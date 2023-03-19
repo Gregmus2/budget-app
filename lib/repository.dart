@@ -44,7 +44,7 @@ class Repository {
         id: maps[i]['id'],
         name: maps[i]['name'],
         icon: IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
-        color: Color(maps[i]['color']),
+        color: Color(maps[i]['color']).withOpacity(1),
         archived: maps[i]['archived'] == 1,
       );
     });

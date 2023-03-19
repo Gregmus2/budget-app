@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+Widget categoryGrid(int length, Widget? Function(BuildContext, int) builder) =>
+    GridView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      itemCount: length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 16,
+          mainAxisExtent: 120),
+      itemBuilder: builder,
+    );
+
 class CategoryCard extends StatelessWidget {
   final double progress;
   final Color color;
-  final String category;
+  final String name;
   final String left;
   final String total;
   final IconData icon;
@@ -13,16 +25,18 @@ class CategoryCard extends StatelessWidget {
       {super.key,
       required this.progress,
       required this.color,
-      required this.category,
+      required this.name,
       this.left = '',
-      this.total = '', required this.icon});
+      this.total = '',
+      required this.icon});
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(category,
+        Text(name,
             style: const TextStyle(
               color: Colors.white,
             )),
@@ -42,8 +56,7 @@ class CategoryCard extends StatelessWidget {
         const SizedBox(
           height: 4,
         ),
-        Text(total,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+        Text(total, style: TextStyle(color: color)),
       ],
     );
   }
@@ -77,8 +90,7 @@ class CategoryCircle extends StatelessWidget {
               ProgressCirclePainter(progress: progress, color: primaryColor),
           child: Padding(
             padding: EdgeInsets.all((diameter - iconSize) / 2),
-            child: Icon(icon,
-                size: iconSize, color: Colors.white),
+            child: Icon(icon, size: iconSize, color: Colors.white),
           ),
         ),
       ),

@@ -9,10 +9,10 @@ class CategoryProvider extends ChangeNotifier {
 
   UnmodifiableListView<Category> get items => UnmodifiableListView(_categories);
 
-  CategoryProvider(this.repo) {
-    repo.listCategories().then((value) {
-      _categories = value;
-    });
+  CategoryProvider(this.repo);
+
+  Future<void> init() async {
+    _categories = await repo.listCategories();
   }
 
   int get length => _categories.length;
