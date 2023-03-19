@@ -1,16 +1,66 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+class CategoryCard extends StatelessWidget {
+  final double progress;
+  final Color color;
+  final String category;
+  final String left;
+  final String total;
+  final IconData icon;
+
+  const CategoryCard(
+      {super.key,
+      required this.progress,
+      required this.color,
+      required this.category,
+      this.left = '',
+      this.total = '', required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(category,
+            style: const TextStyle(
+              color: Colors.white,
+            )),
+        const SizedBox(
+          height: 4,
+        ),
+        Text(
+          left,
+          style: TextStyle(
+            color: color.withOpacity(0.5),
+          ),
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+        CategoryCircle(progress: progress, primaryColor: color, icon: icon),
+        const SizedBox(
+          height: 4,
+        ),
+        Text(total,
+            style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+}
+
 class CategoryCircle extends StatelessWidget {
   final double diameter;
   final double progress;
   final Color primaryColor;
+  final IconData icon;
 
   const CategoryCircle(
       {super.key,
       this.diameter = 50,
       required this.progress,
-      required this.primaryColor});
+      required this.primaryColor,
+      required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +77,7 @@ class CategoryCircle extends StatelessWidget {
               ProgressCirclePainter(progress: progress, color: primaryColor),
           child: Padding(
             padding: EdgeInsets.all((diameter - iconSize) / 2),
-            child: Icon(Icons.add_shopping_cart,
+            child: Icon(icon,
                 size: iconSize, color: Colors.white),
           ),
         ),
