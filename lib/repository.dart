@@ -3,20 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 const String tableCategories = 'categories';
-
-class Repository {
-  late Database db;
-
-  Future init() async {
-    db = await openDatabase(
-        // Set the path to the database. Note: Using the `join` function from the
-        // `path` package is best practice to ensure the path is correctly
-        // constructed for each platform.
-        join(await getDatabasesPath(), '$tableCategories.db'),
-        onCreate: (db, version) {
-      // Run the CREATE TABLE statement on the database.
-      return db.execute(
-        '''CREATE TABLE $tableCategories(
+const migrationScripts = [
+  '''CREATE TABLE $tableCategories(
           id INTEGER PRIMARY KEY, 
           name TEXT, 
           icon_code INT,
@@ -24,8 +12,28 @@ class Repository {
           color INT,
           archived BOOL
         )''',
-      );
-    }, version: 1);
+  '''
+  ALTER TABLE $tableCategories ADD COLUMN currency TEXT
+  '''
+];
+
+class Repository {
+  late Database db;
+
+  Future init() async {
+    db = await openDatabase(
+        version: migrationScripts.length,
+        // Set the path to the database. Note: Using the `join` function from the
+        // `path` package is best practice to ensure the path is correctly
+        // constructed for each platform.
+        join(await getDatabasesPath(), '$tableCategories.db'),
+        onCreate: (Database db, int version) async {
+      db.execute(migrationScripts[0]);
+    }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
+      for (var i = oldVersion + 1; i <= newVersion; i++) {
+        db.execute(migrationScripts[i - 1]);
+      }
+    });
   }
 
   Future<void> createCategory(Category category) async {
@@ -46,6 +54,7 @@ class Repository {
         icon: IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
         color: Color(maps[i]['color']).withOpacity(1),
         archived: maps[i]['archived'] == 1,
+        currency: maps[i]['currency'] ?? "\$",
       );
     });
   }
@@ -75,12 +84,14 @@ class Category implements Model {
   final IconData icon;
   final Color color;
   final bool archived;
+  final String currency;
 
   const Category({
     required this.id,
     required this.name,
     required this.icon,
     required this.color,
+    required this.currency,
     this.archived = false,
   });
 
@@ -92,7 +103,8 @@ class Category implements Model {
       'icon_code': icon.codePoint,
       'icon_font': icon.fontFamily,
       'color': color.value,
-      'archived': archived,
+      'archived': (archived) ? 1 : 0,
+      'currency': currency,
     };
   }
 

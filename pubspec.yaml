@@ -40,6 +40,7 @@ dependencies:
   path: ^1.8.2
   provider: ^6.0.5
   english_words: ^4.0.0
+  money2: ^3.3.0
 
 dev_dependencies:
   flutter_test:

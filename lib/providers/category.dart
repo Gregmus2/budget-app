@@ -17,7 +17,13 @@ class CategoryProvider extends ChangeNotifier {
 
   int get length => _categories.length;
 
-  void add(Category category) {
+  void add(String name, IconData icon, Color color, String currency) {
+    Category category = Category(
+        id: _categories.length,
+        name: name,
+        icon: icon,
+        color: color,
+        currency: currency);
     _categories.add(category);
     repo.createCategory(category);
     notifyListeners();
