@@ -1,4 +1,5 @@
 import 'package:fb/providers/category.dart';
+import 'package:fb/repository.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/icon_picker.dart';
@@ -7,17 +8,29 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class CategoryCreatePage extends StatefulWidget {
-  const CategoryCreatePage({super.key});
+  Category? category;
+
+  CategoryCreatePage({super.key, this.category});
 
   @override
   State<CategoryCreatePage> createState() => _CategoryCreatePageState();
 }
 
 class _CategoryCreatePageState extends State<CategoryCreatePage> {
-  IconData icon = Icons.hourglass_empty;
-  Color color = Colors.blue;
-  Currency currency = CommonCurrencies().euro;
-  final _nameInput = TextEditingController();
+  late IconData icon;
+  late Color color;
+  late Currency currency;
+  late final TextEditingController _nameInput;
+
+  @override
+  void initState() {
+    super.initState();
+
+    icon = widget.category?.icon ?? Icons.hourglass_empty;
+    color = widget.category?.color ?? Colors.blue;
+    currency = widget.category?.currency ?? CommonCurrencies().euro;
+    _nameInput = TextEditingController(text: widget.category?.name);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +64,17 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  provider.add(_nameInput.text, icon, color, currency.symbol);
+                  if (widget.category == null) {
+                    provider.add(_nameInput.text, icon, color, currency);
+                  } else {
+                    widget.category!
+                      ..name = _nameInput.text
+                      ..icon = icon
+                      ..color = color
+                      ..currency = currency;
+                    provider.update(widget.category!);
+                  }
+
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.check))

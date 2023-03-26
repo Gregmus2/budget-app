@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money2/money2.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -54,7 +55,7 @@ class Repository {
         icon: IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
         color: Color(maps[i]['color']).withOpacity(1),
         archived: maps[i]['archived'] == 1,
-        currency: maps[i]['currency'] ?? "\$",
+        currency: Currencies().find(maps[i]['currency'] ?? '') ?? CommonCurrencies().euro,
       );
     });
   }
@@ -80,13 +81,13 @@ class Repository {
 class Category implements Model {
   @override
   final int id;
-  final String name;
-  final IconData icon;
-  final Color color;
-  final bool archived;
-  final String currency;
+  String name;
+  IconData icon;
+  Color color;
+  bool archived;
+  Currency currency;
 
-  const Category({
+  Category({
     required this.id,
     required this.name,
     required this.icon,
@@ -104,7 +105,7 @@ class Category implements Model {
       'icon_font': icon.fontFamily,
       'color': color.value,
       'archived': (archived) ? 1 : 0,
-      'currency': currency,
+      'currency': currency.code,
     };
   }
 

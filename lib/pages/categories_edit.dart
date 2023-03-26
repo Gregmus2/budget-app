@@ -19,17 +19,28 @@ class _CategoriesEditPageState extends State<CategoriesEditPage> {
       body: Consumer<CategoryProvider>(
         builder: (context, value, child) => categoryGrid(
             value.length,
-            (context, index) => CategoryCard(
-                progress: 100,
-                color: value.get(index).color,
-                name: value.get(index).name,
-                icon: value.get(index).icon)),
+            (context, index) => GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CategoryCreatePage(
+                                category: value.get(index),
+                              )),
+                    );
+                  },
+                  child: CategoryCard(
+                      progress: 100,
+                      color: value.get(index).color,
+                      name: value.get(index).name,
+                      icon: value.get(index).icon),
+                )),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CategoryCreatePage()),
+            MaterialPageRoute(builder: (context) => CategoryCreatePage()),
           );
         },
         child: const Icon(Icons.add),

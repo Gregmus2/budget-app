@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:fb/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:money2/money2.dart';
 
 class CategoryProvider extends ChangeNotifier {
   List<Category> _categories = [];
@@ -17,7 +18,7 @@ class CategoryProvider extends ChangeNotifier {
 
   int get length => _categories.length;
 
-  void add(String name, IconData icon, Color color, String currency) {
+  void add(String name, IconData icon, Color color, Currency currency) {
     Category category = Category(
         id: _categories.length,
         name: name,
@@ -31,6 +32,13 @@ class CategoryProvider extends ChangeNotifier {
 
   Category get(int index) {
     return _categories[index];
+  }
+
+  void update(Category category) {
+    final targetCategory = _categories.firstWhere((element) => element.id == category.id);
+    _categories[_categories.indexOf(targetCategory)] = category;
+    repo.update(category);
+    notifyListeners();
   }
 
   void remove(int index) {

@@ -20,7 +20,7 @@ class CategoriesPage extends StatelessWidget {
     for (var i = 0; i < provider.length; i++) {
       int total = random.nextInt(1000);
       categories.add(CategoryStat(provider.get(i),
-          total - random.nextInt(total), total, provider.get(i).currency));
+          total - random.nextInt(total), total, provider.get(i).currency.symbol));
     }
 
     return Scaffold(
