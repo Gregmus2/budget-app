@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
-Widget categoryGrid(int length, Widget? Function(BuildContext, int) builder) =>
+Widget categoryGrid(int length, Widget Function(BuildContext, int) builder) =>
     GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemCount: length,
@@ -11,6 +12,26 @@ Widget categoryGrid(int length, Widget? Function(BuildContext, int) builder) =>
           mainAxisSpacing: 16,
           mainAxisExtent: 120),
       itemBuilder: builder,
+    );
+
+Widget draggableCategoryGrid(
+        int length,
+        Widget Function(BuildContext, int) builder,
+        void Function(int, int) onReorder) =>
+    ReorderableGridView.builder(
+      dragWidgetBuilder: (index, child) => Scaffold(
+        backgroundColor: Colors.transparent,
+        body: child,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      itemCount: length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 16,
+          mainAxisExtent: 120),
+      itemBuilder: builder,
+      onReorder: onReorder,
     );
 
 class CategoryCard extends StatelessWidget {
@@ -32,7 +53,6 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

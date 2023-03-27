@@ -14,6 +14,7 @@ class CategoryProvider extends ChangeNotifier {
 
   Future<void> init() async {
     _categories = await repo.listCategories();
+    _categories.sort((a, b) => a.order.compareTo(b.order));
   }
 
   int get length => _categories.length;
@@ -24,7 +25,8 @@ class CategoryProvider extends ChangeNotifier {
         name: name,
         icon: icon,
         color: color,
-        currency: currency);
+        currency: currency,
+        order: _categories.isNotEmpty ? _categories.last.order + 1 : 0);
     _categories.add(category);
     repo.createCategory(category);
     notifyListeners();
@@ -34,16 +36,36 @@ class CategoryProvider extends ChangeNotifier {
     return _categories[index];
   }
 
+  List<Category> list() {
+    return _categories;
+  }
+
   void update(Category category) {
-    final targetCategory = _categories.firstWhere((element) => element.id == category.id);
+    final targetCategory =
+        _categories.firstWhere((element) => element.id == category.id);
     _categories[_categories.indexOf(targetCategory)] = category;
     repo.update(category);
     notifyListeners();
   }
 
-  void remove(int index) {
-    repo.delete(_categories[index]);
-    _categories.removeAt(index);
+  void remove(Category category) {
+    _categories.remove(category);
+    repo.delete(category);
+    notifyListeners();
+  }
+
+  void reOrder(int from, int to) {
+    if (from == to) {
+      return;
+    }
+
+    _categories[from].order = _categories[to].order;
+    for (var i = from + 1; i <= to; i++) {
+      _categories[i].order--;
+      repo.update(_categories[i]);
+    }
+    _categories.sort((a, b) => a.order.compareTo(b.order));
+
     notifyListeners();
   }
 }

@@ -77,7 +77,15 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.check))
+                icon: const Icon(Icons.check)),
+            // create delete button
+            if (widget.category != null)
+              IconButton(
+                  onPressed: () {
+                    provider.remove(widget.category!);
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.delete)),
           ],
           bottom: const TabBar(
             tabs: [

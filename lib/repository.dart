@@ -11,11 +11,10 @@ const migrationScripts = [
           icon_code INT,
           icon_font TEXT,
           color INT,
-          archived BOOL
+          archived BOOL,
+          currency TEXT,
+          "order" INT
         )''',
-  '''
-  ALTER TABLE $tableCategories ADD COLUMN currency TEXT
-  '''
 ];
 
 class Repository {
@@ -38,7 +37,7 @@ class Repository {
   }
 
   Future<void> createCategory(Category category) async {
-    await db.insert(
+    db.insert(
       tableCategories,
       category.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -50,18 +49,20 @@ class Repository {
 
     return List.generate(maps.length, (i) {
       return Category(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-        icon: IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
-        color: Color(maps[i]['color']).withOpacity(1),
-        archived: maps[i]['archived'] == 1,
-        currency: Currencies().find(maps[i]['currency'] ?? '') ?? CommonCurrencies().euro,
-      );
+          id: maps[i]['id'],
+          name: maps[i]['name'],
+          icon:
+              IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
+          color: Color(maps[i]['color']).withOpacity(1),
+          archived: maps[i]['archived'] == 1,
+          currency: Currencies().find(maps[i]['currency'] ?? '') ??
+              CommonCurrencies().euro,
+          order: maps[i]['order']);
     });
   }
 
   Future<void> update(Model model) async {
-    await db.update(
+    db.update(
       model.tableName(),
       model.toMap(),
       where: 'id = ?',
@@ -70,7 +71,7 @@ class Repository {
   }
 
   Future<void> delete(Model model) async {
-    await db.delete(
+    db.delete(
       model.tableName(),
       where: 'id = ?',
       whereArgs: [model.id],
@@ -86,6 +87,7 @@ class Category implements Model {
   Color color;
   bool archived;
   Currency currency;
+  int order;
 
   Category({
     required this.id,
@@ -93,6 +95,7 @@ class Category implements Model {
     required this.icon,
     required this.color,
     required this.currency,
+    required this.order,
     this.archived = false,
   });
 
@@ -106,6 +109,7 @@ class Category implements Model {
       'color': color.value,
       'archived': (archived) ? 1 : 0,
       'currency': currency.code,
+      'order': order,
     };
   }
 
