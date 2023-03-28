@@ -1,18 +1,12 @@
 import 'package:fb/pages/category_create.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/repository.dart';
 import 'package:fb/ui/category.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CategoriesEditPage extends StatefulWidget {
+class CategoriesEditPage extends StatelessWidget {
   const CategoriesEditPage({super.key});
 
-  @override
-  State<CategoriesEditPage> createState() => _CategoriesEditPageState();
-}
-
-class _CategoriesEditPageState extends State<CategoriesEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

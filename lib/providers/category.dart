@@ -60,9 +60,16 @@ class CategoryProvider extends ChangeNotifier {
     }
 
     _categories[from].order = _categories[to].order;
-    for (var i = from + 1; i <= to; i++) {
-      _categories[i].order--;
-      repo.update(_categories[i]);
+    if (to > from) {
+      for (var i = from + 1; i <= to; i++) {
+        _categories[i].order--;
+        repo.update(_categories[i]);
+      }
+    } else {
+      for (var i = to; i < from; i++) {
+        _categories[i].order++;
+        repo.update(_categories[i]);
+      }
     }
     _categories.sort((a, b) => a.order.compareTo(b.order));
 

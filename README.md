@@ -7,3 +7,5 @@
 ![create here](res/category_create.gif)
 
 ![drag&drop here](res/category_drag&drop.gif)
+
+![bottom navigation here](res/bottom_navigation.png)

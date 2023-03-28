@@ -1,3 +1,4 @@
+import 'package:fb/bottom_navigation.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/repository.dart';
@@ -16,13 +17,24 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => catProvider,
-      child: const MyApp(),
+      child: const App(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  int pageIndex = 1;
+  final List<Widget> _pages = [
+    const Placeholder(),
+    const CategoriesTab(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,25 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: const CategoriesPage(),
+      home: Scaffold(
+          body: IndexedStack(
+            index: pageIndex,
+            children: _pages,
+          ),
+          bottomNavigationBar: BottomNavigation(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_balance_wallet),
+                label: 'Accounts',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Categories',
+              ),
+            ],
+            pageIndex: pageIndex,
+            onSelectTab: (int index) => setState(() => pageIndex = index),
+          )),
     );
   }
 }
