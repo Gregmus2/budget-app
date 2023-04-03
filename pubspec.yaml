@@ -42,6 +42,7 @@ dependencies:
   english_words: ^4.0.0
   money2: ^3.3.0
   reorderable_grid_view: ^2.2.6
+  spannable_grid: ^0.3.0
 
 dev_dependencies:
   flutter_test:

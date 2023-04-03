@@ -1,5 +1,5 @@
+import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/repository.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/icon_picker.dart';

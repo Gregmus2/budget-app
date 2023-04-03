@@ -1,6 +1,6 @@
 import 'package:fb/pages/category_create.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/ui/category.dart';
+import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +30,10 @@ class CategoriesEditPage extends StatelessWidget {
                         progress: 100,
                         color: value.get(index).color,
                         name: value.get(index).name,
-                        icon: value.get(index).icon),
+                        icon: value.get(index).icon,
+                        total: 0,
+                        left: 0,
+                        currency: value.get(index).currency),
                   ),
               (oldIndex, newIndex) => value.reOrder(oldIndex, newIndex));
         },

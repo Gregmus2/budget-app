@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money2/money2.dart';
 import 'dart:math' as math;
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
@@ -38,18 +39,22 @@ class CategoryCard extends StatelessWidget {
   final double progress;
   final Color color;
   final String name;
-  final String left;
-  final String total;
+  final double left;
+  final double total;
   final IconData icon;
+  final Currency currency;
 
-  const CategoryCard(
+  CategoryCard(
       {super.key,
       required this.progress,
       required this.color,
       required this.name,
-      this.left = '',
-      this.total = '',
-      required this.icon});
+      required this.left,
+      required this.total,
+      required this.icon,
+      required this.currency}) {
+    assert(progress >= 0 && progress <= 100);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +69,7 @@ class CategoryCard extends StatelessWidget {
           height: 4,
         ),
         Text(
-          left,
+          "${left.toStringAsFixed(2)} ${currency.symbol}",
           style: TextStyle(
             color: color.withOpacity(0.5),
           ),
@@ -76,7 +81,7 @@ class CategoryCard extends StatelessWidget {
         const SizedBox(
           height: 4,
         ),
-        Text(total, style: TextStyle(color: color)),
+        Text("${total.toStringAsFixed(2)} ${currency.symbol}", style: TextStyle(color: color)),
       ],
     );
   }

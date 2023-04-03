@@ -1,6 +1,7 @@
 import 'dart:collection';
 
-import 'package:fb/repository.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
@@ -28,7 +29,7 @@ class CategoryProvider extends ChangeNotifier {
         currency: currency,
         order: _categories.isNotEmpty ? _categories.last.order + 1 : 0);
     _categories.add(category);
-    repo.createCategory(category);
+    repo.create(category);
     notifyListeners();
   }
 

@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
+import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 const String tableCategories = 'categories';
+const String tableAccounts = 'accounts';
 const migrationScripts = [
   '''CREATE TABLE $tableCategories(
           id INTEGER PRIMARY KEY, 
@@ -15,6 +16,20 @@ const migrationScripts = [
           currency TEXT,
           "order" INT
         )''',
+  '''
+  CREATE TABLE $tableAccounts(
+          id INTEGER PRIMARY KEY, 
+          name TEXT,
+          type INT,
+          icon_code INT,
+          icon_font TEXT,
+          color INT,
+          archived BOOL,
+          currency TEXT,
+          "order" INT,
+          balance REAL
+        )
+  '''
 ];
 
 class Repository {
@@ -36,10 +51,10 @@ class Repository {
     });
   }
 
-  Future<void> createCategory(Category category) async {
+  Future<void> create(Model model) async {
     db.insert(
-      tableCategories,
-      category.toMap(),
+      model.tableName(),
+      model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -48,16 +63,15 @@ class Repository {
     final List<Map<String, dynamic>> maps = await db.query(tableCategories);
 
     return List.generate(maps.length, (i) {
-      return Category(
-          id: maps[i]['id'],
-          name: maps[i]['name'],
-          icon:
-              IconData(maps[i]['icon_code'], fontFamily: maps[i]['icon_font']),
-          color: Color(maps[i]['color']).withOpacity(1),
-          archived: maps[i]['archived'] == 1,
-          currency: Currencies().find(maps[i]['currency'] ?? '') ??
-              CommonCurrencies().euro,
-          order: maps[i]['order']);
+      return Category.mapDatabase(maps[i]);
+    });
+  }
+
+  Future<List<Account>> listAccounts() async {
+    final List<Map<String, dynamic>> maps = await db.query(tableAccounts);
+
+    return List.generate(maps.length, (i) {
+      return Account.mapDatabase(maps[i]);
     });
   }
 
@@ -76,46 +90,6 @@ class Repository {
       where: 'id = ?',
       whereArgs: [model.id],
     );
-  }
-}
-
-class Category implements Model {
-  @override
-  final int id;
-  String name;
-  IconData icon;
-  Color color;
-  bool archived;
-  Currency currency;
-  int order;
-
-  Category({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.color,
-    required this.currency,
-    required this.order,
-    this.archived = false,
-  });
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'icon_code': icon.codePoint,
-      'icon_font': icon.fontFamily,
-      'color': color.value,
-      'archived': (archived) ? 1 : 0,
-      'currency': currency.code,
-      'order': order,
-    };
-  }
-
-  @override
-  String tableName() {
-    return tableCategories;
   }
 }
 

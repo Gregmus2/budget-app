@@ -1,7 +1,9 @@
 import 'package:fb/bottom_navigation.dart';
+import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/categories.dart';
+import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/repository.dart';
+import 'package:fb/db/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +14,15 @@ Future<void> main() async {
   await repo.init();
 
   CategoryProvider catProvider = CategoryProvider(repo);
+  AccountProvider accountProvider = AccountProvider(repo);
   await catProvider.init();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => catProvider,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => catProvider),
+        ChangeNotifierProvider(create: (context) => accountProvider),
+      ],
       child: const App(),
     ),
   );
@@ -32,7 +38,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   int pageIndex = 1;
   final List<Widget> _pages = [
-    const Placeholder(),
+    const AccountsPage(),
     const CategoriesTab(),
   ];
 

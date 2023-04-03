@@ -9,3 +9,5 @@
 ![drag&drop here](res/category_drag&drop.gif)
 
 ![bottom navigation here](res/bottom_navigation.png)
+
+![account create here](res/account_create.gif)
