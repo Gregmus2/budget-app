@@ -12,9 +12,9 @@ class CategoriesEditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Consumer<CategoryProvider>(
-        builder: (context, value, child) {
+        builder: (context, provider, child) {
           return draggableCategoryGrid(
-              value.length,
+              provider.length,
               (context, index) => GestureDetector(
                     key: ValueKey(index),
                     onTap: () {
@@ -22,20 +22,20 @@ class CategoriesEditPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CategoryCreatePage(
-                                  category: value.get(index),
+                                  category: provider.get(index),
                                 )),
                       );
                     },
                     child: CategoryCard(
                         progress: 100,
-                        color: value.get(index).color,
-                        name: value.get(index).name,
-                        icon: value.get(index).icon,
+                        color: provider.get(index).color,
+                        name: provider.get(index).name,
+                        icon: provider.get(index).icon,
                         total: 0,
                         left: 0,
-                        currency: value.get(index).currency),
+                        currency: provider.get(index).currency),
                   ),
-              (oldIndex, newIndex) => value.reOrder(oldIndex, newIndex));
+              (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex));
         },
       ),
       floatingActionButton: FloatingActionButton(

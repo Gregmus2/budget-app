@@ -78,6 +78,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                       ..icon = icon
                       ..color = color
                       ..type = type
+                      ..balance = balance
                       ..currency = currency;
                     provider.update(widget.account!);
                   }

@@ -16,6 +16,7 @@ Future<void> main() async {
   CategoryProvider catProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
   await catProvider.init();
+  await accountProvider.init();
 
   runApp(
     MultiProvider(

@@ -53,7 +53,7 @@ class Account implements Model {
       archived: map['archived'] == 1,
       currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
       order: map['order'],
-      balance: map['balance'],
+      balance: map['balance'] ?? 0.0,
     );
   }
 

@@ -81,7 +81,8 @@ class CategoryCard extends StatelessWidget {
         const SizedBox(
           height: 4,
         ),
-        Text("${total.toStringAsFixed(2)} ${currency.symbol}", style: TextStyle(color: color)),
+        Text("${total.toStringAsFixed(2)} ${currency.symbol}",
+            style: TextStyle(color: color)),
       ],
     );
   }
