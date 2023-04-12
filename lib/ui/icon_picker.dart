@@ -37,11 +37,11 @@ class IconPicker extends StatefulWidget {
     Icons.card_giftcard,
     Icons.airplane_ticket,
   ];
-  Color color;
-  IconData icon;
-  Function(IconData) onChange;
+  final Color color;
+  final IconData icon;
+  final Function(IconData) onChange;
 
-  IconPicker(
+  const IconPicker(
       {super.key,
       required this.color,
       required this.onChange,
@@ -52,6 +52,14 @@ class IconPicker extends StatefulWidget {
 }
 
 class _IconPickerState extends State<IconPicker> {
+  late IconData icon;
+
+  @override
+  void initState() {
+    super.initState();
+    icon = widget.icon;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -70,7 +78,7 @@ class _IconPickerState extends State<IconPicker> {
               shape: MaterialStateProperty.all(const CircleBorder())),
           onPressed: () {
             setState(() {
-              widget.icon = IconPicker.icons[index];
+              icon = IconPicker.icons[index];
             });
             widget.onChange(IconPicker.icons[index]);
           },

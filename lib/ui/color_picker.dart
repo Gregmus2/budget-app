@@ -23,16 +23,24 @@ class ColorPicker extends StatefulWidget {
     Colors.grey,
   ];
   // colors variation through ColorSwatch
-  late Color color;
-  Function(Color) onChange;
+  final Color color;
+  final Function(Color) onChange;
 
-  ColorPicker({super.key, required this.color, required this.onChange});
+  const ColorPicker({super.key, required this.color, required this.onChange});
 
   @override
   State<ColorPicker> createState() => _ColorPickerState();
 }
 
 class _ColorPickerState extends State<ColorPicker> {
+  late Color color;
+
+  @override
+  void initState() {
+    super.initState();
+    color = widget.color;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -45,12 +53,12 @@ class _ColorPickerState extends State<ColorPicker> {
             backgroundColor:
                 MaterialStateProperty.all(ColorPicker.primaryColors[index]),
             shape: MaterialStateProperty.all(CircleBorder(
-                side: (widget.color.value == ColorPicker.primaryColors[index].value)
+                side: (color.value == ColorPicker.primaryColors[index].value)
                     ? const BorderSide(width: 2, color: Colors.white)
                     : BorderSide.none))),
         onPressed: () {
           setState(() {
-            widget.color = ColorPicker.primaryColors[index];
+            color = ColorPicker.primaryColors[index];
           });
           widget.onChange(ColorPicker.primaryColors[index]);
         },

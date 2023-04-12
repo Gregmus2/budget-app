@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:fb/db/account.dart';
-import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';

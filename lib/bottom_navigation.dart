@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatelessWidget {
-  int pageIndex;
+  final int pageIndex;
   final List<BottomNavigationBarItem> items;
   final Function(int) onSelectTab;
 
-  BottomNavigation({super.key, required this.items, this.pageIndex = 0, required this.onSelectTab});
+  const BottomNavigation({super.key, required this.items, this.pageIndex = 0, required this.onSelectTab});
 
   @override
   Widget build(BuildContext context) {

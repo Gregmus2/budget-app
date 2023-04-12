@@ -10,9 +10,9 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class AccountCreatePage extends StatefulWidget {
-  Account? account;
+  final Account? account;
 
-  AccountCreatePage({super.key, this.account});
+  const AccountCreatePage({super.key, this.account});
 
   @override
   State<AccountCreatePage> createState() => _AccountCreatePageState();
@@ -152,6 +152,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                     showModalBottomSheet(
                       context: context,
                       builder: (context) => NumPad(
+                        number: balance,
                         currency: currency,
                         onDone: (value) {
                           setState(() {

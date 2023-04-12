@@ -43,7 +43,9 @@ class Repository {
         // constructed for each platform.
         join(await getDatabasesPath(), '$tableCategories.db'),
         onCreate: (Database db, int version) async {
-      db.execute(migrationScripts[0]);
+      for (var element in migrationScripts) {
+        db.execute(element);
+      }
     }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
       for (var i = oldVersion + 1; i <= newVersion; i++) {
         db.execute(migrationScripts[i - 1]);

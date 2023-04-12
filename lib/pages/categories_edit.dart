@@ -42,7 +42,7 @@ class CategoriesEditPage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CategoryCreatePage()),
+            MaterialPageRoute(builder: (context) => const CategoryCreatePage()),
           );
         },
         child: const Icon(Icons.add),

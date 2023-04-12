@@ -5,9 +5,9 @@ import 'package:money2/money2.dart';
 class CurrencyPicker extends StatefulWidget {
   final Function(Currency?) onChanged;
   final Color color;
-  Currency currency;
+  final Currency currency;
 
-  CurrencyPicker(
+  const CurrencyPicker(
       {super.key,
       required this.onChanged,
       required this.color,
@@ -18,6 +18,14 @@ class CurrencyPicker extends StatefulWidget {
 }
 
 class _CurrencyPickerState extends State<CurrencyPicker> {
+  late Currency currency;
+
+  @override
+  void initState() {
+    super.initState();
+    currency = widget.currency;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -60,7 +68,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
         ),
         onPressed: () {
           setState(() {
-            widget.currency = element;
+            currency = element;
           });
           widget.onChanged(element);
         },

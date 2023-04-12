@@ -20,7 +20,7 @@ class AccountsPage extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AccountCreatePage()));
+                        builder: (context) => const AccountCreatePage()));
               },
               icon: const Icon(Icons.add))
         ],

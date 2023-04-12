@@ -8,9 +8,9 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class CategoryCreatePage extends StatefulWidget {
-  Category? category;
+  final Category? category;
 
-  CategoryCreatePage({super.key, this.category});
+  const CategoryCreatePage({super.key, this.category});
 
   @override
   State<CategoryCreatePage> createState() => _CategoryCreatePageState();
