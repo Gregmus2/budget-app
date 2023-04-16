@@ -4,6 +4,7 @@ import 'package:fb/pages/categories.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -15,14 +16,17 @@ Future<void> main() async {
 
   CategoryProvider catProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
+  TransactionProvider transactionProvider = TransactionProvider(repo);
   await catProvider.init();
   await accountProvider.init();
+  await transactionProvider.init();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => catProvider),
         ChangeNotifierProvider(create: (context) => accountProvider),
+        ChangeNotifierProvider(create: (context) => transactionProvider),
       ],
       child: const App(),
     ),

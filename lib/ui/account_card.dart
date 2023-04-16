@@ -7,6 +7,7 @@ class AccountCard extends StatelessWidget {
   final double balance;
   final IconData icon;
   final Currency currency;
+  final Function() onPressed;
 
   const AccountCard(
       {super.key,
@@ -14,28 +15,36 @@ class AccountCard extends StatelessWidget {
       required this.name,
       required this.balance,
       required this.icon,
-      required this.currency});
+      required this.currency,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          width: 50,
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: color,
-            border: Border.all(color: Colors.white.withOpacity(0.5)),
-          ),
-          child: Icon(icon, color: Colors.white),
-        ),
-        const SizedBox(height: 10),
-        Text(name, style: const TextStyle(color: Colors.white)),
-        const SizedBox(height: 4),
-        Text("${balance.toString()} ${currency.symbol}",
-            style: const TextStyle(color: Colors.green)),
+        Expanded(
+            child: TextButton(
+                onPressed: onPressed,
+                style: const ButtonStyle(
+                    alignment: AlignmentDirectional.centerStart,
+                    shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
+                    padding: MaterialStatePropertyAll(
+                        EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(icon, color: color, size: 40),
+                        const SizedBox(width: 10,),
+                        Text(name, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                      ],
+                    ),
+                    Text("${balance.toString()} ${currency.symbol}",
+                        style: const TextStyle(color: Colors.green, fontSize: 18)),
+                  ],
+                ))),
       ],
     );
   }

@@ -43,6 +43,7 @@ dependencies:
   money2: ^3.3.0
   reorderable_grid_view: ^2.2.6
   spannable_grid: ^0.3.0
+  date_util: ^0.1.4
 
 dev_dependencies:
   flutter_test:

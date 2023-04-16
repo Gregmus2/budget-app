@@ -3,7 +3,6 @@ import 'package:fb/providers/account.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({super.key});
@@ -25,19 +24,22 @@ class AccountsPage extends StatelessWidget {
               icon: const Icon(Icons.add))
         ],
       ),
-      body: ReorderableGridView.builder(
-        dragWidgetBuilder: (index, child) => Scaffold(
+      body: ReorderableListView.builder(
+        /*dragWidgetBuilder: (index, child) => Scaffold(
           backgroundColor: Colors.transparent,
           body: child,
+        ),*/
+        footer: const Divider(
+          color: Colors.grey,
         ),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 16,
-            mainAxisExtent: 120),
-        itemBuilder: (context, index) => GestureDetector(
+        itemBuilder: (context, index) => AccountCard(
           key: ValueKey(index),
-          onTap: () {
+          color: provider.get(index).color,
+          name: provider.get(index).name,
+          balance: provider.get(index).balance,
+          icon: provider.get(index).icon,
+          currency: provider.get(index).currency,
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -46,13 +48,6 @@ class AccountsPage extends StatelessWidget {
                       )),
             );
           },
-          child: AccountCard(
-              key: ValueKey(index),
-              color: provider.get(index).color,
-              name: provider.get(index).name,
-              balance: provider.get(index).balance,
-              icon: provider.get(index).icon,
-              currency: provider.get(index).currency),
         ),
         itemCount: provider.length,
         onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
