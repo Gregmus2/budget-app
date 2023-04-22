@@ -1,23 +1,112 @@
+import 'package:fb/db/account.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 
-class NumPad extends StatefulWidget {
+class TransactionNumPad extends StatelessWidget {
+  final Currency currency;
+  final DateTime _selectedDate = DateTime.now();
+  Account from;
+  TransferTarget to;
+  final Function(double value, DateTime date, Account from, TransferTarget to)
+      onDoneFunc;
+
+  TransactionNumPad(
+      {super.key, required this.currency,
+      required this.onDoneFunc,
+      required this.from,
+      required this.to});
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleNumPad(
+      currency: currency,
+      additionalButtons: [
+        _NumPadButton(5, 2, "Date", "D"),
+      ],
+      tabloItems: [
+        Row(
+          children: [
+            FromToButton(entity: from),
+            const Icon(Icons.arrow_right),
+          ],
+        ),
+        Row(
+          children: [
+            const Icon(Icons.arrow_right),
+            FromToButton(entity: to),
+          ],
+        )
+      ],
+      footer: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 7),
+        child: Text(DateFormat().format(_selectedDate),
+            style: const TextStyle(color: Colors.white)),
+      ),
+      onDone: (number) =>
+          onDoneFunc(number, _selectedDate, from, to),
+    );
+  }
+}
+
+class FromToButton extends StatelessWidget {
+  const FromToButton({
+    super.key,
+    required this.entity,
+  });
+
+  final TransferTarget entity;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: ButtonStyle(
+          shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
+      onPressed: () {
+        // todo modal window to select account using the same widget as in account page
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Column(
+          children: [
+            Icon(
+              entity.icon,
+              color: entity.color,
+            ),
+            Text(entity.name,
+                style: const TextStyle(color: Colors.white, fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SimpleNumPad extends StatefulWidget {
   final double number;
   final Currency currency;
-  final Function(double) onDone;
+  final List<_NumPadButton>? additionalButtons;
+  List<Widget>? tabloItems;
+  Widget? footer;
+  final Function(String char, BuildContext context)? handler;
+  final Function(double number) onDone;
 
-  const NumPad(
-      {super.key,
-      this.number = 0,
+  SimpleNumPad(
+      {super.key, this.number = 0,
       required this.currency,
+      this.additionalButtons,
+      this.tabloItems,
+      this.footer,
+      this.handler,
       required this.onDone});
 
   @override
-  State<NumPad> createState() => _NumPadState();
+  State<SimpleNumPad> createState() => _SimpleNumPadState();
 }
 
-class _NumPadState extends State<NumPad> {
+class _SimpleNumPadState extends State<SimpleNumPad> {
   late String arg1;
   String arg2 = '';
   String operator = '';
@@ -46,52 +135,66 @@ class _NumPadState extends State<NumPad> {
   void initState() {
     super.initState();
     arg1 = widget.number.toString();
+
+    if (widget.additionalButtons != null) {
+      assert(widget.additionalButtons!.length < 3);
+
+      buttons.last.rowSpan = 3 - widget.additionalButtons!.length;
+      buttons.last.row = 2 + widget.additionalButtons!.length;
+      for (var element in widget.additionalButtons!) {
+        buttons.insert(buttons.length - 1, element);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> sheet = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          widget.tabloItems != null ? widget.tabloItems![0] : Container(),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                const Text("Balance",
+                    style: TextStyle(color: Colors.white, fontSize: 12)),
+                Text(
+                    "$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
+                    style: const TextStyle(fontSize: 24, color: Colors.white)),
+              ],
+            ),
+          ),
+          widget.tabloItems != null ? widget.tabloItems![1] : Container(),
+        ],
+      ),
+      const Divider(height: 1),
+      SpannableGrid(
+        columns: 5,
+        rows: 4,
+        cells: _getCells(context),
+        showGrid: true,
+        style: SpannableGridStyle(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          spacing: 0.5,
+        ),
+      ),
+      const Divider(height: 1),
+    ];
+    if (widget.footer != null) {
+      sheet.add(widget.footer!);
+    }
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Column(
-                    children: [
-                      const Text("Balance",
-                          style: TextStyle(color: Colors.white, fontSize: 12)),
-                      Text(
-                          "$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
-                          style: const TextStyle(
-                              fontSize: 24, color: Colors.white)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 1),
-          SpannableGrid(
-            columns: 5,
-            rows: 4,
-            cells: _getCells(),
-            showGrid: true,
-            style: SpannableGridStyle(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              spacing: 0.5,
-            ),
-          ),
-        ],
+        children: sheet,
       ),
     );
   }
 
-  _handler(String char) {
+  _handler(String char, BuildContext context) {
     switch (char) {
       case "7":
       case "4":
@@ -164,6 +267,10 @@ class _NumPadState extends State<NumPad> {
         widget.onDone(double.parse(_doCalc(arg1, operator, arg2)));
         break;
     }
+
+    if (widget.handler != null) {
+      widget.handler!(char, context);
+    }
   }
 
   String _doCalc(String number1, operator, number2) {
@@ -213,7 +320,7 @@ class _NumPadState extends State<NumPad> {
     return '$number$digit';
   }
 
-  List<SpannableGridCellData> _getCells() {
+  List<SpannableGridCellData> _getCells(BuildContext context) {
     var result = List<SpannableGridCellData>.generate(
         buttons.length,
         (index) => SpannableGridCellData(
@@ -224,7 +331,7 @@ class _NumPadState extends State<NumPad> {
               columnSpan: buttons[index].columnSpan ?? 1,
               child: NumPadButton(
                 char: buttons[index].char,
-                onPressed: () => _handler(buttons[index].char),
+                onPressed: () => _handler(buttons[index].char, context),
               ),
             ));
 
@@ -269,6 +376,5 @@ class _NumPadButton {
   String label;
   String char;
 
-  _NumPadButton(this.column, this.row, this.label, this.char,
-      {this.rowSpan});
+  _NumPadButton(this.column, this.row, this.label, this.char, {this.rowSpan});
 }

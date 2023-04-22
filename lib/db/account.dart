@@ -1,17 +1,22 @@
 import 'package:fb/db/repository.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
 enum AccountType { regular, debt, savings }
 
-class Account implements Model {
+class Account implements Model, TransferTarget {
   @override
   final int id;
+  @override
   String name;
   AccountType type;
+  @override
   IconData icon;
+  @override
   Color color;
   bool archived;
+  @override
   Currency currency;
   int order;
   double balance;

@@ -1,6 +1,7 @@
 import 'package:fb/bottom_navigation.dart';
 import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/categories.dart';
+import 'package:fb/pages/transactions.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/db/repository.dart';
@@ -44,6 +45,7 @@ class _AppState extends State<App> {
   int pageIndex = 1;
   final List<Widget> _pages = [
     const AccountsPage(),
+    const TransactionsPage(),
     const CategoriesTab(),
   ];
 
@@ -72,6 +74,10 @@ class _AppState extends State<App> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.account_balance_wallet),
                 label: 'Accounts',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.receipt),
+                label: 'Transactions',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.list),

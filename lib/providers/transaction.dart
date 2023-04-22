@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:flutter/material.dart';
 
 import '../db/category.dart';
@@ -26,14 +27,14 @@ class TransactionProvider extends ChangeNotifier {
 
   int get length => _transactions.length;
 
-  void add(String note, Account from, Account? toAccount, Category? toCategory,
+  void add(String note, Account from, TransferTarget to,
       double amountFrom, double amountTo, DateTime date) {
     Transaction transaction = Transaction(
         id: _transactions.length + 1,
         note: note,
         from: from.id,
-        toAccount: (toAccount != null) ? toAccount.id : null,
-        toCategory: (toCategory != null) ? toCategory.id : null,
+        toAccount: (to is Account) ? to.id : null,
+        toCategory: (to is Category) ? to.id : null,
         amountFrom: amountFrom,
         amountTo: amountTo,
         date: date);

@@ -3,7 +3,6 @@ import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart' as model;
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:date_util/date_util.dart';
 
 const String tableCategories = 'categories';
 const String tableAccounts = 'accounts';
@@ -97,14 +96,12 @@ class Repository {
 
   Future<List<model.Transaction>> listTransactions(int year, month) async {
     final DateTime date = DateTime(year, month);
+    final DateTime nextMonth = DateTime(year, month + 1);
     final List<Map<String, dynamic>> maps = await db.query(tableTransactions,
         where: 'date >= ? AND date < ?',
         whereArgs: [
           date.millisecondsSinceEpoch ~/ 1000,
-          date
-                  .add(Duration(days: DateUtil().daysInMonth(month, year)))
-                  .millisecondsSinceEpoch ~/
-              1000
+          nextMonth.millisecondsSinceEpoch ~/ 1000
         ],
         orderBy: 'date DESC');
 
@@ -131,7 +128,7 @@ class Repository {
   }
 }
 
-class Model {
+abstract class Model {
   final int id;
 
   Model(this.id);

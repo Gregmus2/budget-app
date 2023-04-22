@@ -151,7 +151,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
-                      builder: (context) => NumPad(
+                      builder: (context) => SimpleNumPad(
                         number: balance,
                         currency: currency,
                         onDone: (value) {

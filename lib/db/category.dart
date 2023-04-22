@@ -1,14 +1,19 @@
 import 'package:fb/db/repository.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
-class Category implements Model {
+class Category implements Model, TransferTarget {
   @override
   final int id;
+  @override
   String name;
+  @override
   IconData icon;
+  @override
   Color color;
   bool archived;
+  @override
   Currency currency;
   int order;
 
