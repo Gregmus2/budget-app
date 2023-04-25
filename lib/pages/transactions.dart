@@ -1,5 +1,3 @@
-import 'package:fb/db/account.dart';
-import 'package:fb/db/category.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/transaction.dart';
@@ -14,37 +12,46 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-    final Account DefaultAccount = accountProvider.items.last; // todo replace with last transaction account
-    final Category DefaultCategory = categoryProvider.items.last; // todo replace with last transaction category
+    final TransactionProvider provider =
+        Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider =
+        Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider =
+        Provider.of<CategoryProvider>(context);
+
+    List<Widget> actions = [];
+    if (accountProvider.items.isNotEmpty && categoryProvider.items.isNotEmpty) {
+      actions.add(
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TransactionNumPad(
+                    currency: CommonCurrencies().euro,
+                    // todo replace with default currency from user configuration
+                    onDoneFunc: (value, date, from, to, note) {
+                      provider.add(note, from, to, value, value, date);
+                      Navigator.pop(context);
+                    },
+                    from: accountProvider.items.last,
+                    to: categoryProvider.items.last,
+                  ),
+                ],
+              ),
+            );
+          },
+          icon: const Icon(Icons.add),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => Column(
-                    children: [
-                      TransactionNumPad(
-                        currency: CommonCurrencies().euro, // todo replace with default currency from user configuration
-                        onDoneFunc: (value, date, from, to) {
-                         print(value);
-                         print(date);
-                          Navigator.pop(context);
-                        },
-                        from: DefaultAccount,
-                        to: DefaultCategory,
-                      ),
-                    ],
-                  ),
-                );
-              },
-              icon: const Icon(Icons.add))
-        ],
+        actions: actions,
       ),
       body: Row(),
     );

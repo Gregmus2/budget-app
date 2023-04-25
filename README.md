@@ -15,3 +15,5 @@
 ![numpad here](res/numpad.gif)
 
 ![transaction numpad here](res/transaction_num_pad.png)
+
+![transaction numpad 2 here](res/transaction_num_pad2.gif)

@@ -1,3 +1,4 @@
+import 'package:fb/db/account.dart';
 import 'package:fb/pages/account_create.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/ui/account_card.dart';
@@ -24,7 +25,7 @@ class AccountsPage extends StatelessWidget {
               icon: const Icon(Icons.add))
         ],
       ),
-      body: ReorderableListView.builder(
+      body: ReorderableListView(
         /*dragWidgetBuilder: (index, child) => Scaffold(
           backgroundColor: Colors.transparent,
           body: child,
@@ -32,26 +33,35 @@ class AccountsPage extends StatelessWidget {
         footer: const Divider(
           color: Colors.grey,
         ),
-        itemBuilder: (context, index) => AccountCard(
-          key: ValueKey(index),
-          color: provider.get(index).color,
-          name: provider.get(index).name,
-          balance: provider.get(index).balance,
-          icon: provider.get(index).icon,
-          currency: provider.get(index).currency,
-          onPressed: () {
-            Navigator.push(
+        onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
+        children: buildAccountCards(context, (account) {
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AccountCreatePage(
-                        account: provider.get(index),
-                      )),
-            );
-          },
-        ),
-        itemCount: provider.length,
-        onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
+                        account: account,
+                      )));
+        }),
       ),
     );
   }
+}
+
+List<Widget> buildAccountCards(
+    BuildContext context, Function(Account) onPressed) {
+  final AccountProvider provider = Provider.of<AccountProvider>(context);
+
+  return List.generate(
+      provider.length,
+      (index) => AccountCard(
+            key: ValueKey(index),
+            color: provider.get(index).color,
+            name: provider.get(index).name,
+            balance: provider.get(index).balance,
+            icon: provider.get(index).icon,
+            currency: provider.get(index).currency,
+            onPressed: () {
+              onPressed(provider.get(index));
+            },
+          ));
 }

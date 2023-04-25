@@ -1,39 +1,44 @@
+import 'package:fb/db/category.dart';
+import 'package:fb/models.dart';
+import 'package:fb/providers/category.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 import 'dart:math' as math;
-import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
-Widget categoryGrid(int length, Widget Function(BuildContext, int) builder) =>
-    GridView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      itemCount: length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 16,
-          mainAxisExtent: 120),
-      itemBuilder: builder,
-    );
+List<Widget> buildCategoryCards(
+    BuildContext context, Function(Category) onPressed) {
+  List<CategoryStat> categoriesStat = [];
+  final CategoryProvider provider = Provider.of<CategoryProvider>(context);
+  final math.Random random = math.Random();
 
-Widget draggableCategoryGrid(
-        int length,
-        Widget Function(BuildContext, int) builder,
-        void Function(int, int) onReorder) =>
-    ReorderableGridView.builder(
-      dragWidgetBuilder: (index, child) => Scaffold(
-        backgroundColor: Colors.transparent,
-        body: child,
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      itemCount: length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 16,
-          mainAxisExtent: 120),
-      itemBuilder: builder,
-      onReorder: onReorder,
-    );
+  // todo remove mock data
+  for (var i = 0; i < provider.length; i++) {
+    double total = random.nextDouble() * 1000;
+    categoriesStat.add(CategoryStat(
+        provider.get(i),
+        total - random.nextDouble() * total,
+        total,
+        provider.get(i).currency.symbol));
+  }
+
+  return List.generate(
+      provider.length,
+      (index) => CategoryCard(
+            key: ValueKey(index),
+            color: categoriesStat[index].category.color,
+            name: categoriesStat[index].category.name,
+            left: categoriesStat[index].left,
+            total: categoriesStat[index].total,
+            icon: categoriesStat[index].category.icon,
+            currency: categoriesStat[index].category.currency,
+            onPressed: () {
+              onPressed(categoriesStat[index].category);
+            },
+            progress:
+                100 * categoriesStat[index].left / categoriesStat[index].total,
+          ));
+}
 
 class CategoryCard extends StatelessWidget {
   final double progress;
@@ -43,6 +48,7 @@ class CategoryCard extends StatelessWidget {
   final double total;
   final IconData icon;
   final Currency currency;
+  final Function()? onPressed;
 
   CategoryCard(
       {super.key,
@@ -52,38 +58,45 @@ class CategoryCard extends StatelessWidget {
       required this.left,
       required this.total,
       required this.icon,
-      required this.currency}) {
+      required this.currency,
+      this.onPressed}) {
     assert(progress >= 0 && progress <= 100);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(name,
-            style: const TextStyle(
-              color: Colors.white,
-            )),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          "${left.toStringAsFixed(2)} ${currency.symbol}",
-          style: TextStyle(
-            color: color.withOpacity(0.5),
+    return TextButton(
+      style: ButtonStyle(
+        padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+      ),
+      onPressed: onPressed,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(name,
+              style: const TextStyle(
+                color: Colors.white,
+              )),
+          const SizedBox(
+            height: 4,
           ),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        CategoryCircle(progress: progress, primaryColor: color, icon: icon),
-        const SizedBox(
-          height: 4,
-        ),
-        Text("${total.toStringAsFixed(2)} ${currency.symbol}",
-            style: TextStyle(color: color)),
-      ],
+          Text(
+            "${left.toStringAsFixed(2)} ${currency.symbol}",
+            style: TextStyle(
+              color: color.withOpacity(0.5),
+            ),
+          ),
+          const SizedBox(
+            height: 4,
+          ),
+          CategoryCircle(progress: progress, primaryColor: color, icon: icon),
+          const SizedBox(
+            height: 4,
+          ),
+          Text("${total.toStringAsFixed(2)} ${currency.symbol}",
+              style: TextStyle(color: color)),
+        ],
+      ),
     );
   }
 }

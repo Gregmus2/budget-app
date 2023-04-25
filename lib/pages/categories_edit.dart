@@ -3,6 +3,7 @@ import 'package:fb/providers/category.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 class CategoriesEditPage extends StatelessWidget {
   const CategoriesEditPage({super.key});
@@ -13,29 +14,29 @@ class CategoriesEditPage extends StatelessWidget {
       appBar: AppBar(),
       body: Consumer<CategoryProvider>(
         builder: (context, provider, child) {
-          return draggableCategoryGrid(
-              provider.length,
-              (context, index) => GestureDetector(
-                    key: ValueKey(index),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CategoryCreatePage(
-                                  category: provider.get(index),
-                                )),
-                      );
-                    },
-                    child: CategoryCard(
-                        progress: 100,
-                        color: provider.get(index).color,
-                        name: provider.get(index).name,
-                        icon: provider.get(index).icon,
-                        total: 0,
-                        left: 0,
-                        currency: provider.get(index).currency),
-                  ),
-              (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex));
+          return ReorderableGridView.count(
+            dragWidgetBuilder: (index, child) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: child,
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            onReorder: (oldIndex, newIndex) =>
+                provider.reOrder(oldIndex, newIndex),
+            crossAxisCount: 4,
+            childAspectRatio: 0.8,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 16,
+            mainAxisExtent: 120,
+            children: buildCategoryCards(context, (category) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CategoryCreatePage(
+                          category: category,
+                        )),
+              );
+            }),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

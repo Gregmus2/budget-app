@@ -1,5 +1,6 @@
 import 'package:fb/models.dart';
 import 'package:fb/pages/categories.dart';
+import 'package:fb/pages/category_create.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';
@@ -36,18 +37,23 @@ class CategoriesListPage extends StatelessWidget {
                 icon: const Icon(Icons.edit))
           ],
         ),
-        body: categoryGrid(categoriesStat.length, (context, int index) {
-          return CategoryCard(
-            progress:
-                100 * categoriesStat[index].left / categoriesStat[index].total,
-            color: categoriesStat[index].category.color,
-            name: categoriesStat[index].category.name,
-            left: categoriesStat[index].left,
-            total: categoriesStat[index].total,
-            icon: categoriesStat[index].category.icon,
-            currency: categoriesStat[index].category.currency,
-          );
-        }) // This trailing comma makes auto-formatting nicer for build methods.
+        body: GridView.count(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          crossAxisCount: 4,
+          childAspectRatio: 0.8,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 16,
+          children: buildCategoryCards(context, (category) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CategoryCreatePage(
+                        category: category,
+                      )),
+            );
+          }),
+        ) // This trailing comma makes auto-formatting nicer for build methods.
         );
   }
 }

@@ -1,63 +1,116 @@
 import 'package:fb/db/account.dart';
 import 'package:fb/db/transfer_target.dart';
+import 'package:fb/pages/accounts.dart';
+import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 
-class TransactionNumPad extends StatelessWidget {
+class TransactionNumPad extends StatefulWidget {
   final Currency currency;
-  final DateTime _selectedDate = DateTime.now();
-  Account from;
-  TransferTarget to;
-  final Function(double value, DateTime date, Account from, TransferTarget to)
+  final Account from;
+  final TransferTarget to;
+  final Function(double value, DateTime date, Account from, TransferTarget to, String note)
       onDoneFunc;
 
-  TransactionNumPad(
-      {super.key, required this.currency,
+  const TransactionNumPad(
+      {super.key,
+      required this.currency,
       required this.onDoneFunc,
       required this.from,
       required this.to});
 
   @override
+  State<TransactionNumPad> createState() => _TransactionNumPadState();
+}
+
+class _TransactionNumPadState extends State<TransactionNumPad> {
+  final DateTime _selectedDate = DateTime.now();
+  late Account from;
+  late TransferTarget to;
+  final TextEditingController _nameInput = TextEditingController();
+
+  @override
+  void initState() {
+    from = widget.from;
+    to = widget.to;
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SimpleNumPad(
-      currency: currency,
-      additionalButtons: [
-        _NumPadButton(5, 2, "Date", "D"),
-      ],
-      tabloItems: [
-        Row(
-          children: [
-            FromToButton(entity: from),
-            const Icon(Icons.arrow_right),
+    return Column(
+      children: [
+        SimpleNumPad(
+          currency: widget.currency,
+          additionalButtons: [
+            NumPadButtonModel(5, 2, "Date", "D"),
           ],
+          tabloItems: [
+            Row(
+              children: [
+                FromToButton(
+                    entity: from,
+                    onSelected: (account) {
+                      setState(() {
+                        from = account as Account;
+                      });
+                    }),
+                const Icon(Icons.arrow_right),
+              ],
+            ),
+            Row(
+              children: [
+                const Icon(Icons.arrow_right),
+                FromToButton(
+                    entity: to,
+                    onSelected: (target) {
+                      setState(() {
+                        to = target;
+                      });
+                    }),
+              ],
+            )
+          ],
+          middle: Column(
+            children: [
+              const Divider(
+                height: 1,
+              ),
+              TextField(
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+                controller: _nameInput,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                    hintText: 'Notes...',
+                    contentPadding: EdgeInsets.all(0),
+                    border: InputBorder.none),
+              ),
+            ],
+          ),
+          onDone: (number) => widget.onDoneFunc(number, _selectedDate, from, to, _nameInput.text),
         ),
-        Row(
-          children: [
-            const Icon(Icons.arrow_right),
-            FromToButton(entity: to),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          child: Text(DateFormat().format(_selectedDate),
+              style: const TextStyle(color: Colors.white)),
         )
       ],
-      footer: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Text(DateFormat().format(_selectedDate),
-            style: const TextStyle(color: Colors.white)),
-      ),
-      onDone: (number) =>
-          onDoneFunc(number, _selectedDate, from, to),
     );
   }
 }
 
 class FromToButton extends StatelessWidget {
+  final TransferTarget entity;
+  final Function(TransferTarget) onSelected;
+
   const FromToButton({
     super.key,
     required this.entity,
+    required this.onSelected,
   });
-
-  final TransferTarget entity;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +118,38 @@ class FromToButton extends StatelessWidget {
       style: ButtonStyle(
           shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
       onPressed: () {
-        // todo modal window to select account using the same widget as in account page
+        showGeneralDialog(
+          context: context,
+          barrierLabel: "Barrier",
+          barrierDismissible: true,
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return Center(
+                child: Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: entity is Account
+                  ? ListView(
+                      children: buildAccountCards(context, (account) {
+                      onSelected(account);
+
+                      Navigator.pop(context);
+                    }))
+                  : GridView.count(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      crossAxisCount: 4,
+                      childAspectRatio: 0.5,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 16,
+                      children: buildCategoryCards(context, (category) {
+                        onSelected(category);
+
+                        Navigator.pop(context);
+                      }),
+                    ),
+            ));
+          },
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
@@ -87,19 +171,20 @@ class FromToButton extends StatelessWidget {
 class SimpleNumPad extends StatefulWidget {
   final double number;
   final Currency currency;
-  final List<_NumPadButton>? additionalButtons;
-  List<Widget>? tabloItems;
-  Widget? footer;
+  final List<NumPadButtonModel>? additionalButtons;
+  final List<Widget>? tabloItems;
+  final Widget? middle;
   final Function(String char, BuildContext context)? handler;
   final Function(double number) onDone;
 
-  SimpleNumPad(
-      {super.key, this.number = 0,
+  const SimpleNumPad(
+      {super.key,
+      this.number = 0,
       required this.currency,
       this.additionalButtons,
       this.tabloItems,
-      this.footer,
       this.handler,
+      this.middle,
       required this.onDone});
 
   @override
@@ -110,25 +195,25 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
   late String arg1;
   String arg2 = '';
   String operator = '';
-  List<_NumPadButton> buttons = [
-    _NumPadButton(1, 1, "Divider", "÷"),
-    _NumPadButton(1, 2, "Multiply", "×"),
-    _NumPadButton(1, 3, "Minus", "-"),
-    _NumPadButton(1, 4, "Plus", "+"),
-    _NumPadButton(2, 1, "7", "7"),
-    _NumPadButton(2, 2, "4", "4"),
-    _NumPadButton(2, 3, "1", "1"),
-    _NumPadButton(2, 4, "=", "="),
-    _NumPadButton(3, 1, "8", "8"),
-    _NumPadButton(3, 2, "5", "5"),
-    _NumPadButton(3, 3, "2", "2"),
-    _NumPadButton(3, 4, "0", "0"),
-    _NumPadButton(4, 1, "9", "9"),
-    _NumPadButton(4, 2, "6", "6"),
-    _NumPadButton(4, 3, "3", "3"),
-    _NumPadButton(4, 4, "Dot", "."),
-    _NumPadButton(5, 1, "Backspace", "⌫"),
-    _NumPadButton(5, 2, "Done", "✔", rowSpan: 3),
+  List<NumPadButtonModel> buttons = [
+    NumPadButtonModel(1, 1, "Divider", "÷"),
+    NumPadButtonModel(1, 2, "Multiply", "×"),
+    NumPadButtonModel(1, 3, "Minus", "-"),
+    NumPadButtonModel(1, 4, "Plus", "+"),
+    NumPadButtonModel(2, 1, "7", "7"),
+    NumPadButtonModel(2, 2, "4", "4"),
+    NumPadButtonModel(2, 3, "1", "1"),
+    NumPadButtonModel(2, 4, "=", "="),
+    NumPadButtonModel(3, 1, "8", "8"),
+    NumPadButtonModel(3, 2, "5", "5"),
+    NumPadButtonModel(3, 3, "2", "2"),
+    NumPadButtonModel(3, 4, "0", "0"),
+    NumPadButtonModel(4, 1, "9", "9"),
+    NumPadButtonModel(4, 2, "6", "6"),
+    NumPadButtonModel(4, 3, "3", "3"),
+    NumPadButtonModel(4, 4, "Dot", "."),
+    NumPadButtonModel(5, 1, "Backspace", "⌫"),
+    NumPadButtonModel(5, 2, "Done", "✔", rowSpan: 3),
   ];
 
   @override
@@ -159,7 +244,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
             child: Column(
               children: [
                 const Text("Balance",
-                    style: TextStyle(color: Colors.white, fontSize: 12)),
+                    style: TextStyle(color: Colors.white, fontSize: 14)),
                 Text(
                     "$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
                     style: const TextStyle(fontSize: 24, color: Colors.white)),
@@ -169,6 +254,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
           widget.tabloItems != null ? widget.tabloItems![1] : Container(),
         ],
       ),
+      widget.middle ?? Container(),
       const Divider(height: 1),
       SpannableGrid(
         columns: 5,
@@ -182,13 +268,11 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
       ),
       const Divider(height: 1),
     ];
-    if (widget.footer != null) {
-      sheet.add(widget.footer!);
-    }
 
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: sheet,
       ),
     );
@@ -368,7 +452,7 @@ class NumPadButton extends StatelessWidget {
   }
 }
 
-class _NumPadButton {
+class NumPadButtonModel {
   int column;
   int row;
   int? columnSpan;
@@ -376,5 +460,6 @@ class _NumPadButton {
   String label;
   String char;
 
-  _NumPadButton(this.column, this.row, this.label, this.char, {this.rowSpan});
+  NumPadButtonModel(this.column, this.row, this.label, this.char,
+      {this.rowSpan});
 }
