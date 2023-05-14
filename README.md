@@ -17,3 +17,5 @@
 ![transaction numpad here](res/transaction_num_pad.png)
 
 ![transaction numpad 2 here](res/transaction_num_pad2.gif)
+
+![transactions grouped here](res/transactions_grouped.png)

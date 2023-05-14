@@ -26,7 +26,7 @@ class TransactionNumPad extends StatefulWidget {
 }
 
 class _TransactionNumPadState extends State<TransactionNumPad> {
-  final DateTime _selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
   late Account from;
   late TransferTarget to;
   final TextEditingController _nameInput = TextEditingController();
@@ -48,6 +48,22 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
           additionalButtons: [
             NumPadButtonModel(5, 2, "Date", "D"),
           ],
+          handler: (char, context) {
+            if (char == 'D') {
+              showDatePicker(
+                      context: context,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100))
+                  .then((value) {
+                if (value != null) {
+                  setState(() {
+                    selectedDate = value;
+                  });
+                }
+              });
+            }
+          },
           tabloItems: [
             Row(
               children: [
@@ -90,11 +106,11 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               ),
             ],
           ),
-          onDone: (number) => widget.onDoneFunc(number, _selectedDate, from, to, _nameInput.text),
+          onDone: (number) => widget.onDoneFunc(number, selectedDate, from, to, _nameInput.text),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
-          child: Text(DateFormat().format(_selectedDate),
+          child: Text(DateFormat().format(selectedDate),
               style: const TextStyle(color: Colors.white)),
         )
       ],
