@@ -42,6 +42,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: color,
+          foregroundColor: Colors.white,
           toolbarHeight: 100,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +78,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.check)),
+                icon: const Icon(Icons.check, color: Colors.white)),
             // create delete button
             if (widget.category != null)
               IconButton(
@@ -85,7 +86,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     provider.remove(widget.category!);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.delete)),
+                  icon: const Icon(Icons.delete, color: Colors.white)),
           ],
           bottom: const TabBar(
             tabs: [

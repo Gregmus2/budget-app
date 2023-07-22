@@ -11,7 +11,7 @@ class CategoriesEditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(foregroundColor: Colors.white),
       body: Consumer<CategoryProvider>(
         builder: (context, provider, child) {
           return ReorderableGridView.count(
@@ -46,7 +46,7 @@ class CategoriesEditPage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const CategoryCreatePage()),
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

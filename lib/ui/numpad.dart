@@ -74,12 +74,12 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                         from = account as Account;
                       });
                     }),
-                const Icon(Icons.arrow_right),
+                const Icon(Icons.arrow_right, color: Colors.white),
               ],
             ),
             Row(
               children: [
-                const Icon(Icons.arrow_right),
+                const Icon(Icons.arrow_right, color: Colors.white),
                 FromToButton(
                     entity: to,
                     onSelected: (target) {

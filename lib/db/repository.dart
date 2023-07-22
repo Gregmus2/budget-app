@@ -1,4 +1,5 @@
 import 'package:fb/db/account.dart';
+import 'package:fb/db/budget.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart' as model;
 import 'package:sqflite/sqflite.dart';
@@ -7,6 +8,7 @@ import 'package:path/path.dart';
 const String tableCategories = 'categories';
 const String tableAccounts = 'accounts';
 const String tableTransactions = 'transactions';
+const String tableBudgets = 'budgets';
 const migrationScripts = [
   '''CREATE TABLE $tableCategories(
           id INTEGER PRIMARY KEY, 
@@ -45,6 +47,15 @@ const migrationScripts = [
           FOREIGN KEY ("from") REFERENCES $tableAccounts(id),
           FOREIGN KEY (to_account) REFERENCES $tableAccounts(id),
           FOREIGN KEY (to_category) REFERENCES $tableCategories(id)
+        )
+  ''',
+  '''
+  CREATE TABLE $tableBudgets(
+          id INTEGER PRIMARY KEY, 
+          category INT,
+          month INT,
+          amount REAL,
+          FOREIGN KEY (category) REFERENCES $tableCategories(id)
         )
   '''
 ];
@@ -107,6 +118,16 @@ class Repository {
 
     return List.generate(maps.length, (i) {
       return model.Transaction.mapDatabase(maps[i]);
+    });
+  }
+
+  Future<List<Budget>> listBudgets(int month) async {
+    final List<Map<String, dynamic>> maps = await db.query(tableBudgets,
+        where: 'month = ?',
+        whereArgs: [month]);
+
+    return List.generate(maps.length, (i) {
+      return Budget.mapDatabase(maps[i]);
     });
   }
 

@@ -3,6 +3,7 @@ import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/pages/transactions.dart';
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/providers/transaction.dart';
@@ -18,9 +19,11 @@ Future<void> main() async {
   CategoryProvider catProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
   TransactionProvider transactionProvider = TransactionProvider(repo);
+  BudgetProvider budgetProvider = BudgetProvider(repo);
   await catProvider.init();
   await accountProvider.init();
   await transactionProvider.init();
+  await budgetProvider.init();
 
   runApp(
     MultiProvider(
@@ -28,6 +31,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => catProvider),
         ChangeNotifierProvider(create: (context) => accountProvider),
         ChangeNotifierProvider(create: (context) => transactionProvider),
+        ChangeNotifierProvider(create: (context) => budgetProvider),
       ],
       child: const App(),
     ),
@@ -72,15 +76,15 @@ class _AppState extends State<App> {
           bottomNavigationBar: BottomNavigation(
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.account_balance_wallet),
+                icon: Icon(Icons.account_balance_wallet, color: Colors.white),
                 label: 'Accounts',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.receipt),
+                icon: Icon(Icons.receipt, color: Colors.white),
                 label: 'Transactions',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.list),
+                icon: Icon(Icons.list, color: Colors.white),
                 label: 'Categories',
               ),
             ],

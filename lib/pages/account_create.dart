@@ -48,6 +48,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: color,
+          foregroundColor: Colors.white,
           toolbarHeight: 100,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +86,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
 
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.check)),
+                icon: const Icon(Icons.check, color: Colors.white)),
             // create delete button
             if (widget.account != null)
               IconButton(
@@ -93,7 +94,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                     provider.remove(widget.account!);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.delete)),
+                  icon: const Icon(Icons.delete, color: Colors.white)),
           ],
           bottom: const TabBar(
             tabs: [

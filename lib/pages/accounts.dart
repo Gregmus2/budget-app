@@ -22,8 +22,9 @@ class AccountsPage extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => const AccountCreatePage()));
               },
-              icon: const Icon(Icons.add))
+              icon: const Icon(Icons.add, color: Colors.white))
         ],
+        foregroundColor: Colors.white,
       ),
       body: ReorderableListView(
         /*dragWidgetBuilder: (index, child) => Scaffold(

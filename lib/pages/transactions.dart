@@ -50,7 +50,7 @@ class TransactionsPage extends StatelessWidget {
               ),
             );
           },
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add, color: Colors.white),
         ),
       );
     }
@@ -58,6 +58,7 @@ class TransactionsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: actions,
+        foregroundColor: Colors.white,
       ),
       body: GroupedListView<Transaction, String>(
         elements: provider.items,
@@ -112,20 +113,26 @@ class TransactionsPage extends StatelessWidget {
                 Row(
                   children: [
                     Icon(to.icon, color: Colors.grey.shade400, size: 16),
-                    Text(to.name, style: TextStyle(color: Colors.grey.shade400)),
+                    Text(to.name,
+                        style: TextStyle(color: Colors.grey.shade400)),
                   ],
                 ),
-                Text(transaction.note, style: const TextStyle(fontSize: 14, color: Colors.grey),),
+                Text(
+                  transaction.note,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
               ],
             ),
             trailing: Text(
               "${transaction.amountFrom.toString()} ${from.currency.symbol}",
               style: TextStyle(
                   color:
-                  transaction.amountFrom < 0 ? Colors.green : Colors.red),
+                      transaction.amountFrom < 0 ? Colors.green : Colors.red),
             ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
-            shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            shape: BorderDirectional(
+                bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
         order: GroupedListOrder.ASC,
@@ -137,9 +144,7 @@ class TransactionsPage extends StatelessWidget {
 class ProgressCirclePainter extends CustomPainter {
   final Color color;
 
-  const ProgressCirclePainter(
-      {super.repaint,
-        required this.color});
+  const ProgressCirclePainter({super.repaint, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {

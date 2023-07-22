@@ -17,6 +17,7 @@ class CategoriesListPage extends StatelessWidget {
     final Random random = Random();
 
     // mock data
+    print(provider.length);
     for (var i = 0; i < provider.length; i++) {
       double total = random.nextDouble() * 1000;
       categoriesStat.add(CategoryStat(
@@ -34,8 +35,9 @@ class CategoriesListPage extends StatelessWidget {
                   Navigator.pushNamed(
                       context, CategoryNavigatorRoutes.categoriesEdit);
                 },
-                icon: const Icon(Icons.edit))
+                icon: const Icon(Icons.edit, color: Colors.white))
           ],
+          foregroundColor: Colors.white,
         ),
         body: GridView.count(
           shrinkWrap: true,
