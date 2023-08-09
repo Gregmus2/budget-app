@@ -1,21 +1,13 @@
+import 'package:fb/db/account.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 
 class AccountCard extends StatelessWidget {
-  final Color color;
-  final String name;
-  final double balance;
-  final IconData icon;
-  final Currency currency;
+  final Account account;
   final Function() onPressed;
 
   const AccountCard(
       {super.key,
-      required this.color,
-      required this.name,
-      required this.balance,
-      required this.icon,
-      required this.currency,
+      required this.account,
       required this.onPressed});
 
   @override
@@ -36,12 +28,12 @@ class AccountCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(icon, color: color, size: 40),
+                        Icon(account.icon, color: account.color, size: 40),
                         const SizedBox(width: 10,),
-                        Text(name, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                        Text(account.name, style: const TextStyle(color: Colors.white, fontSize: 18)),
                       ],
                     ),
-                    Text("${balance.toString()} ${currency.symbol}",
+                    Text("${account.balance.toString()} ${account.currency.symbol}",
                         style: const TextStyle(color: Colors.green, fontSize: 18)),
                   ],
                 ))),

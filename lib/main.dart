@@ -1,11 +1,13 @@
 import 'package:fb/bottom_navigation.dart';
 import 'package:fb/pages/accounts.dart';
+import 'package:fb/pages/budget.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/pages/transactions.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +22,7 @@ Future<void> main() async {
   AccountProvider accountProvider = AccountProvider(repo);
   TransactionProvider transactionProvider = TransactionProvider(repo);
   BudgetProvider budgetProvider = BudgetProvider(repo);
+  StateProvider stateProvider = StateProvider();
   await catProvider.init();
   await accountProvider.init();
   await transactionProvider.init();
@@ -32,6 +35,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => accountProvider),
         ChangeNotifierProvider(create: (context) => transactionProvider),
         ChangeNotifierProvider(create: (context) => budgetProvider),
+        ChangeNotifierProvider(create: (context) => stateProvider),
       ],
       child: const App(),
     ),
@@ -51,6 +55,7 @@ class _AppState extends State<App> {
     const AccountsPage(),
     const TransactionsPage(),
     const CategoriesTab(),
+    const BudgetPage(),
   ];
 
   @override
@@ -86,6 +91,10 @@ class _AppState extends State<App> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.list, color: Colors.white),
                 label: 'Categories',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.savings, color: Colors.white),
+                label: 'Budget',
               ),
             ],
             pageIndex: pageIndex,

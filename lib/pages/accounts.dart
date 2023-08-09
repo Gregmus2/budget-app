@@ -56,11 +56,7 @@ List<Widget> buildAccountCards(
       provider.length,
       (index) => AccountCard(
             key: ValueKey(index),
-            color: provider.get(index).color,
-            name: provider.get(index).name,
-            balance: provider.get(index).balance,
-            icon: provider.get(index).icon,
-            currency: provider.get(index).currency,
+            account: provider.get(index),
             onPressed: () {
               onPressed(provider.get(index));
             },
