@@ -5,12 +5,14 @@ class Budget implements Model {
   final int id;
   int category;
   int month;
+  int year;
   double amount;
 
   Budget({
     required this.id,
     required this.category,
     required this.month,
+    required this.year,
     required this.amount,
   });
 
@@ -20,6 +22,7 @@ class Budget implements Model {
       'id': id,
       'category': category,
       'month': month,
+      'year': year,
       'amount': amount,
     };
   }
@@ -29,6 +32,7 @@ class Budget implements Model {
       id: map['id'],
       category: map['category'],
       month: map['month'],
+      year: map['year'],
       amount: map['amount'],
     );
   }

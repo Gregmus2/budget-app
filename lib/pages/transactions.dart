@@ -89,31 +89,31 @@ class TransactionsPage extends StatelessWidget {
           ),
         ),
         itemBuilder: (context, Transaction transaction) {
-          Account from = accountProvider.get(transaction.from);
+          Account from = accountProvider.getById(transaction.from);
           TransferTarget to;
           if (transaction.toAccount != null) {
-            to = accountProvider.get(transaction.toAccount!);
+            to = accountProvider.getById(transaction.toAccount!);
           } else {
-            to = categoryProvider.get(transaction.toCategory!);
+            to = categoryProvider.getById(transaction.toCategory!);
           }
 
           return ListTile(
             leading: CircleAvatar(
-              backgroundColor: from.color,
+              backgroundColor: to.color,
               child: Icon(
-                from.icon,
+                to.icon,
                 color: Colors.white,
               ),
             ),
             textColor: Colors.white,
-            title: Text(from.name),
+            title: Text(to.name),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(to.icon, color: Colors.grey.shade400, size: 16),
-                    Text(to.name,
+                    Icon(from.icon, color: Colors.grey.shade400, size: 16),
+                    Text(from.name,
                         style: TextStyle(color: Colors.grey.shade400)),
                   ],
                 ),

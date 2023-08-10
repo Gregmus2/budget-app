@@ -2,9 +2,9 @@ import 'package:fb/db/category.dart';
 
 class CategoryStat {
   final Category category;
-  final double left;
-  final double total;
+  final double spent;
+  final double? total;
   final String currency;
 
-  CategoryStat(this.category, this.left, this.total, this.currency);
+  CategoryStat(this.category, this.spent, this.total, this.currency);
 }

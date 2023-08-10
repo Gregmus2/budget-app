@@ -57,6 +57,9 @@ const migrationScripts = [
           amount REAL,
           FOREIGN KEY (category) REFERENCES $tableCategories(id)
         )
+  ''',
+  '''
+  ALTER TABLE $tableBudgets ADD COLUMN year INT
   '''
 ];
 
@@ -121,10 +124,10 @@ class Repository {
     });
   }
 
-  Future<List<Budget>> listBudgets(int month) async {
+  Future<List<Budget>> listBudgets(int month, year) async {
     final List<Map<String, dynamic>> maps = await db.query(tableBudgets,
-        where: 'month = ?',
-        whereArgs: [month]);
+        where: 'month = ? AND year = ?',
+        whereArgs: [month, year]);
 
     return List.generate(maps.length, (i) {
       return Budget.mapDatabase(maps[i]);

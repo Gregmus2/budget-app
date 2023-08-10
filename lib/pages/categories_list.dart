@@ -1,10 +1,9 @@
-import 'package:fb/models.dart';
 import 'package:fb/pages/categories.dart';
-import 'package:fb/pages/category_create.dart';
-import 'package:fb/providers/category.dart';
+import 'package:fb/providers/account.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/category_card.dart';
+import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:provider/provider.dart';
 
 class CategoriesListPage extends StatelessWidget {
@@ -12,19 +11,8 @@ class CategoriesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<CategoryStat> categoriesStat = [];
-    final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-    final Random random = Random();
-
-    // mock data
-    for (var i = 0; i < provider.length; i++) {
-      double total = random.nextDouble() * 1000;
-      categoriesStat.add(CategoryStat(
-          provider.get(i),
-          total - random.nextDouble() * total,
-          total,
-          provider.get(i).currency.symbol));
-    }
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -46,12 +34,23 @@ class CategoriesListPage extends StatelessWidget {
           crossAxisSpacing: 10,
           mainAxisSpacing: 16,
           children: buildCategoryCards(context, (category) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CategoryCreatePage(
-                        category: category,
-                      )),
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TransactionNumPad(
+                    currency: category.currency,
+                    onDoneFunc: (value, date, from, to, note) {
+                      transactionProvider.add(note, from, to, value, value, date);
+                      Navigator.pop(context);
+                    },
+                    from: accountProvider.items.last,
+                    to: category,
+                  ),
+                ],
+              ),
             );
           }),
         ) // This trailing comma makes auto-formatting nicer for build methods.

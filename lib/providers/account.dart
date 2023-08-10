@@ -77,4 +77,8 @@ class AccountProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  
+  Account getById(int id) {
+    return _accounts.firstWhere((element) => element.id == id);
+  }
 }

@@ -27,8 +27,8 @@ class TransactionProvider extends ChangeNotifier {
 
   int get length => _transactions.length;
 
-  void add(String note, Account from, TransferTarget to,
-      double amountFrom, double amountTo, DateTime date) {
+  void add(String note, Account from, TransferTarget to, double amountFrom,
+      double amountTo, DateTime date) {
     Transaction transaction = Transaction(
         id: _transactions.length + 1,
         note: note,
@@ -63,5 +63,27 @@ class TransactionProvider extends ChangeNotifier {
     _transactions.remove(transaction);
     repo.delete(transaction);
     notifyListeners();
+  }
+
+  // todo check if db query would be faster and ?cache
+  Map<int, double> getMonthlyExpense(int month, int year) {
+    Map<int, double> monthlyExpense = {};
+    for (var i = 0; i < _transactions.length; i++) {
+      if (_transactions[i].date.month != month ||
+          _transactions[i].date.year != year ||
+          _transactions[i].toCategory == null) {
+        continue;
+      }
+
+      if (monthlyExpense.containsKey(_transactions[i].toCategory)) {
+        monthlyExpense[_transactions[i].toCategory!] =
+            monthlyExpense[_transactions[i].toCategory]! + _transactions[i].amountTo;
+      } else {
+        monthlyExpense[_transactions[i].toCategory!] =
+            _transactions[i].amountTo;
+      }
+    }
+
+    return monthlyExpense;
   }
 }

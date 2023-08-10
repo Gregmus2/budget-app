@@ -76,4 +76,8 @@ class CategoryProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Category getById(int id) {
+    return _categories.firstWhere((element) => element.id == id);
+  }
 }

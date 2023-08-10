@@ -1,42 +1,58 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/models.dart';
+import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
+import 'package:fb/providers/state.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
 List<Widget> buildCategoryCards(
-    BuildContext context, Function(Category) onPressed) {
+    BuildContext context, Function(Category) onPressed,
+    {List<int> exclude = const []}) {
   List<CategoryStat> categoriesStat = [];
   final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-  final math.Random random = math.Random();
+  final TransactionProvider transactionProvider =
+      Provider.of<TransactionProvider>(context);
+  final StateProvider stateProvider = Provider.of<StateProvider>(context);
+  final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
+  Map<int, double> totals = transactionProvider.getMonthlyExpense(
+      stateProvider.month, stateProvider.year);
 
-  // todo remove mock data
   for (var i = 0; i < provider.length; i++) {
-    double total = random.nextDouble() * 1000;
+    if (exclude.contains(provider.get(i).id)) {
+      continue;
+    }
+
+    double? budget = budgetProvider.getBudgetAmount(
+        provider.get(i).id, stateProvider.month, stateProvider.year);
     categoriesStat.add(CategoryStat(
         provider.get(i),
-        total - random.nextDouble() * total,
-        total,
+        totals[provider.get(i).id] ?? 0,
+        budget,
         provider.get(i).currency.symbol));
   }
 
   return List.generate(
-      provider.length,
+      categoriesStat.length,
       (index) => CategoryCard(
             key: ValueKey(index),
             color: categoriesStat[index].category.color,
             name: categoriesStat[index].category.name,
-            left: categoriesStat[index].left,
+            spent: categoriesStat[index].spent,
             total: categoriesStat[index].total,
             icon: categoriesStat[index].category.icon,
             currency: categoriesStat[index].category.currency,
             onPressed: () {
               onPressed(categoriesStat[index].category);
             },
-            progress:
-                100 * categoriesStat[index].left / categoriesStat[index].total,
+            progress: categoriesStat[index].total == null
+                ? 100
+                : 100 *
+                    categoriesStat[index].spent /
+                    categoriesStat[index].total!,
           ));
 }
 
@@ -44,8 +60,8 @@ class CategoryCard extends StatelessWidget {
   final double progress;
   final Color color;
   final String name;
-  final double left;
-  final double total;
+  final double spent;
+  final double? total;
   final IconData icon;
   final Currency currency;
   final Function()? onPressed;
@@ -55,12 +71,14 @@ class CategoryCard extends StatelessWidget {
       required this.progress,
       required this.color,
       required this.name,
-      required this.left,
+      required this.spent,
       required this.total,
       required this.icon,
       required this.currency,
       this.onPressed}) {
     assert(progress >= 0 && progress <= 100);
+    assert(spent >= 0);
+    assert(total == null || total! >= 0);
   }
 
   @override
@@ -81,7 +99,7 @@ class CategoryCard extends StatelessWidget {
             height: 4,
           ),
           Text(
-            "${left.toStringAsFixed(2)} ${currency.symbol}",
+            "${(total != null ? total! - spent : 0).toStringAsFixed(2)} ${currency.symbol}",
             style: TextStyle(
               color: color.withOpacity(0.5),
             ),
@@ -93,7 +111,7 @@ class CategoryCard extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          Text("${total.toStringAsFixed(2)} ${currency.symbol}",
+          Text("${spent.toStringAsFixed(2)} ${currency.symbol}",
               style: TextStyle(color: color)),
         ],
       ),

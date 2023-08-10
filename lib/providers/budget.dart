@@ -14,16 +14,18 @@ class BudgetProvider extends ChangeNotifier {
   BudgetProvider(this.repo);
 
   Future<void> init() async {
-    _budgets = await repo.listBudgets(DateTime.now().month);
+    _budgets =
+        await repo.listBudgets(DateTime.now().month, DateTime.now().year);
   }
 
   int get length => _budgets.length;
 
-  void add(int category, int month, double amount) {
+  void add(int category, int month, int year, double amount) {
     Budget budget = Budget(
       id: _budgets.length,
       category: category,
       month: month,
+      year: year,
       amount: amount,
     );
     _budgets.add(budget);
@@ -50,5 +52,23 @@ class BudgetProvider extends ChangeNotifier {
     _budgets.remove(budget);
     repo.delete(budget);
     notifyListeners();
+  }
+
+  List<int> getCategories() {
+    List<int> categories = [];
+    for (var budget in _budgets) {
+      if (!categories.contains(budget.category)) {
+        categories.add(budget.category);
+      }
+    }
+
+    return categories;
+  }
+
+  double? getBudgetAmount(int category, int month, int year) {
+    return _budgets.where((element) =>
+        element.category == category &&
+        element.month == month &&
+        element.year == year).firstOrNull?.amount;
   }
 }

@@ -26,16 +26,41 @@ class BudgetCard extends StatelessWidget {
                 alignment: AlignmentDirectional.centerStart,
                 shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
                 padding: MaterialStatePropertyAll(
-                    EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
+                    EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CategoryCircle(progress: 100, primaryColor: category.color, icon: category.icon),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 Expanded(
-                  child: LinearProgressIndicator(
-                    value: budget, // todo fill math about current sum transactions for this category
-                    color: category.color,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(category.name, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                          Text("${budget - spent} ${category.currency.symbol}",
+                              style: const TextStyle(color: Colors.red, fontSize: 18)),
+                        ],
+                      ),
+                      const SizedBox(height: 5,),
+                      LinearProgressIndicator(
+                        value: budget/10000*spent, // todo fill math about current sum transactions for this category
+                        color: category.color,
+                        minHeight: 5,
+                        backgroundColor: Colors.grey[800],
+                      ),
+                      const SizedBox(height: 5,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("$spent ${category.currency.symbol}",
+                              style: TextStyle(color: category.color, fontSize: 14)),
+                          Text("$budget ${category.currency.symbol}",
+                              style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
