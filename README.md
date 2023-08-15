@@ -19,3 +19,5 @@
 ![transaction numpad 2 here](res/transaction_num_pad2.gif)
 
 ![transactions grouped here](res/transactions_grouped.png)
+
+![home screen widget here](res/home_screen_widget.gif)
