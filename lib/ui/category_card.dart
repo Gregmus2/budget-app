@@ -48,7 +48,8 @@ List<Widget> buildCategoryCards(
             onPressed: () {
               onPressed(categoriesStat[index].category);
             },
-            progress: categoriesStat[index].total == null
+            progress: categoriesStat[index].total == null ||
+                    categoriesStat[index].spent > categoriesStat[index].total!
                 ? 100
                 : 100 *
                     categoriesStat[index].spent /

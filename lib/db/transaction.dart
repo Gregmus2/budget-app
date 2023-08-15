@@ -40,12 +40,12 @@ class Transaction implements Model {
     return Transaction(
       id: map['id'],
       note: map['note'],
-      amountFrom: map['amount_from'],
-      amountTo: map['amount_to'],
+      amountFrom: map['amount_from']?.toDouble(),
+      amountTo: map['amount_to']?.toDouble(),
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] * 1000),
-      from: map['from'],
-      toAccount: map['to_account'],
-      toCategory: map['to_category'],
+      from: map['from']?.toInt(),
+      toAccount: map['to_account']?.toInt(),
+      toCategory: map['to_category']?.toInt(),
     );
   }
 

@@ -45,6 +45,7 @@ dependencies:
   spannable_grid: ^0.3.0
   intl: ^0.17.0
   grouped_list: ^5.1.2
+  home_widget: ^0.3.0
 
 dev_dependencies:
   flutter_test:
