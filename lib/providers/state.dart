@@ -1,6 +1,27 @@
+import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 
 class StateProvider extends ChangeNotifier {
-  int month = DateTime.now().month;
-  int year = DateTime.now().year;
+  DateTime date = DateTime.now();
+  final TransactionProvider transactionProvider;
+
+  StateProvider(this.transactionProvider);
+
+  int get year => date.year;
+  int get month => date.month;
+
+  void nextMonth() {
+    date = DateTime(date.year, date.month + 1);
+    update();
+  }
+
+  void previousMonth() {
+    date = DateTime(date.year, date.month - 1);
+    update();
+  }
+
+  void update() {
+    transactionProvider.updateDate(date);
+    notifyListeners();
+  }
 }

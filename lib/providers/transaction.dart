@@ -27,6 +27,14 @@ class TransactionProvider extends ChangeNotifier {
 
   int get length => _transactions.length;
 
+  Future<void> updateDate(DateTime date) async {
+    _transactions =
+        await repo.listTransactions(date.year, date.month); // get latest month
+    _transactions
+        .sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+    notifyListeners();
+  }
+
   void add(String note, Account from, TransferTarget to, double amountFrom,
       double amountTo, DateTime date) {
     Transaction transaction = Transaction(

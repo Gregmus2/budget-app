@@ -5,7 +5,9 @@ import 'package:fb/pages/categories.dart';
 import 'package:fb/pages/transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:fb/pages/page.dart' as page;
 
+import '../ui/date_bar.dart';
 import 'quick_transaction.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,7 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int pageIndex = 1;
-  final List<Widget> _pages = [
+  final List<page.Page> _pages = [
     const AccountsPage(),
     const TransactionsPage(),
     const CategoriesTab(),
@@ -27,10 +29,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     HomeWidget.widgetClicked.listen((event) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const QuickTransaction()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const QuickTransaction()));
     });
 
     return Scaffold(
+        appBar: !_pages[pageIndex].ownAppBar()
+            ? AppBar(
+          bottom: const DateBar(),
+                actions: _pages[pageIndex].getActions(context),
+                foregroundColor: Colors.white,
+              )
+            : null,
         body: IndexedStack(
           index: pageIndex,
           children: _pages,

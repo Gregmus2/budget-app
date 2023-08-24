@@ -35,3 +35,6 @@
 
 ### Home screen widget
 ![home screen widget here](res/home_screen_widget.gif)
+
+### Date bar
+![date bar here](res/date_bar.gif)

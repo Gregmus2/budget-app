@@ -3,6 +3,7 @@ import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
+import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +12,13 @@ import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
+import 'package:fb/pages/page.dart' as page;
 
-class TransactionsPage extends StatelessWidget {
+class TransactionsPage extends StatelessWidget implements page.Page {
   const TransactionsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  List<Widget>? getActions(BuildContext context) {
     final TransactionProvider provider =
         Provider.of<TransactionProvider>(context);
     final AccountProvider accountProvider =
@@ -54,11 +56,22 @@ class TransactionsPage extends StatelessWidget {
       );
     }
 
+    return actions;
+  }
+
+  @override
+  bool ownAppBar() => false;
+
+  @override
+  Widget build(BuildContext context) {
+    final TransactionProvider provider =
+        Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider =
+        Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider =
+        Provider.of<CategoryProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        actions: actions,
-        foregroundColor: Colors.white,
-      ),
       body: GroupedListView<Transaction, String>(
         elements: provider.items,
         groupBy: (element) => element.date.day.toString(),

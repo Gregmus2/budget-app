@@ -7,9 +7,16 @@ import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fb/pages/page.dart' as page;
 
-class BudgetPage extends StatelessWidget {
+class BudgetPage extends StatelessWidget implements page.Page {
   const BudgetPage({super.key});
+
+  @override
+  List<Widget>? getActions(BuildContext context) => null;
+
+  @override
+  bool ownAppBar() => false;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +24,6 @@ class BudgetPage extends StatelessWidget {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-      ),
       body: ListView(
         shrinkWrap: true,
         children: [

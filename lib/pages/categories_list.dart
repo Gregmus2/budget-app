@@ -2,6 +2,7 @@ import 'package:fb/pages/categories.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/category_card.dart';
+import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +12,10 @@ class CategoriesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final TransactionProvider transactionProvider =
+        Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider =
+        Provider.of<AccountProvider>(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -25,6 +28,7 @@ class CategoriesListPage extends StatelessWidget {
                 icon: const Icon(Icons.edit, color: Colors.white))
           ],
           foregroundColor: Colors.white,
+          bottom: const DateBar(),
         ),
         body: GridView.count(
           shrinkWrap: true,
@@ -43,7 +47,8 @@ class CategoriesListPage extends StatelessWidget {
                   TransactionNumPad(
                     currency: category.currency,
                     onDoneFunc: (value, date, from, to, note) {
-                      transactionProvider.add(note, from, to, value, value, date);
+                      transactionProvider.add(
+                          note, from, to, value, value, date);
                       Navigator.pop(context);
                     },
                     from: accountProvider.items.last,
