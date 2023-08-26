@@ -2,6 +2,7 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/budget.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart' as model;
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -72,8 +73,7 @@ class Repository {
         // Set the path to the database. Note: Using the `join` function from the
         // `path` package is best practice to ensure the path is correctly
         // constructed for each platform.
-        join(await getDatabasesPath(), '$tableCategories.db'),
-        onCreate: (Database db, int version) async {
+        join(await getDatabasesPath(), '$tableCategories.db'), onCreate: (Database db, int version) async {
       for (var element in migrationScripts) {
         db.execute(element);
       }
@@ -108,15 +108,10 @@ class Repository {
     });
   }
 
-  Future<List<model.Transaction>> listTransactions(int year, month) async {
-    final DateTime date = DateTime(year, month);
-    final DateTime nextMonth = DateTime(year, month + 1);
+  Future<List<model.Transaction>> listTransactions(DateTimeRange range) async {
     final List<Map<String, dynamic>> maps = await db.query(tableTransactions,
-        where: 'date >= ? AND date < ?',
-        whereArgs: [
-          date.millisecondsSinceEpoch ~/ 1000,
-          nextMonth.millisecondsSinceEpoch ~/ 1000
-        ],
+        where: 'date >= ? AND date <= ?',
+        whereArgs: [range.start.millisecondsSinceEpoch ~/ 1000, range.end.millisecondsSinceEpoch ~/ 1000],
         orderBy: 'date DESC');
 
     return List.generate(maps.length, (i) {
@@ -124,10 +119,9 @@ class Repository {
     });
   }
 
-  Future<List<Budget>> listBudgets(int month, year) async {
-    final List<Map<String, dynamic>> maps = await db.query(tableBudgets,
-        where: 'month = ? AND year = ?',
-        whereArgs: [month, year]);
+  Future<List<Budget>> listBudgets(int month, int year) async {
+    final List<Map<String, dynamic>> maps =
+        await db.query(tableBudgets, where: 'month = ? AND year = ?', whereArgs: [month, year]);
 
     return List.generate(maps.length, (i) {
       return Budget.mapDatabase(maps[i]);

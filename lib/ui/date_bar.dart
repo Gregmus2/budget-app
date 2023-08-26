@@ -23,19 +23,19 @@ class _DateBarState extends State<DateBar> {
       children: [
         IconButton(
           onPressed: () {
-            stateProvider.previousMonth();
+            stateProvider.previousRange();
           },
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),
         Text(
-            DateFormat("MMM yyyy")
-                .format(DateTime(stateProvider.year, stateProvider.month)),
+            "${DateFormat("dd MMM yyyy")
+                .format(stateProvider.range.start)} - ${DateFormat("dd MMM yyyy").format(stateProvider.range.end)}",
             style: const TextStyle(color: Colors.white)),
         IconButton(
           onPressed: () {
-            stateProvider.nextMonth();
+            stateProvider.nextRange();
           },
-          icon: const Icon(Icons.arrow_forward_ios),
+          icon: Icon(Icons.arrow_forward_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),
       ],
     );

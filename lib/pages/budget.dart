@@ -4,6 +4,7 @@ import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/budget_card.dart';
 import 'package:fb/ui/category_card.dart';
+import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
   List<Widget>? getActions(BuildContext context) => null;
 
   @override
-  bool ownAppBar() => false;
+  bool ownAppBar() => true;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,10 @@ class BudgetPage extends StatelessWidget implements page.Page {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        bottom: const DateBar(),
+      ),
       body: ListView(
         shrinkWrap: true,
         children: [
@@ -42,8 +47,8 @@ class BudgetPage extends StatelessWidget implements page.Page {
                   number: 0,
                   currency: category.currency,
                   onDone: (value) {
-                    budgetProvider.add(category.id, stateProvider.month,
-                        stateProvider.year, value);
+                    budgetProvider.add(category.id, stateProvider.range.start.month,
+                        stateProvider.range.start.year, value);
                     Navigator.pop(context);
                   },
                 ),
@@ -63,8 +68,7 @@ List<Widget> buildBudgetCards(BuildContext context) {
   final TransactionProvider transactionProvider =
       Provider.of<TransactionProvider>(context);
   final StateProvider stateProvider = Provider.of<StateProvider>(context);
-  Map<int, double> totals = transactionProvider.getMonthlyExpense(
-      stateProvider.month, stateProvider.year);
+  Map<int, double> totals = transactionProvider.getRangeExpenses();
 
   return List.generate(budgetProvider.length, (index) {
     final budget = budgetProvider.get(index);

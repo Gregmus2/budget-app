@@ -17,14 +17,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HomeWidget.initiallyLaunchedFromHomeWidget().then((value) {
     if (value != null) {
-      _runApp(const QuickTransaction());
+      _runApp(const QuickTransaction(), false);
     } else {
-      _runApp(const App());
+      _runApp(const App(), true);
     }
   });
 }
 
-Future<void> _runApp(Widget app) async {
+Future<void> _runApp(Widget app, bool main) async {
   Repository repo = Repository();
   await repo.init();
 
@@ -37,6 +37,7 @@ Future<void> _runApp(Widget app) async {
   await accountProvider.init();
   await transactionProvider.init();
   await budgetProvider.init();
+  await stateProvider.init();
 
   runApp(
     MultiProvider(

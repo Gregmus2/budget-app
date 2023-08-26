@@ -4,7 +4,9 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
+import 'package:fb/providers/state.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../db/category.dart';
 
@@ -18,18 +20,21 @@ class TransactionProvider extends ChangeNotifier {
   TransactionProvider(this.repo);
 
   Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
     final DateTime now = DateTime.now();
+    final DateTime start = DateTime(now.year, now.month, prefs.getInt(firstDayOfMonthKey) ?? 1);
+    final DateTime end = start.copyWith(month: start.month + 1);
     _transactions =
-        await repo.listTransactions(now.year, now.month); // get latest month
+        await repo.listTransactions(DateTimeRange(start: start, end: end)); // get latest month
     _transactions
         .sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
   int get length => _transactions.length;
 
-  Future<void> updateDate(DateTime date) async {
+  Future<void> updateRange(DateTimeRange range) async {
     _transactions =
-        await repo.listTransactions(date.year, date.month); // get latest month
+        await repo.listTransactions(range); // get latest month
     _transactions
         .sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
     notifyListeners();
@@ -74,12 +79,10 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   // todo check if db query would be faster and ?cache
-  Map<int, double> getMonthlyExpense(int month, int year) {
+  Map<int, double> getRangeExpenses() {
     Map<int, double> monthlyExpense = {};
     for (var i = 0; i < _transactions.length; i++) {
-      if (_transactions[i].date.month != month ||
-          _transactions[i].date.year != year ||
-          _transactions[i].toCategory == null) {
+      if (_transactions[i].toCategory == null) {
         continue;
       }
 

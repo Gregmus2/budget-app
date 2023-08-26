@@ -3,9 +3,12 @@ import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/budget.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/pages/transactions.dart';
+import 'package:fb/providers/state.dart';
+import 'package:fb/ui/drawer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:fb/pages/page.dart' as page;
+import 'package:provider/provider.dart';
 
 import '../ui/date_bar.dart';
 import 'quick_transaction.dart';
@@ -28,15 +31,71 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    StateProvider stateProvider = Provider.of<StateProvider>(context);
+
     HomeWidget.widgetClicked.listen((event) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const QuickTransaction()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const QuickTransaction()));
     });
 
     return Scaffold(
+        drawer: Drawer(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                ),
+                child: null,
+              ),
+              StringDrawerCard(
+                name: "First day of month",
+                value: stateProvider.firstDayOfMonth.toString(),
+                icon: Icons.calendar_month,
+                color: theme.colorScheme.primary,
+                onPressed: () {
+                  // todo move
+                  showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: theme.scaffoldBackgroundColor,
+                        content: StatefulBuilder(
+                          builder: (BuildContext context, StateSetter setState) {
+                            return SingleChildScrollView(
+                              child: Column(
+                                children: List<Widget>.generate(
+                                    30,
+                                    (index) => RadioListTile<int>(
+                                          title: Text((index + 1).toString(),
+                                              style: const TextStyle(color: Colors.white, fontSize: 18)),
+                                          value: index + 1,
+                                          groupValue: stateProvider.firstDayOfMonth,
+                                          onChanged: (int? value) {
+                                            setState(() {
+                                              stateProvider.setFirstDayOfMonth(value!);
+
+                                              Navigator.pop(context);
+                                            });
+                                          },
+                                        )),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         appBar: !_pages[pageIndex].ownAppBar()
             ? AppBar(
-          bottom: const DateBar(),
+                bottom: const DateBar(),
                 actions: _pages[pageIndex].getActions(context),
                 foregroundColor: Colors.white,
               )
@@ -46,26 +105,32 @@ class _HomePageState extends State<HomePage> {
           children: _pages,
         ),
         bottomNavigationBar: BottomNavigation(
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.account_balance_wallet, color: Colors.white),
               label: 'Accounts',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.receipt, color: Colors.white),
               label: 'Transactions',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.list, color: Colors.white),
               label: 'Categories',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.savings, color: Colors.white),
+              icon: Icon(Icons.savings, color: stateProvider.isMonthlyRange ? Colors.white : Colors.grey),
               label: 'Budget',
             ),
           ],
           pageIndex: pageIndex,
-          onSelectTab: (int index) => setState(() => pageIndex = index),
+          onSelectTab: (int index) => setState(() {
+            if (_pages[index] is BudgetPage && !stateProvider.isMonthlyRange) {
+              return;
+            }
+
+            pageIndex = index;
+          }),
         ));
   }
 }

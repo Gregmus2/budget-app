@@ -38,3 +38,6 @@
 
 ### Date bar
 ![date bar here](res/date_bar.gif)
+
+### Date Range
+![date range here](res/date_range.gif)

@@ -9,30 +9,27 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
-List<Widget> buildCategoryCards(
-    BuildContext context, Function(Category) onPressed,
-    {List<int> exclude = const []}) {
+List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<int> exclude = const []}) {
   List<CategoryStat> categoriesStat = [];
   final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-  final TransactionProvider transactionProvider =
-      Provider.of<TransactionProvider>(context);
+  final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
   final StateProvider stateProvider = Provider.of<StateProvider>(context);
   final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-  Map<int, double> totals = transactionProvider.getMonthlyExpense(
-      stateProvider.month, stateProvider.year);
+  Map<int, double> totals = transactionProvider.getRangeExpenses();
 
   for (var i = 0; i < provider.length; i++) {
     if (exclude.contains(provider.get(i).id)) {
       continue;
     }
 
-    double? budget = budgetProvider.getBudgetAmount(
-        provider.get(i).id, stateProvider.month, stateProvider.year);
-    categoriesStat.add(CategoryStat(
-        provider.get(i),
-        totals[provider.get(i).id] ?? 0,
-        budget,
-        provider.get(i).currency.symbol));
+    double? budget;
+    // budgeting works only with standard monthly ranges
+    if (stateProvider.isMonthlyRange) {
+      budget = budgetProvider.getBudgetAmount(
+          provider.get(i).id, stateProvider.range.start.month, stateProvider.range.start.year);
+    }
+    categoriesStat
+        .add(CategoryStat(provider.get(i), totals[provider.get(i).id] ?? 0, budget, provider.get(i).currency.symbol));
   }
 
   return List.generate(
@@ -48,12 +45,9 @@ List<Widget> buildCategoryCards(
             onPressed: () {
               onPressed(categoriesStat[index].category);
             },
-            progress: categoriesStat[index].total == null ||
-                    categoriesStat[index].spent > categoriesStat[index].total!
+            progress: categoriesStat[index].total == null || categoriesStat[index].spent > categoriesStat[index].total!
                 ? 100
-                : 100 *
-                    categoriesStat[index].spent /
-                    categoriesStat[index].total!,
+                : 100 * categoriesStat[index].spent / categoriesStat[index].total!,
           ));
 }
 
@@ -112,8 +106,7 @@ class CategoryCard extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          Text("${spent.toStringAsFixed(2)} ${currency.symbol}",
-              style: TextStyle(color: color)),
+          Text("${spent.toStringAsFixed(2)} ${currency.symbol}", style: TextStyle(color: color)),
         ],
       ),
     );
@@ -127,11 +120,7 @@ class CategoryCircle extends StatelessWidget {
   final IconData icon;
 
   const CategoryCircle(
-      {super.key,
-      this.diameter = 50,
-      required this.progress,
-      required this.primaryColor,
-      required this.icon});
+      {super.key, this.diameter = 50, required this.progress, required this.primaryColor, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -141,11 +130,9 @@ class CategoryCircle extends StatelessWidget {
       maxRadius: diameter / 2,
       backgroundColor: primaryColor.withOpacity(0.5),
       child: CustomPaint(
-        painter: ProgressCirclePainter(
-            progress: 100, color: primaryColor, stroke: true),
+        painter: ProgressCirclePainter(progress: 100, color: primaryColor, stroke: true),
         child: CustomPaint(
-          painter:
-              ProgressCirclePainter(progress: progress, color: primaryColor),
+          painter: ProgressCirclePainter(progress: progress, color: primaryColor),
           child: Padding(
             padding: EdgeInsets.all((diameter - iconSize) / 2),
             child: Icon(icon, size: iconSize, color: Colors.white),
@@ -161,11 +148,7 @@ class ProgressCirclePainter extends CustomPainter {
   final Color color;
   final bool stroke;
 
-  const ProgressCirclePainter(
-      {super.repaint,
-      required this.progress,
-      required this.color,
-      this.stroke = false});
+  const ProgressCirclePainter({super.repaint, required this.progress, required this.color, this.stroke = false});
 
   @override
   void paint(Canvas canvas, Size size) {
