@@ -34,7 +34,7 @@ class CategoriesListPage extends StatelessWidget {
           shrinkWrap: true,
           padding: const EdgeInsets.symmetric(vertical: 10),
           crossAxisCount: 4,
-          childAspectRatio: 0.8,
+          childAspectRatio: 0.7,
           crossAxisSpacing: 10,
           mainAxisSpacing: 16,
           children: buildCategoryCards(context, (category) {
