@@ -147,7 +147,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
                 bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
-        order: GroupedListOrder.ASC,
+        order: GroupedListOrder.DESC,
       ),
     );
   }

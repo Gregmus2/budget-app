@@ -30,7 +30,7 @@ Future<void> _runApp(Widget app, bool main) async {
 
   CategoryProvider catProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
-  TransactionProvider transactionProvider = TransactionProvider(repo);
+  TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider);
   BudgetProvider budgetProvider = BudgetProvider(repo);
   StateProvider stateProvider = StateProvider(transactionProvider);
   await catProvider.init();

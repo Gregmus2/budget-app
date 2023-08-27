@@ -20,7 +20,7 @@ class AccountProvider extends ChangeNotifier {
 
   int get length => _accounts.length;
 
-  void add(String name, IconData icon, Color color, Currency currency, AccountType type) {
+  void add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     Account account = Account(
         id: _accounts.length,
         name: name,
@@ -28,6 +28,7 @@ class AccountProvider extends ChangeNotifier {
         color: color,
         currency: currency,
         type: type,
+        balance: balance,
         order: _accounts.isNotEmpty ? _accounts.last.order + 1 : 0);
     _accounts.add(account);
     repo.create(account);
@@ -48,6 +49,11 @@ class AccountProvider extends ChangeNotifier {
     _accounts[_accounts.indexOf(target)] = account;
     repo.update(account);
     notifyListeners();
+  }
+
+  void addBalance(Account account, double amount) {
+    account.balance += amount;
+    update(account);
   }
 
   void remove(Account account) {

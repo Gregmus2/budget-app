@@ -34,7 +34,7 @@ class AccountCard extends StatelessWidget {
                       ],
                     ),
                     Text("${account.balance.toString()} ${account.currency.symbol}",
-                        style: const TextStyle(color: Colors.green, fontSize: 18)),
+                        style: TextStyle(color: account.balance >= 0 ? Colors.green : Colors.red, fontSize: 18)),
                   ],
                 ))),
       ],

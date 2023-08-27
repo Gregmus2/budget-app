@@ -72,7 +72,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
             IconButton(
                 onPressed: () {
                   if (widget.account == null) {
-                    provider.add(_nameInput.text, icon, color, currency, type);
+                    provider.add(_nameInput.text, icon, color, currency, type, balance);
                   } else {
                     widget.account!
                       ..name = _nameInput.text

@@ -4,6 +4,7 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
+import 'package:fb/providers/account.dart';
 import 'package:fb/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,11 +14,12 @@ import '../db/category.dart';
 class TransactionProvider extends ChangeNotifier {
   List<Transaction> _transactions = [];
   final Repository repo;
+  final AccountProvider accountProvider;
 
   UnmodifiableListView<Transaction> get items =>
       UnmodifiableListView(_transactions);
 
-  TransactionProvider(this.repo);
+  TransactionProvider(this.repo, this.accountProvider);
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -53,15 +55,13 @@ class TransactionProvider extends ChangeNotifier {
         date: date);
     _transactions.add(transaction);
     repo.create(transaction);
+
+    accountProvider.addBalance(from, -amountFrom);
+    if (to is Account) {
+      accountProvider.addBalance(to, amountTo);
+    }
+
     notifyListeners();
-  }
-
-  Transaction get(int index) {
-    return _transactions[index];
-  }
-
-  List<Transaction> list() {
-    return _transactions;
   }
 
   void update(Transaction transaction) {

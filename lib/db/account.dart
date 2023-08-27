@@ -45,6 +45,7 @@ class Account implements Model, TransferTarget {
       'archived': (archived) ? 1 : 0,
       'currency': currency.code,
       'order': order,
+      'balance': balance,
     };
   }
 
