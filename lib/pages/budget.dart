@@ -6,6 +6,7 @@ import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/budget_card.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/date_bar.dart';
+import 'package:fb/ui/drawer.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
 
     return Scaffold(
+      drawer: const BudgetDrawer(),
       appBar: AppBar(
         foregroundColor: Colors.white,
         bottom: const DateBar(),
