@@ -13,10 +13,7 @@ class AccountsPage extends StatelessWidget implements page.Page {
   List<Widget>? getActions(BuildContext context) => [
         IconButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AccountCreatePage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
             },
             icon: const Icon(Icons.add, color: Colors.white))
       ];
@@ -51,8 +48,7 @@ class AccountsPage extends StatelessWidget implements page.Page {
   }
 }
 
-List<Widget> buildAccountCards(
-    BuildContext context, Function(Account) onPressed) {
+List<Widget> buildAccountCards(BuildContext context, Function(Account) onPressed) {
   final AccountProvider provider = Provider.of<AccountProvider>(context);
 
   return List.generate(

@@ -11,15 +11,10 @@ class TransactionNumPad extends StatefulWidget {
   final Currency currency;
   final Account from;
   final TransferTarget to;
-  final Function(double value, DateTime date, Account from, TransferTarget to, String note)
-      onDoneFunc;
+  final Function(double value, DateTime date, Account from, TransferTarget to, String note) onDoneFunc;
 
   const TransactionNumPad(
-      {super.key,
-      required this.currency,
-      required this.onDoneFunc,
-      required this.from,
-      required this.to});
+      {super.key, required this.currency, required this.onDoneFunc, required this.from, required this.to});
 
   @override
   State<TransactionNumPad> createState() => _TransactionNumPadState();
@@ -51,10 +46,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
           handler: (char, context) {
             if (char == 'D') {
               showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100))
+                      context: context, initialDate: selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2100))
                   .then((value) {
                 if (value != null) {
                   setState(() {
@@ -64,32 +56,31 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               });
             }
           },
-          tabloItems: [
-            Row(
-              children: [
-                FromToButton(
-                    entity: from,
-                    onSelected: (account) {
-                      setState(() {
-                        from = account as Account;
-                      });
-                    }),
-                const Icon(Icons.arrow_right, color: Colors.white),
-              ],
-            ),
-            Row(
-              children: [
-                const Icon(Icons.arrow_right, color: Colors.white),
-                FromToButton(
-                    entity: to,
-                    onSelected: (target) {
-                      setState(() {
-                        to = target;
-                      });
-                    }),
-              ],
-            )
-          ],
+          tabloItem: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              FromToButton(
+                  isLeft: true,
+                  entity: from,
+                  onSelected: (account) {
+                    setState(() {
+                      from = account as Account;
+                    });
+                  }),
+              const Icon(
+                Icons.arrow_right,
+                color: Colors.white,
+              ),
+              FromToButton(
+                  isLeft: false,
+                  entity: to,
+                  onSelected: (target) {
+                    setState(() {
+                      to = target;
+                    });
+                  }),
+            ],
+          ),
           middle: Column(
             children: [
               const Divider(
@@ -100,9 +91,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                 controller: _nameInput,
                 textAlign: TextAlign.center,
                 decoration: const InputDecoration(
-                    hintText: 'Notes...',
-                    contentPadding: EdgeInsets.all(0),
-                    border: InputBorder.none),
+                    hintText: 'Notes...', contentPadding: EdgeInsets.all(0), border: InputBorder.none),
               ),
             ],
           ),
@@ -110,8 +99,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
-          child: Text(DateFormat().format(selectedDate),
-              style: const TextStyle(color: Colors.white)),
+          child: Text(DateFormat().format(selectedDate), style: const TextStyle(color: Colors.white)),
         )
       ],
     );
@@ -121,18 +109,30 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
 class FromToButton extends StatelessWidget {
   final TransferTarget entity;
   final Function(TransferTarget) onSelected;
+  final bool isLeft;
 
   const FromToButton({
     super.key,
     required this.entity,
     required this.onSelected,
+    required this.isLeft,
   });
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> box = [
+      Icon(
+        entity.icon,
+        color: entity.color,
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      Text(entity.name, style: const TextStyle(color: Colors.white)),
+    ];
+
     return TextButton(
-      style: ButtonStyle(
-          shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
+      style: ButtonStyle(shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
       onPressed: () {
         showGeneralDialog(
           context: context,
@@ -169,15 +169,8 @@ class FromToButton extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Column(
-          children: [
-            Icon(
-              entity.icon,
-              color: entity.color,
-            ),
-            Text(entity.name,
-                style: const TextStyle(color: Colors.white, fontSize: 12)),
-          ],
+        child: Row(
+          children: isLeft ? box : box.reversed.toList(),
         ),
       ),
     );
@@ -188,7 +181,7 @@ class SimpleNumPad extends StatefulWidget {
   final double number;
   final Currency currency;
   final List<NumPadButtonModel>? additionalButtons;
-  final List<Widget>? tabloItems;
+  final Widget? tabloItem;
   final Widget? middle;
   final Function(String char, BuildContext context)? handler;
   final Function(double number) onDone;
@@ -198,7 +191,7 @@ class SimpleNumPad extends StatefulWidget {
       this.number = 0,
       required this.currency,
       this.additionalButtons,
-      this.tabloItems,
+      this.tabloItem,
       this.handler,
       this.middle,
       required this.onDone});
@@ -235,7 +228,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
   @override
   void initState() {
     super.initState();
-    arg1 = widget.number.toString();
+    arg1 = widget.number == 0 ? '0' : widget.number.toString();
 
     if (widget.additionalButtons != null) {
       assert(widget.additionalButtons!.length < 3);
@@ -250,25 +243,21 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> sheet = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          widget.tabloItems != null ? widget.tabloItems![0] : Container(),
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                const Text("Balance",
-                    style: TextStyle(color: Colors.white, fontSize: 14)),
-                Text(
-                    "$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
-                    style: const TextStyle(fontSize: 24, color: Colors.white)),
-              ],
-            ),
-          ),
-          widget.tabloItems != null ? widget.tabloItems![1] : Container(),
-        ],
+    List<Widget> sheet = [];
+    if (widget.tabloItem != null) {
+      sheet.add(widget.tabloItem!);
+    }
+
+    sheet.addAll([
+      Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 14)),
+            Text("$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
+                style: const TextStyle(fontSize: 24, color: Colors.white)),
+          ],
+        ),
       ),
       widget.middle ?? Container(),
       const Divider(height: 1),
@@ -283,7 +272,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
         ),
       ),
       const Divider(height: 1),
-    ];
+    ]);
 
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -413,6 +402,9 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
   }
 
   String _addDigit(String number, String digit) {
+    if (number.contains('.') && number.split('.')[1].length == 2) {
+      return number;
+    }
     if (number == '0') {
       return digit;
     }
@@ -444,18 +436,13 @@ class NumPadButton extends StatelessWidget {
   final Color? backgroundColor;
   final Function() onPressed;
 
-  const NumPadButton(
-      {super.key,
-      required this.char,
-      this.backgroundColor,
-      required this.onPressed});
+  const NumPadButton({super.key, required this.char, this.backgroundColor, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
-            backgroundColor ?? Theme.of(context).scaffoldBackgroundColor),
+        backgroundColor: MaterialStateProperty.all(backgroundColor ?? Theme.of(context).scaffoldBackgroundColor),
       ),
       onPressed: onPressed,
       child: Center(
@@ -476,6 +463,5 @@ class NumPadButtonModel {
   String label;
   String char;
 
-  NumPadButtonModel(this.column, this.row, this.label, this.char,
-      {this.rowSpan});
+  NumPadButtonModel(this.column, this.row, this.label, this.char, {this.rowSpan});
 }

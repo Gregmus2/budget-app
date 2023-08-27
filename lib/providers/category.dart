@@ -42,8 +42,7 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   void update(Category category) {
-    final targetCategory =
-        _categories.firstWhere((element) => element.id == category.id);
+    final targetCategory = _categories.firstWhere((element) => element.id == category.id);
     _categories[_categories.indexOf(targetCategory)] = category;
     repo.update(category);
     notifyListeners();

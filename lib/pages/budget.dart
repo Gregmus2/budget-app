@@ -1,3 +1,4 @@
+import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -8,7 +9,6 @@ import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fb/pages/page.dart' as page;
 
 class BudgetPage extends StatelessWidget implements page.Page {
   const BudgetPage({super.key});
@@ -47,8 +47,8 @@ class BudgetPage extends StatelessWidget implements page.Page {
                   number: 0,
                   currency: category.currency,
                   onDone: (value) {
-                    budgetProvider.add(category.id, stateProvider.range.start.month,
-                        stateProvider.range.start.year, value);
+                    budgetProvider.add(
+                        category.id, stateProvider.range.start.month, stateProvider.range.start.year, value);
                     Navigator.pop(context);
                   },
                 ),
@@ -63,21 +63,14 @@ class BudgetPage extends StatelessWidget implements page.Page {
 
 List<Widget> buildBudgetCards(BuildContext context) {
   final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-  final CategoryProvider categoryProvider =
-      Provider.of<CategoryProvider>(context);
-  final TransactionProvider transactionProvider =
-      Provider.of<TransactionProvider>(context);
-  final StateProvider stateProvider = Provider.of<StateProvider>(context);
+  final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+  final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
   Map<int, double> totals = transactionProvider.getRangeExpenses();
 
   return List.generate(budgetProvider.length, (index) {
     final budget = budgetProvider.get(index);
     final category = categoryProvider.getById(budget.category);
 
-    return BudgetCard(
-        category: category,
-        spent: totals[budget.category] ?? 0,
-        budget: budget.amount,
-        onPressed: () {});
+    return BudgetCard(category: category, spent: totals[budget.category] ?? 0, budget: budget.amount, onPressed: () {});
   });
 }

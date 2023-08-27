@@ -41,11 +41,7 @@ class IconPicker extends StatefulWidget {
   final IconData icon;
   final Function(IconData) onChange;
 
-  const IconPicker(
-      {super.key,
-      required this.color,
-      required this.onChange,
-      this.icon = Icons.shopping_cart});
+  const IconPicker({super.key, required this.color, required this.onChange, this.icon = Icons.shopping_cart});
 
   @override
   State<IconPicker> createState() => _IconPickerState();
@@ -65,16 +61,14 @@ class _IconPickerState extends State<IconPicker> {
     return GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemCount: IconPicker.icons.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, crossAxisSpacing: 10, mainAxisExtent: 100),
+      gridDelegate:
+          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 10, mainAxisExtent: 100),
       itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: OutlinedButton(
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(
-                  (widget.icon == IconPicker.icons[index])
-                      ? widget.color
-                      : Colors.transparent),
+                  (widget.icon == IconPicker.icons[index]) ? widget.color : Colors.transparent),
               shape: MaterialStateProperty.all(const CircleBorder())),
           onPressed: () {
             setState(() {

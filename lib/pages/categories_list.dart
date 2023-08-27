@@ -12,18 +12,15 @@ class CategoriesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TransactionProvider transactionProvider =
-        Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider =
-        Provider.of<AccountProvider>(context);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
 
     return Scaffold(
         appBar: AppBar(
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                      context, CategoryNavigatorRoutes.categoriesEdit);
+                  Navigator.pushNamed(context, CategoryNavigatorRoutes.categoriesEdit);
                 },
                 icon: const Icon(Icons.edit, color: Colors.white))
           ],
@@ -47,8 +44,7 @@ class CategoriesListPage extends StatelessWidget {
                   TransactionNumPad(
                     currency: category.currency,
                     onDoneFunc: (value, date, from, to, note) {
-                      transactionProvider.add(
-                          note, from, to, value, value, date);
+                      transactionProvider.add(note, from, to, value, value, date);
                       Navigator.pop(context);
                     },
                     from: accountProvider.items.last,

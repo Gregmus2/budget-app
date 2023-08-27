@@ -58,4 +58,3 @@ class Category implements Model, TransferTarget {
     return tableCategories;
   }
 }
-

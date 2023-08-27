@@ -26,8 +26,7 @@ class StringDrawerCard extends StatelessWidget {
                 style: const ButtonStyle(
                     alignment: AlignmentDirectional.centerStart,
                     shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
-                    padding: MaterialStatePropertyAll(
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -38,11 +37,8 @@ class StringDrawerCard extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 18)),
-                        Text(value,
-                            style: TextStyle(color: color, fontSize: 16)),
+                        Text(name, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                        Text(value, style: TextStyle(color: color, fontSize: 16)),
                       ],
                     ),
                   ],

@@ -14,15 +14,12 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color.fromRGBO(42, 45, 66, 1.0),
-        appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.blue, foregroundColor: Colors.blue),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.blue, foregroundColor: Colors.blue),
         colorScheme: const ColorScheme.dark(
           primary: Colors.blue,
         ),
         textTheme: GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
+          Theme.of(context).textTheme,
         ),
       ),
     );

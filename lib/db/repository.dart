@@ -3,8 +3,8 @@ import 'package:fb/db/budget.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart' as model;
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 const String tableCategories = 'categories';
 const String tableAccounts = 'accounts';

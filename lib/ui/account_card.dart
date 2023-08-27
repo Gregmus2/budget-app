@@ -5,10 +5,7 @@ class AccountCard extends StatelessWidget {
   final Account account;
   final Function() onPressed;
 
-  const AccountCard(
-      {super.key,
-      required this.account,
-      required this.onPressed});
+  const AccountCard({super.key, required this.account, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +18,16 @@ class AccountCard extends StatelessWidget {
                 style: const ButtonStyle(
                     alignment: AlignmentDirectional.centerStart,
                     shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
-                    padding: MaterialStatePropertyAll(
-                        EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
+                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         Icon(account.icon, color: account.color, size: 40),
-                        const SizedBox(width: 10,),
+                        const SizedBox(
+                          width: 10,
+                        ),
                         Text(account.name, style: const TextStyle(color: Colors.white, fontSize: 18)),
                       ],
                     ),

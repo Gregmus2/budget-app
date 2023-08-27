@@ -20,8 +20,7 @@ class CustomButton extends StatelessWidget {
               style: const ButtonStyle(
                   shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
                   alignment: AlignmentDirectional.centerStart,
-                  padding: MaterialStatePropertyAll(
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                  padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
               child: child),
         ),
       ],

@@ -22,6 +22,7 @@ class ColorPicker extends StatefulWidget {
     Colors.blueGrey,
     Colors.grey,
   ];
+
   // colors variation through ColorSwatch
   final Color color;
   final Function(Color) onChange;
@@ -46,12 +47,11 @@ class _ColorPickerState extends State<ColorPicker> {
     return GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemCount: ColorPicker.primaryColors.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5, crossAxisSpacing: 10, mainAxisExtent: 100),
+      gridDelegate:
+          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5, crossAxisSpacing: 10, mainAxisExtent: 100),
       itemBuilder: (context, index) => ElevatedButton(
         style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all(ColorPicker.primaryColors[index]),
+            backgroundColor: MaterialStateProperty.all(ColorPicker.primaryColors[index]),
             shape: MaterialStateProperty.all(CircleBorder(
                 side: (color.value == ColorPicker.primaryColors[index].value)
                     ? const BorderSide(width: 2, color: Colors.white)

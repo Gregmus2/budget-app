@@ -2,12 +2,12 @@ import 'package:fb/bottom_navigation.dart';
 import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/budget.dart';
 import 'package:fb/pages/categories.dart';
+import 'package:fb/pages/page.dart' as page;
 import 'package:fb/pages/transactions.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/ui/drawer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:fb/pages/page.dart' as page;
 import 'package:provider/provider.dart';
 
 import '../ui/date_bar.dart';

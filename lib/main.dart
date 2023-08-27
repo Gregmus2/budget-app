@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:fb/db/repository.dart';
 import 'package:fb/pages/quick_transaction.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/db/repository.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';

@@ -1,9 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:fb/db/account.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
+import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
@@ -11,20 +13,15 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
-import 'package:fb/pages/page.dart' as page;
 
 class TransactionsPage extends StatelessWidget implements page.Page {
   const TransactionsPage({super.key});
 
   @override
   List<Widget>? getActions(BuildContext context) {
-    final TransactionProvider provider =
-        Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider =
-        Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider =
-        Provider.of<CategoryProvider>(context);
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
     List<Widget> actions = [];
     if (accountProvider.items.isNotEmpty && categoryProvider.items.isNotEmpty) {
@@ -64,12 +61,9 @@ class TransactionsPage extends StatelessWidget implements page.Page {
 
   @override
   Widget build(BuildContext context) {
-    final TransactionProvider provider =
-        Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider =
-        Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider =
-        Provider.of<CategoryProvider>(context);
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
     return Scaffold(
       body: GroupedListView<Transaction, String>(
@@ -125,8 +119,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
                 Row(
                   children: [
                     Icon(from.icon, color: Colors.grey.shade400, size: 16),
-                    Text(from.name,
-                        style: TextStyle(color: Colors.grey.shade400)),
+                    Text(from.name, style: TextStyle(color: Colors.grey.shade400)),
                   ],
                 ),
                 Text(
@@ -137,14 +130,10 @@ class TransactionsPage extends StatelessWidget implements page.Page {
             ),
             trailing: Text(
               "${transaction.amountFrom.toString()} ${from.currency.symbol}",
-              style: TextStyle(
-                  color:
-                      transaction.amountFrom < 0 ? Colors.green : Colors.red),
+              style: TextStyle(color: transaction.amountFrom < 0 ? Colors.green : Colors.red),
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
-            shape: BorderDirectional(
-                bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
+            contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
         order: GroupedListOrder.DESC,

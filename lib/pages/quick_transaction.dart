@@ -18,12 +18,9 @@ class QuickTransaction extends StatefulWidget {
 class _QuickTransactionState extends State<QuickTransaction> {
   @override
   Widget build(BuildContext context) {
-    final AccountProvider accountProvider =
-        Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider =
-        Provider.of<CategoryProvider>(context);
-    final TransactionProvider transactionProvider =
-        Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -31,8 +28,7 @@ class _QuickTransactionState extends State<QuickTransaction> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color.fromRGBO(42, 45, 66, 1.0),
-        appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.blue, foregroundColor: Colors.blue),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.blue, foregroundColor: Colors.blue),
         colorScheme: const ColorScheme.dark(
           primary: Colors.blue,
         ),

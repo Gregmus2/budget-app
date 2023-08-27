@@ -7,11 +7,7 @@ class CurrencyPicker extends StatefulWidget {
   final Color color;
   final Currency currency;
 
-  const CurrencyPicker(
-      {super.key,
-      required this.onChanged,
-      required this.color,
-      required this.currency});
+  const CurrencyPicker({super.key, required this.onChanged, required this.color, required this.currency});
 
   @override
   State<CurrencyPicker> createState() => _CurrencyPickerState();
@@ -48,10 +44,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
                 element.symbol,
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                    color: (widget.currency == element)
-                        ? widget.color
-                        : Colors.white,
-                    fontWeight: FontWeight.bold),
+                    color: (widget.currency == element) ? widget.color : Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(
@@ -60,8 +53,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
             Text(
               element.name,
               style: TextStyle(
-                color:
-                    (widget.currency == element) ? widget.color : Colors.white,
+                color: (widget.currency == element) ? widget.color : Colors.white,
               ),
             ),
           ],

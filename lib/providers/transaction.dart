@@ -16,8 +16,7 @@ class TransactionProvider extends ChangeNotifier {
   final Repository repo;
   final AccountProvider accountProvider;
 
-  UnmodifiableListView<Transaction> get items =>
-      UnmodifiableListView(_transactions);
+  UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
 
   TransactionProvider(this.repo, this.accountProvider);
 
@@ -26,24 +25,19 @@ class TransactionProvider extends ChangeNotifier {
     final DateTime now = DateTime.now();
     final DateTime start = DateTime(now.year, now.month, prefs.getInt(firstDayOfMonthKey) ?? 1);
     final DateTime end = start.copyWith(month: start.month + 1);
-    _transactions =
-        await repo.listTransactions(DateTimeRange(start: start, end: end)); // get latest month
-    _transactions
-        .sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+    _transactions = await repo.listTransactions(DateTimeRange(start: start, end: end)); // get latest month
+    _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
   int get length => _transactions.length;
 
   Future<void> updateRange(DateTimeRange range) async {
-    _transactions =
-        await repo.listTransactions(range); // get latest month
-    _transactions
-        .sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+    _transactions = await repo.listTransactions(range); // get latest month
+    _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
     notifyListeners();
   }
 
-  void add(String note, Account from, TransferTarget to, double amountFrom,
-      double amountTo, DateTime date) {
+  void add(String note, Account from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
     Transaction transaction = Transaction(
         id: _transactions.length + 1,
         note: note,
@@ -65,8 +59,7 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   void update(Transaction transaction) {
-    final target =
-        _transactions.firstWhere((element) => element.id == transaction.id);
+    final target = _transactions.firstWhere((element) => element.id == transaction.id);
     _transactions[_transactions.indexOf(target)] = transaction;
     repo.update(transaction);
     notifyListeners();
@@ -90,8 +83,7 @@ class TransactionProvider extends ChangeNotifier {
         monthlyExpense[_transactions[i].toCategory!] =
             monthlyExpense[_transactions[i].toCategory]! + _transactions[i].amountTo;
       } else {
-        monthlyExpense[_transactions[i].toCategory!] =
-            _transactions[i].amountTo;
+        monthlyExpense[_transactions[i].toCategory!] = _transactions[i].amountTo;
       }
     }
 

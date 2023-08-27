@@ -68,4 +68,3 @@ class Account implements Model, TransferTarget {
     return tableAccounts;
   }
 }
-

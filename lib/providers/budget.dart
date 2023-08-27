@@ -14,8 +14,7 @@ class BudgetProvider extends ChangeNotifier {
   BudgetProvider(this.repo);
 
   Future<void> init() async {
-    _budgets =
-        await repo.listBudgets(DateTime.now().month, DateTime.now().year);
+    _budgets = await repo.listBudgets(DateTime.now().month, DateTime.now().year);
   }
 
   int get length => _budgets.length;
@@ -66,9 +65,9 @@ class BudgetProvider extends ChangeNotifier {
   }
 
   double? getBudgetAmount(int category, int month, int year) {
-    return _budgets.where((element) =>
-        element.category == category &&
-        element.month == month &&
-        element.year == year).firstOrNull?.amount;
+    return _budgets
+        .where((element) => element.category == category && element.month == month && element.year == year)
+        .firstOrNull
+        ?.amount;
   }
 }

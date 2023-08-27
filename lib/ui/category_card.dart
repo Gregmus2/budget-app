@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fb/db/category.dart';
 import 'package:fb/models.dart';
 import 'package:fb/providers/budget.dart';
@@ -7,7 +9,6 @@ import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 
 List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<int> exclude = const []}) {
   List<CategoryStat> categoriesStat = [];

@@ -44,8 +44,7 @@ class AccountProvider extends ChangeNotifier {
   }
 
   void update(Account account) {
-    final target =
-        _accounts.firstWhere((element) => element.id == account.id);
+    final target = _accounts.firstWhere((element) => element.id == account.id);
     _accounts[_accounts.indexOf(target)] = account;
     repo.update(account);
     notifyListeners();
@@ -83,7 +82,7 @@ class AccountProvider extends ChangeNotifier {
 
     notifyListeners();
   }
-  
+
   Account getById(int id) {
     return _accounts.firstWhere((element) => element.id == id);
   }
