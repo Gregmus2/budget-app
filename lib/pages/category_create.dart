@@ -1,5 +1,6 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
+import 'package:fb/ui/card_button.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/icon_picker.dart';
@@ -21,6 +22,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   late Color color;
   late Currency currency;
   late final TextEditingController _nameInput;
+  late List<Category> subcategories;
 
   @override
   void initState() {
@@ -30,15 +32,48 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     color = widget.category?.color ?? Colors.blue;
     currency = widget.category?.currency ?? CommonCurrencies().euro;
     _nameInput = TextEditingController(text: widget.category?.name);
+    subcategories = widget.category?.subCategories ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
+    List<Widget> subcategoriesCards = buildSubCategoriesCards(context, subcategories);
+    subcategoriesCards.insert(
+        0,
+        CustomButton(
+          child: const Center(
+            child: Text(
+              "+ Add subcategory",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          onPressed: () {
+            _showSubcategoryDialog(
+              (name, icon) {
+                if (widget.category != null) {
+                  provider.addSubcategory(name, icon, color, currency, widget.category!.id);
+                } else {
+                  setState(() {
+                    subcategories.add(Category(
+                        id: provider.length,
+                        name: name,
+                        icon: icon,
+                        color: color,
+                        currency: currency,
+                        order: subcategories.isEmpty ? 0 : subcategories.last.order + 1,
+                        parent: widget.category?.id));
+                  });
+                }
+              },
+            );
+          },
+        ));
 
     return DefaultTabController(
       initialIndex: 1,
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: color,
@@ -53,6 +88,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 decoration: const InputDecoration(
                   hintText: 'Name',
                 ),
+                style: const TextStyle(color: Colors.white),
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter some text';
@@ -66,7 +102,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             IconButton(
                 onPressed: () {
                   if (widget.category == null) {
-                    provider.add(_nameInput.text, icon, color, currency);
+                    provider.add(_nameInput.text, icon, color, currency, subcategories);
                   } else {
                     widget.category!
                       ..name = _nameInput.text
@@ -89,6 +125,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                   icon: const Icon(Icons.delete, color: Colors.white)),
           ],
           bottom: const TabBar(
+            isScrollable: true,
             tabs: [
               Tab(
                 text: "CURRENCY",
@@ -98,6 +135,9 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               ),
               Tab(
                 text: "COLOR",
+              ),
+              Tab(
+                text: "SUBCATEGORIES",
               ),
             ],
           ),
@@ -136,6 +176,11 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 },
               ),
             ),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ListView(
+                  children: subcategoriesCards,
+                )),
           ],
         ),
       ),
@@ -147,4 +192,112 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     _nameInput.dispose();
     super.dispose();
   }
+
+  Future<void> _showSubcategoryDialog(Function(String name, IconData icon) onSubmit) async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController subcategoryNameInput = TextEditingController();
+        IconData icon = Icons.shopping_cart;
+
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            actionsPadding: const EdgeInsets.symmetric(vertical: 0),
+            content: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: subcategoryNameInput,
+                    decoration: const InputDecoration(
+                      hintText: 'Name',
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    width: double.maxFinite,
+                    height: MediaQuery.of(context).size.height * 0.69,
+                    child: IconPicker(
+                      color: color,
+                      icon: icon,
+                      onChange: (pickedIcon) {
+                        setState(() {
+                          icon = pickedIcon;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    onSubmit(subcategoryNameInput.text, icon);
+                    Navigator.pop(context);
+                  },
+                  style: const ButtonStyle(
+                      shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
+                      alignment: AlignmentDirectional.center,
+                      padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                  child: const Text('OK')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: const ButtonStyle(
+                      shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
+                      alignment: AlignmentDirectional.center,
+                      padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                  child: const Text('CANCEL')),
+            ],
+          );
+        });
+      },
+    );
+  }
+}
+
+List<Widget> buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
+  return List.generate(subcategories.length, (index) {
+    final subCategory = subcategories[index];
+
+    return Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(subCategory.icon),
+            const SizedBox(width: 10),
+            Text(subCategory.name, style: const TextStyle(color: Colors.white, fontSize: 20)),
+          ],
+        ),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            // TODO edit subcategory (local if new category and provider if existing)
+            // TODO implement other
+          },
+          itemBuilder: (BuildContext context) {
+            return {'Edit', 'Convert to category', 'Merge with subcategory', 'archive', 'delete'}.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        ),
+      ],
+    );
+  });
 }

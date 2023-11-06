@@ -19,7 +19,7 @@ List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPress
   Map<int, double> totals = transactionProvider.getRangeExpenses();
 
   for (var i = 0; i < provider.length; i++) {
-    if (exclude.contains(provider.get(i).id)) {
+    if (exclude.contains(provider.get(i).id) || provider.get(i).isSubCategory()) {
       continue;
     }
 

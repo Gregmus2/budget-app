@@ -1,4 +1,5 @@
 import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/accounts.dart';
 import 'package:fb/ui/category_card.dart';
@@ -24,6 +25,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
   DateTime selectedDate = DateTime.now();
   late Account from;
   late TransferTarget to;
+  TransferTarget? toSubCategory;
   final TextEditingController _nameInput = TextEditingController();
 
   @override
@@ -56,29 +58,65 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               });
             }
           },
-          tabloItem: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          tabloItem: Column(
             children: [
-              FromToButton(
-                  isLeft: true,
-                  entity: from,
-                  onSelected: (account) {
-                    setState(() {
-                      from = account as Account;
-                    });
-                  }),
-              const Icon(
-                Icons.arrow_right,
-                color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  FromToButton(
+                      isLeft: true,
+                      entity: from,
+                      onSelected: (account) {
+                        setState(() {
+                          from = account as Account;
+                        });
+                      }),
+                  const Icon(
+                    Icons.arrow_right,
+                    color: Colors.white,
+                  ),
+                  FromToButton(
+                      isLeft: false,
+                      entity: to,
+                      onSelected: (target) {
+                        setState(() {
+                          to = target;
+                        });
+                      }),
+                ],
               ),
-              FromToButton(
-                  isLeft: false,
-                  entity: to,
-                  onSelected: (target) {
-                    setState(() {
-                      to = target;
-                    });
-                  }),
+              (to is Category && (to as Category).subCategories.isNotEmpty) ? SizedBox(
+                height: 25,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: (to as Category).subCategories.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Category subcategory = (to as Category).subCategories[index];
+                    Category category = (to as Category);
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            toSubCategory = subcategory;
+                          });
+                        },
+                        style: ButtonStyle(
+                          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(15)),side: BorderSide(color: category.color))),
+                          alignment: AlignmentDirectional.center,
+                          backgroundColor: (toSubCategory == subcategory) ? MaterialStatePropertyAll(category.color) : const MaterialStatePropertyAll(Colors.transparent),
+                          shadowColor: const MaterialStatePropertyAll(Colors.transparent),
+                          overlayColor: const MaterialStatePropertyAll(Colors.transparent),
+                        ),
+                        icon: Icon(subcategory.icon, color: (toSubCategory == subcategory) ? Colors.white : category.color, size: 18,),
+                        label: Text(subcategory.name, style: TextStyle(color: (toSubCategory == subcategory) ? Colors.white : category.color), textAlign: TextAlign.center,),
+                      ),
+                    );
+                  },
+                ),
+              ) : Container(),
             ],
           ),
           middle: Column(
@@ -95,7 +133,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               ),
             ],
           ),
-          onDone: (number) => widget.onDoneFunc(number, selectedDate, from, to, _nameInput.text),
+          onDone: (number) => widget.onDoneFunc(number, selectedDate, from, toSubCategory ?? to, _nameInput.text),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),

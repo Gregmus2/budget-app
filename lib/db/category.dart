@@ -16,6 +16,8 @@ class Category implements Model, TransferTarget {
   @override
   Currency currency;
   int order;
+  int? parent;
+  List<Category> subCategories = [];
 
   Category({
     required this.id,
@@ -25,6 +27,7 @@ class Category implements Model, TransferTarget {
     required this.currency,
     required this.order,
     this.archived = false,
+    this.parent
   });
 
   @override
@@ -38,6 +41,7 @@ class Category implements Model, TransferTarget {
       'archived': (archived) ? 1 : 0,
       'currency': currency.code,
       'order': order,
+      'parent': parent,
     };
   }
 
@@ -50,11 +54,16 @@ class Category implements Model, TransferTarget {
       archived: map['archived'] == 1,
       currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
       order: map['order'],
+      parent: map['parent']?.toInt(),
     );
   }
 
   @override
   String tableName() {
     return tableCategories;
+  }
+
+  bool isSubCategory() {
+    return parent != null;
   }
 }

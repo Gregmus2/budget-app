@@ -41,3 +41,6 @@
 
 ### Date Range
 ![date range here](res/date_range.gif)
+
+### Subcategories
+![subcategories here](res/subcategories.gif)

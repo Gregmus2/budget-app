@@ -20,7 +20,7 @@ class CategoriesEditPage extends StatelessWidget {
               body: child,
             ),
             padding: const EdgeInsets.symmetric(vertical: 10),
-            onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
+            onReorder: (oldIndex, newIndex) => provider.reOrderCategory(oldIndex, newIndex),
             crossAxisCount: 4,
             childAspectRatio: 0.7,
             crossAxisSpacing: 10,

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/page.dart' as page;
@@ -97,10 +98,15 @@ class TransactionsPage extends StatelessWidget implements page.Page {
         itemBuilder: (context, Transaction transaction) {
           Account from = accountProvider.getById(transaction.from);
           TransferTarget to;
+          Category? parent;
           if (transaction.toAccount != null) {
             to = accountProvider.getById(transaction.toAccount!);
           } else {
-            to = categoryProvider.getById(transaction.toCategory!);
+            Category category = categoryProvider.getById(transaction.toCategory!);
+            to = category;
+            if (category.parent != null) {
+              parent = categoryProvider.getById(category.parent!);
+            }
           }
 
           return ListTile(
@@ -112,7 +118,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
               ),
             ),
             textColor: Colors.white,
-            title: Text(to.name),
+            title: Text(to.name + (parent != null ? " (${parent.name})" : "")),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

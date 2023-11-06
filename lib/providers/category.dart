@@ -16,21 +16,68 @@ class CategoryProvider extends ChangeNotifier {
   Future<void> init() async {
     _categories = await repo.listCategories();
     _categories.sort((a, b) => a.order.compareTo(b.order));
+
+    for (var category in _categories) {
+      if (category.parent != null) {
+        getById(category.parent!).subCategories.add(category);
+      }
+    }
+
+    for (var category in _categories) {
+      category.subCategories.sort((a, b) => a.order.compareTo(b.order));
+    }
   }
 
   int get length => _categories.length;
 
-  void add(String name, IconData icon, Color color, Currency currency) {
+  void add(String name, IconData icon, Color color, Currency currency, List<Category> subCategories) {
     Category category = Category(
-        id: _categories.length,
-        name: name,
-        icon: icon,
-        color: color,
-        currency: currency,
-        order: _categories.isNotEmpty ? _categories.last.order + 1 : 0);
+      id: _categories.length,
+      name: name,
+      icon: icon,
+      color: color,
+      currency: currency,
+      order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
+    );
     _categories.add(category);
     repo.create(category);
+
+    for (int i = 0; i < subCategories.length; i++) {
+      Category subCategory = Category(
+        id: _categories.length + 1 + i,
+        name: subCategories[i].name,
+        icon: subCategories[i].icon,
+        color: color,
+        currency: currency,
+        order: category.subCategories.isNotEmpty ? category.subCategories.last.order + 1 : 0,
+        parent: category.id,
+      );
+      category.subCategories.add(subCategory);
+      _categories.add(subCategory);
+      // todo update or notify transactions
+      repo.create(subCategory);
+    }
+
     notifyListeners();
+  }
+
+  Category addSubcategory(String name, IconData icon, Color color, Currency currency, int parent) {
+    Category category = Category(
+      id: _categories.length,
+      name: name,
+      icon: icon,
+      color: color,
+      currency: currency,
+      order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
+      parent: parent,
+    );
+    _categories.add(category);
+    repo.create(category);
+    getById(category.parent!).subCategories.add(category);
+
+    notifyListeners();
+
+    return category;
   }
 
   Category get(int index) {
@@ -51,10 +98,35 @@ class CategoryProvider extends ChangeNotifier {
   void remove(Category category) {
     _categories.remove(category);
     repo.delete(category);
+    if (category.parent != null) {
+      getById(category.parent!).subCategories.remove(category);
+    }
     notifyListeners();
   }
 
-  void reOrder(int from, int to) {
+  void reOrderSubCategory(Category category, int from, int to) {
+    if (from == to) {
+      return;
+    }
+
+    category.subCategories[from].order = category.subCategories[to].order;
+    if (to > from) {
+      for (var i = from + 1; i <= to; i++) {
+        category.subCategories[i].order--;
+        repo.update(category.subCategories[i]);
+      }
+    } else {
+      for (var i = to; i < from; i++) {
+        category.subCategories[i].order++;
+        repo.update(category.subCategories[i]);
+      }
+    }
+    category.subCategories.sort((a, b) => a.order.compareTo(b.order));
+
+    notifyListeners();
+  }
+
+  void reOrderCategory(int from, int to) {
     if (from == to) {
       return;
     }

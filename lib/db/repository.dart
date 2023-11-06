@@ -45,9 +45,9 @@ const migrationScripts = [
           amount_from REAL,
           amount_to REAL,
           date INT,
-          FOREIGN KEY ("from") REFERENCES $tableAccounts(id),
-          FOREIGN KEY (to_account) REFERENCES $tableAccounts(id),
-          FOREIGN KEY (to_category) REFERENCES $tableCategories(id)
+          FOREIGN KEY ("from") REFERENCES $tableAccounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (to_account) REFERENCES $tableAccounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (to_category) REFERENCES $tableCategories(id) ON DELETE CASCADE
         )
   ''',
   '''
@@ -56,11 +56,14 @@ const migrationScripts = [
           category INT,
           month INT,
           amount REAL,
-          FOREIGN KEY (category) REFERENCES $tableCategories(id)
+          FOREIGN KEY (category) REFERENCES $tableCategories(id) ON DELETE CASCADE
         )
   ''',
   '''
   ALTER TABLE $tableBudgets ADD COLUMN year INT
+  ''',
+  '''
+  ALTER TABLE $tableCategories ADD COLUMN parent INT REFERENCES $tableCategories(id) ON DELETE CASCADE
   '''
 ];
 
@@ -81,6 +84,9 @@ class Repository {
       for (var i = oldVersion + 1; i <= newVersion; i++) {
         db.execute(migrationScripts[i - 1]);
       }
+    },
+    onConfigure: (Database db) async {
+      await db.execute('PRAGMA foreign_keys = ON');
     });
   }
 
