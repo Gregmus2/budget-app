@@ -43,7 +43,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
                     },
                     // todo replace with default currency from user configuration
                     from: accountProvider.items.last,
-                    to: categoryProvider.items.last,
+                    to: categoryProvider.items.where((element) => element.parent == null).first,
                   ),
                 ],
               ),

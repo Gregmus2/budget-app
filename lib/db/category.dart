@@ -3,6 +3,8 @@ import 'package:fb/db/transfer_target.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
+enum CategoryType { expenses, income }
+
 class Category implements Model, TransferTarget {
   @override
   final int id;
@@ -17,6 +19,7 @@ class Category implements Model, TransferTarget {
   Currency currency;
   int order;
   int? parent;
+  CategoryType type;
   List<Category> subCategories = [];
 
   Category({
@@ -26,6 +29,7 @@ class Category implements Model, TransferTarget {
     required this.color,
     required this.currency,
     required this.order,
+    required this.type,
     this.archived = false,
     this.parent
   });
@@ -55,6 +59,7 @@ class Category implements Model, TransferTarget {
       currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
       order: map['order'],
       parent: map['parent']?.toInt(),
+      type: CategoryType.values[map['type']],
     );
   }
 

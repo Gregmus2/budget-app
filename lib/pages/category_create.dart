@@ -4,6 +4,7 @@ import 'package:fb/ui/card_button.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/icon_picker.dart';
+import 'package:fb/ui/subcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
@@ -38,152 +39,244 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-    List<Widget> subcategoriesCards = buildSubCategoriesCards(context, subcategories);
-    subcategoriesCards.insert(
-        0,
-        CustomButton(
-          child: const Center(
-            child: Text(
-              "+ Add subcategory",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-          onPressed: () {
-            _showSubcategoryDialog(
-              (name, icon) {
-                if (widget.category != null) {
-                  provider.addSubcategory(name, icon, color, currency, widget.category!.id);
-                } else {
-                  setState(() {
-                    subcategories.add(Category(
-                        id: provider.length,
-                        name: name,
-                        icon: icon,
-                        color: color,
-                        currency: currency,
-                        order: subcategories.isEmpty ? 0 : subcategories.last.order + 1,
-                        parent: widget.category?.id));
-                  });
-                }
-              },
-            );
+    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context, subcategories);
+    subcategoriesCards.add(SubCategory(
+      label: "Add",
+      color: color,
+      icon: Icons.add,
+      inverse: true,
+      onPressed: () {
+        _showSubcategoryDialog(
+          (name, icon) {
+            if (widget.category != null) {
+              provider.addSubcategory(name, icon, widget.category!.id);
+            } else {
+              setState(() {
+                subcategories.add(Category(
+                    id: provider.length,
+                    name: name,
+                    icon: icon,
+                    color: color,
+                    currency: currency,
+                    type: CategoryType.expenses,
+                    order: subcategories.isEmpty ? 0 : subcategories.last.order + 1,
+                    parent: widget.category?.id));
+              });
+            }
           },
-        ));
+        );
+      },
+    ));
 
     return DefaultTabController(
       initialIndex: 1,
       length: 4,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          toolbarHeight: 100,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("New category"),
-              TextFormField(
-                controller: _nameInput,
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                ),
-                style: const TextStyle(color: Colors.white),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              )
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  if (widget.category == null) {
-                    provider.add(_nameInput.text, icon, color, currency, subcategories);
-                  } else {
-                    widget.category!
-                      ..name = _nameInput.text
-                      ..icon = icon
-                      ..color = color
-                      ..currency = currency;
-                    provider.update(widget.category!);
-                  }
-
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.check, color: Colors.white)),
-            // create delete button
-            if (widget.category != null)
+          appBar: AppBar(
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+            toolbarHeight: 100,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("New category"),
+                TextFormField(
+                  controller: _nameInput,
+                  decoration: const InputDecoration(
+                    hintText: 'Name',
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                )
+              ],
+            ),
+            actions: [
               IconButton(
                   onPressed: () {
-                    provider.remove(widget.category!);
+                    if (widget.category == null) {
+                      provider.add(_nameInput.text, icon, color, currency, CategoryType.expenses, subcategories);
+                    } else {
+                      widget.category!
+                        ..name = _nameInput.text
+                        ..icon = icon
+                        ..color = color
+                        ..currency = currency;
+                      provider.update(widget.category!);
+                    }
+
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.delete, color: Colors.white)),
-          ],
-          bottom: const TabBar(
-            isScrollable: true,
-            tabs: [
-              Tab(
-                text: "CURRENCY",
-              ),
-              Tab(
-                text: "ICON",
-              ),
-              Tab(
-                text: "COLOR",
-              ),
-              Tab(
-                text: "SUBCATEGORIES",
-              ),
+                  icon: const Icon(Icons.check, color: Colors.white)),
+              // create delete button
+              if (widget.category != null)
+                IconButton(
+                    onPressed: () {
+                      provider.remove(widget.category!);
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.delete, color: Colors.white)),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            CurrencyPicker(
-              currency: currency,
-              onChanged: (currency) {
-                setState(() {
-                  this.currency = currency!;
-                });
-              },
-              color: color,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: IconPicker(
+          body: ListView(
+            children: [
+              CustomButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
+                          Text(currency.name)
+                        ],
+                      ),
+                      Text(currency.code)
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  _showCurrencyDialog();
+                },
+              ),
+              CustomButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Icon", style: TextStyle(color: Colors.white, fontSize: 15)),
+                      Icon(icon, color: color)
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  _showIconDialog();
+                },
+              ),
+              CustomButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Color", style: TextStyle(color: Colors.white, fontSize: 15)),
+                      Icon(Icons.circle, color: color)
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  _showColorDialog();
+                },
+              ),
+              // todo show subcategories in the same way as in transactions, rounded boxes one by one with cross on edge to delete and plus icon for the last box
+              Column(
+                children: [
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "Subcategories",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ),
+                  ),
+                  Wrap(
+                    children: subcategoriesCards,
+                  ),
+                ],
+              )
+            ],
+          )),
+    );
+  }
+
+  Future<void> _showCurrencyDialog() async {
+    const TextStyle textStyle = TextStyle(color: Colors.white);
+
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        List<Currency> currencies = Currencies().getRegistered().toList();
+        currencies.sort((a, b) => (a.name.compareTo(b.name)));
+
+        return SimpleDialog(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            children: List.generate(
+                currencies.length,
+                (index) => SimpleDialogOption(
+                      onPressed: () {
+                        setState(() {
+                          currency = currencies[index];
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            currencies[index].name,
+                            style: textStyle,
+                          ),
+                          Text(currencies[index].code, style: textStyle)
+                        ],
+                      ),
+                    )));
+      },
+    );
+  }
+
+  Future<void> _showIconDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: double.maxFinite,
+            height: MediaQuery.of(context).size.height * 0.69,
+            child: IconPicker(
                 color: color,
-                icon: icon,
                 onChange: (icon) {
                   setState(() {
                     this.icon = icon;
+
+                    Navigator.pop(context);
                   });
                 },
-              ),
+                icon: icon),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showColorDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: double.maxFinite,
+            height: MediaQuery.of(context).size.height * 0.69,
+            child: ColorPicker(
+              color: color,
+              onChange: (color) {
+                setState(() {
+                  this.color = color;
+
+                  Navigator.pop(context);
+                });
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ColorPicker(
-                color: color,
-                onChange: (color) {
-                  setState(() {
-                    this.color = color;
-                  });
-                },
-              ),
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: ListView(
-                  children: subcategoriesCards,
-                )),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -268,36 +361,21 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   }
 }
 
-List<Widget> buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
-  return List.generate(subcategories.length, (index) {
-    final subCategory = subcategories[index];
+List<Widget> _buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
+  return List<Widget>.generate(
+    subcategories.length,
+    (index) {
+      Category subcategory = subcategories[index];
 
-    return Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Icon(subCategory.icon),
-            const SizedBox(width: 10),
-            Text(subCategory.name, style: const TextStyle(color: Colors.white, fontSize: 20)),
-          ],
-        ),
-        PopupMenuButton<String>(
-          onSelected: (value) {
-            // TODO edit subcategory (local if new category and provider if existing)
-            // TODO implement other
-          },
-          itemBuilder: (BuildContext context) {
-            return {'Edit', 'Convert to category', 'Merge with subcategory', 'archive', 'delete'}.map((String choice) {
-              return PopupMenuItem<String>(
-                value: choice,
-                child: Text(choice),
-              );
-            }).toList();
-          },
-        ),
-      ],
-    );
-  });
+      return SubCategory(
+        icon: subcategory.icon,
+        color: subcategory.color,
+        label: subcategory.name,
+        onPressed: () {
+          // todo subcategory edit (local if new category and provider if existing)
+          // todo add 'Convert to category', 'Merge with subcategory', 'archive', 'delete' options there
+        },
+      );
+    },
+  );
 }

@@ -9,12 +9,23 @@ import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Currencies().registerList(<Currency>[
+    Currency.create('UAH', 2,
+        symbol: '₴',
+        invertSeparators: true,
+        name: 'Ukrainian Hryvnia',
+        country: 'Ukraine',
+        pattern: 'S0.00',
+        unit: 'hryvnia'),
+  ]);
+
   HomeWidget.initiallyLaunchedFromHomeWidget().then((value) {
     if (value != null) {
       _runApp(const QuickTransaction(), false);

@@ -44,3 +44,6 @@
 
 ### Subcategories
 ![subcategories here](res/subcategories.gif)
+
+### New category editor
+![category here](res/new_category_editor.png)

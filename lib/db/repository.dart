@@ -64,6 +64,9 @@ const migrationScripts = [
   ''',
   '''
   ALTER TABLE $tableCategories ADD COLUMN parent INT REFERENCES $tableCategories(id) ON DELETE CASCADE
+  ''',
+  '''
+  ALTER TABLE $tableCategories ADD COLUMN type INT DEFAULT 0
   '''
 ];
 

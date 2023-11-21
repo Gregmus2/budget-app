@@ -2,7 +2,9 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/accounts.dart';
+import 'package:fb/pages/category_create.dart';
 import 'package:fb/ui/category_card.dart';
+import 'package:fb/ui/subcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
@@ -85,38 +87,30 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                       }),
                 ],
               ),
-              (to is Category && (to as Category).subCategories.isNotEmpty) ? SizedBox(
-                height: 25,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: (to as Category).subCategories.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Category subcategory = (to as Category).subCategories[index];
-                    Category category = (to as Category);
+              (to is Category && (to as Category).subCategories.isNotEmpty)
+                  ? SizedBox(
+                      height: 25,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: (to as Category).subCategories.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Category subcategory = (to as Category).subCategories[index];
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            toSubCategory = subcategory;
-                          });
+                          return SubCategory(
+                              label: subcategory.name,
+                              color: subcategory.color,
+                              icon: subcategory.icon,
+                              inverse: (toSubCategory == subcategory),
+                              onPressed: () {
+                                setState(() {
+                                  toSubCategory = subcategory;
+                                });
+                              });
                         },
-                        style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(15)),side: BorderSide(color: category.color))),
-                          alignment: AlignmentDirectional.center,
-                          backgroundColor: (toSubCategory == subcategory) ? MaterialStatePropertyAll(category.color) : const MaterialStatePropertyAll(Colors.transparent),
-                          shadowColor: const MaterialStatePropertyAll(Colors.transparent),
-                          overlayColor: const MaterialStatePropertyAll(Colors.transparent),
-                        ),
-                        icon: Icon(subcategory.icon, color: (toSubCategory == subcategory) ? Colors.white : category.color, size: 18,),
-                        label: Text(subcategory.name, style: TextStyle(color: (toSubCategory == subcategory) ? Colors.white : category.color), textAlign: TextAlign.center,),
                       ),
-                    );
-                  },
-                ),
-              ) : Container(),
+                    )
+                  : Container(),
             ],
           ),
           middle: Column(

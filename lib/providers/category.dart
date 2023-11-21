@@ -30,7 +30,8 @@ class CategoryProvider extends ChangeNotifier {
 
   int get length => _categories.length;
 
-  void add(String name, IconData icon, Color color, Currency currency, List<Category> subCategories) {
+  Category add(
+      String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories) {
     Category category = Category(
       id: _categories.length,
       name: name,
@@ -38,6 +39,7 @@ class CategoryProvider extends ChangeNotifier {
       color: color,
       currency: currency,
       order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
+      type: type,
     );
     _categories.add(category);
     repo.create(category);
@@ -51,6 +53,7 @@ class CategoryProvider extends ChangeNotifier {
         currency: currency,
         order: category.subCategories.isNotEmpty ? category.subCategories.last.order + 1 : 0,
         parent: category.id,
+        type: type,
       );
       category.subCategories.add(subCategory);
       _categories.add(subCategory);
@@ -59,17 +62,21 @@ class CategoryProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    return category;
   }
 
-  Category addSubcategory(String name, IconData icon, Color color, Currency currency, int parent) {
+  Category addSubcategory(String name, IconData icon, int parentID) {
+    Category parent = getById(parentID);
     Category category = Category(
       id: _categories.length,
       name: name,
       icon: icon,
-      color: color,
-      currency: currency,
+      color: parent.color,
+      currency: parent.currency,
       order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
-      parent: parent,
+      parent: parentID,
+      type: parent.type,
     );
     _categories.add(category);
     repo.create(category);
@@ -90,6 +97,13 @@ class CategoryProvider extends ChangeNotifier {
 
   void update(Category category) {
     final targetCategory = _categories.firstWhere((element) => element.id == category.id);
+    for (var subCategory in targetCategory.subCategories) {
+      if (subCategory.color != category.color || subCategory.currency != category.currency) {
+        subCategory.color = category.color;
+        subCategory.currency = category.currency;
+        update(subCategory);
+      }
+    }
     _categories[_categories.indexOf(targetCategory)] = category;
     repo.update(category);
     notifyListeners();

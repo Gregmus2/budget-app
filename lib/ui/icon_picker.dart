@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class IconPicker extends StatefulWidget {
   static const List<IconData> icons = <IconData>[
+    Icons.list,
     Icons.shopping_cart,
     Icons.accessibility,
     Icons.accessible,

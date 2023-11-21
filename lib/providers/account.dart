@@ -20,7 +20,7 @@ class AccountProvider extends ChangeNotifier {
 
   int get length => _accounts.length;
 
-  void add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
+  Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     Account account = Account(
         id: _accounts.length,
         name: name,
@@ -33,6 +33,8 @@ class AccountProvider extends ChangeNotifier {
     _accounts.add(account);
     repo.create(account);
     notifyListeners();
+
+    return account;
   }
 
   Account get(int index) {
