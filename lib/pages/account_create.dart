@@ -97,104 +97,113 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                   },
                   icon: const Icon(Icons.delete, color: Colors.white)),
           ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(
-                text: "GENERAL",
-              ),
-              Tab(
-                text: "CURRENCY",
-              ),
-              Tab(
-                text: "ICON",
-              ),
-              Tab(
-                text: "COLOR",
-              ),
-            ],
-          ),
         ),
-        body: TabBarView(
+        body: ListView(
           children: <Widget>[
-            Column(
-              children: [
-                const SizedBox(height: 10),
-                CustomButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
+            CustomButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Type", style: TextStyle(color: Colors.white, fontSize: 15)),
+                    Text(type.name, style: TextStyle(color: color))
+                  ],
+                ),
+              ),
+              onPressed: () {
+                _showTypeDialog();
+              },
+            ),
+            CustomButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 15)),
+                    Text("${balance.toString()} ${currency.symbol}", style: TextStyle(color: color)),
+                  ],
+                ),
+              ),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => SimpleNumPad(
+                    number: balance,
+                    currency: currency,
+                    onDone: (value) {
+                      setState(() {
+                        balance = value;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              },
+            ),
+            CustomButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("Type", style: TextStyle(color: Colors.white, fontSize: 15)),
-                        Text(type.name)
+                        const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
+                        Text(currency.name, style: TextStyle(color: color))
                       ],
                     ),
-                  ),
-                  onPressed: () {
-                    _showTypeDialog();
-                  },
+                    Text(currency.code, style: TextStyle(color: color))
+                  ],
                 ),
-                const Divider(height: 0),
-                CustomButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 15)),
-                        Text("${balance.toString()} ${currency.symbol}"),
-                      ],
-                    ),
-                  ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => SimpleNumPad(
-                        number: balance,
-                        currency: currency,
-                        onDone: (value) {
-                          setState(() {
-                            balance = value;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            CurrencyPicker(
-              currency: currency,
-              onChanged: (currency) {
-                setState(() {
-                  this.currency = currency!;
+              ),
+              onPressed: () {
+                showCurrencyDialog(context, (currency) {
+                  setState(() {
+                    this.currency = currency;
+                  });
                 });
               },
-              color: color,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: IconPicker(
-                color: color,
-                icon: icon,
-                onChange: (icon) {
+            CustomButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Icon", style: TextStyle(color: Colors.white, fontSize: 15)),
+                    Icon(icon, color: color)
+                  ],
+                ),
+              ),
+              onPressed: () {
+                showIconDialog(context, color, icon, (icon) {
                   setState(() {
                     this.icon = icon;
                   });
-                },
-              ),
+                });
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ColorPicker(
-                color: color,
-                onChange: (color) {
+            CustomButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Color", style: TextStyle(color: Colors.white, fontSize: 15)),
+                    Icon(Icons.circle, color: color)
+                  ],
+                ),
+              ),
+              onPressed: () {
+                showColorDialog(context, color, (color) {
                   setState(() {
                     this.color = color;
                   });
-                },
-              ),
+                });
+              },
             ),
           ],
         ),

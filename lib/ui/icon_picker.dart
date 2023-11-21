@@ -92,3 +92,24 @@ class _IconPickerState extends State<IconPicker> {
     );
   }
 }
+
+Future<void> showIconDialog(BuildContext context, Color color, IconData icon, Function(IconData) onChange) async {
+  await showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: SizedBox(
+          width: double.maxFinite,
+          height: MediaQuery.of(context).size.height * 0.69,
+          child: IconPicker(
+              color: color,
+              onChange: (icon) {
+                onChange(icon);
+                Navigator.pop(context);
+              },
+              icon: icon),
+        ),
+      );
+    },
+  );
+}

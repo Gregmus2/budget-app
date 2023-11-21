@@ -134,15 +134,19 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
-                          Text(currency.name)
+                          Text(currency.name, style: TextStyle(color: color))
                         ],
                       ),
-                      Text(currency.code)
+                      Text(currency.code, style: TextStyle(color: color))
                     ],
                   ),
                 ),
                 onPressed: () {
-                  _showCurrencyDialog();
+                  showCurrencyDialog(context, (currency) {
+                    setState(() {
+                      this.currency = currency;
+                    });
+                  });
                 },
               ),
               CustomButton(
@@ -157,7 +161,11 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                   ),
                 ),
                 onPressed: () {
-                  _showIconDialog();
+                  showIconDialog(context, color, icon, (icon) {
+                    setState(() {
+                      this.icon = icon;
+                    });
+                  });
                 },
               ),
               CustomButton(
@@ -172,7 +180,11 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                   ),
                 ),
                 onPressed: () {
-                  _showColorDialog();
+                  showColorDialog(context, color, (color) {
+                    setState(() {
+                      this.color = color;
+                    });
+                  });
                 },
               ),
               // todo show subcategories in the same way as in transactions, rounded boxes one by one with cross on edge to delete and plus icon for the last box
@@ -194,89 +206,6 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               )
             ],
           )),
-    );
-  }
-
-  Future<void> _showCurrencyDialog() async {
-    const TextStyle textStyle = TextStyle(color: Colors.white);
-
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        List<Currency> currencies = Currencies().getRegistered().toList();
-        currencies.sort((a, b) => (a.name.compareTo(b.name)));
-
-        return SimpleDialog(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            children: List.generate(
-                currencies.length,
-                (index) => SimpleDialogOption(
-                      onPressed: () {
-                        setState(() {
-                          currency = currencies[index];
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            currencies[index].name,
-                            style: textStyle,
-                          ),
-                          Text(currencies[index].code, style: textStyle)
-                        ],
-                      ),
-                    )));
-      },
-    );
-  }
-
-  Future<void> _showIconDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SizedBox(
-            width: double.maxFinite,
-            height: MediaQuery.of(context).size.height * 0.69,
-            child: IconPicker(
-                color: color,
-                onChange: (icon) {
-                  setState(() {
-                    this.icon = icon;
-
-                    Navigator.pop(context);
-                  });
-                },
-                icon: icon),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showColorDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SizedBox(
-            width: double.maxFinite,
-            height: MediaQuery.of(context).size.height * 0.69,
-            child: ColorPicker(
-              color: color,
-              onChange: (color) {
-                setState(() {
-                  this.color = color;
-
-                  Navigator.pop(context);
-                });
-              },
-            ),
-          ),
-        );
-      },
     );
   }
 

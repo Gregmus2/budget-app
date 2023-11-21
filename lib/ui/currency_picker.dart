@@ -70,3 +70,36 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
     return tiles;
   }
 }
+
+Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPressed) async {
+  const TextStyle textStyle = TextStyle(color: Colors.white);
+
+  await showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      List<Currency> currencies = Currencies().getRegistered().toList();
+      currencies.sort((a, b) => (a.name.compareTo(b.name)));
+
+      return SimpleDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          children: List.generate(
+              currencies.length,
+              (index) => SimpleDialogOption(
+                    onPressed: () {
+                      onPressed(currencies[index]);
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          currencies[index].name,
+                          style: textStyle,
+                        ),
+                        Text(currencies[index].code, style: textStyle)
+                      ],
+                    ),
+                  )));
+    },
+  );
+}

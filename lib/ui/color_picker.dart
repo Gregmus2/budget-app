@@ -67,3 +67,24 @@ class _ColorPickerState extends State<ColorPicker> {
     );
   }
 }
+
+Future<void> showColorDialog(BuildContext context, Color color, Function(Color) onChange) async {
+  await showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: SizedBox(
+          width: double.maxFinite,
+          height: MediaQuery.of(context).size.height * 0.69,
+          child: ColorPicker(
+            color: color,
+            onChange: (color) {
+              onChange(color);
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      );
+    },
+  );
+}

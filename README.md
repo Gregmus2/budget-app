@@ -47,3 +47,6 @@
 
 ### New category editor
 ![category here](res/new_category_editor.png)
+
+### New account editor
+![account here](res/account_editor.png)
