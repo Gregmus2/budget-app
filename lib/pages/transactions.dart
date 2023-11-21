@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
@@ -75,30 +74,37 @@ class TransactionsPage extends StatelessWidget implements page.Page {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                groupByValue.length == 1 ? "0$groupByValue" : groupByValue,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade400,
-                ),
-              ),
+              Text(groupByValue.length == 1 ? "0$groupByValue" : groupByValue,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade400,
+                  ),
+                  overflow: TextOverflow.ellipsis),
               const SizedBox(width: 5),
-              Text(
-                DateFormat(DateFormat.MONTH).format(provider.items.first.date),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
+              Text(DateFormat(DateFormat.MONTH).format(provider.items.first.date),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis)
             ],
           ),
         ),
         itemBuilder: (context, Transaction transaction) {
-          Account from = accountProvider.getById(transaction.from);
+          TransferTarget from;
           TransferTarget to;
           Category? parent;
+          if (transaction.fromAccount != null) {
+            from = accountProvider.getById(transaction.fromAccount!);
+          } else {
+            Category category = categoryProvider.getById(transaction.fromCategory!);
+            from = category;
+            if (category.parent != null) {
+              parent = categoryProvider.getById(category.parent!);
+            }
+          }
           if (transaction.toAccount != null) {
             to = accountProvider.getById(transaction.toAccount!);
           } else {
@@ -118,26 +124,23 @@ class TransactionsPage extends StatelessWidget implements page.Page {
               ),
             ),
             textColor: Colors.white,
-            title: Text(to.name + (parent != null ? " (${parent.name})" : "")),
+            title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(from.icon, color: Colors.grey.shade400, size: 16),
-                    Text(from.name, style: TextStyle(color: Colors.grey.shade400)),
+                    Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
                   ],
                 ),
-                Text(
-                  transaction.note,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                ),
+                Text(transaction.note,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
               ],
             ),
-            trailing: Text(
-              "${transaction.amountFrom.toString()} ${from.currency.symbol}",
-              style: TextStyle(color: transaction.amountFrom < 0 ? Colors.green : Colors.red),
-            ),
+            trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
+                style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
+                overflow: TextOverflow.ellipsis),
             contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
             shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );

@@ -122,7 +122,8 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 15)),
-                    Text("${balance.toString()} ${currency.symbol}", style: TextStyle(color: color)),
+                    Text("${balance.toString()} ${currency.symbol}",
+                        style: TextStyle(color: color), overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -152,7 +153,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
-                        Text(currency.name, style: TextStyle(color: color))
+                        Text(currency.name, style: TextStyle(color: color), overflow: TextOverflow.ellipsis)
                       ],
                     ),
                     Text(currency.code, style: TextStyle(color: color))

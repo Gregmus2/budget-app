@@ -88,6 +88,7 @@ class CategoryCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(name,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
               )),
@@ -96,6 +97,7 @@ class CategoryCard extends StatelessWidget {
           ),
           Text(
             "${(total != null ? total! - spent : 0).toStringAsFixed(2)} ${currency.symbol}",
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: color.withOpacity(0.5),
             ),
@@ -107,7 +109,11 @@ class CategoryCard extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          Text("${spent.toStringAsFixed(2)} ${currency.symbol}", style: TextStyle(color: color)),
+          Text(
+            "${spent.toStringAsFixed(2)} ${currency.symbol}",
+            style: TextStyle(color: color),
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

@@ -2,7 +2,6 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/accounts.dart';
-import 'package:fb/pages/category_create.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +11,9 @@ import 'package:spannable_grid/spannable_grid.dart';
 
 class TransactionNumPad extends StatefulWidget {
   final Currency currency;
-  final Account from;
+  final TransferTarget from;
   final TransferTarget to;
-  final Function(double value, DateTime date, Account from, TransferTarget to, String note) onDoneFunc;
+  final Function(double value, DateTime date, TransferTarget from, TransferTarget to, String note) onDoneFunc;
 
   const TransactionNumPad(
       {super.key, required this.currency, required this.onDoneFunc, required this.from, required this.to});
@@ -25,9 +24,10 @@ class TransactionNumPad extends StatefulWidget {
 
 class _TransactionNumPadState extends State<TransactionNumPad> {
   DateTime selectedDate = DateTime.now();
-  late Account from;
+  late TransferTarget from;
   late TransferTarget to;
   TransferTarget? toSubCategory;
+  TransferTarget? fromSubCategory;
   final TextEditingController _nameInput = TextEditingController();
 
   @override
@@ -40,6 +40,14 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
 
   @override
   Widget build(BuildContext context) {
+    Category? parentCategory;
+    if (from is Category && (from as Category).subCategories.isNotEmpty) {
+      parentCategory = from as Category;
+    }
+    if (to is Category && (to as Category).subCategories.isNotEmpty) {
+      parentCategory = to as Category;
+    }
+
     return Column(
       children: [
         SimpleNumPad(
@@ -60,59 +68,51 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               });
             }
           },
-          tabloItem: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FromToButton(
-                      isLeft: true,
-                      entity: from,
-                      onSelected: (account) {
-                        setState(() {
-                          from = account as Account;
-                        });
-                      }),
-                  const Icon(
-                    Icons.arrow_right,
-                    color: Colors.white,
-                  ),
-                  FromToButton(
-                      isLeft: false,
-                      entity: to,
-                      onSelected: (target) {
-                        setState(() {
-                          to = target;
-                        });
-                      }),
-                ],
-              ),
-              (to is Category && (to as Category).subCategories.isNotEmpty)
-                  ? SizedBox(
-                      height: 25,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: (to as Category).subCategories.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Category subcategory = (to as Category).subCategories[index];
+          underBalance: parentCategory != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: SizedBox(
+                    height: 25,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: parentCategory.subCategories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Category subcategory = parentCategory!.subCategories[index];
 
-                          return SubCategory(
-                              label: subcategory.name,
-                              color: subcategory.color,
-                              icon: subcategory.icon,
-                              inverse: (toSubCategory == subcategory),
-                              onPressed: () {
-                                setState(() {
+                        return SubCategory(
+                            label: subcategory.name,
+                            color: subcategory.color,
+                            icon: subcategory.icon,
+                            inverse: (toSubCategory == subcategory || fromSubCategory == subcategory),
+                            onPressed: () {
+                              setState(() {
+                                if (parentCategory == from) {
+                                  fromSubCategory = subcategory;
+                                } else {
                                   toSubCategory = subcategory;
-                                });
+                                }
                               });
-                        },
-                      ),
-                    )
-                  : Container(),
-            ],
-          ),
+                            });
+                      },
+                    ),
+                  ),
+                )
+              : Container(),
+          leftGuy: FromToButton(
+              entity: from,
+              onSelected: (target) {
+                setState(() {
+                  from = target;
+                });
+              }),
+          rightGuy: FromToButton(
+              entity: to,
+              onSelected: (target) {
+                setState(() {
+                  to = target;
+                });
+              }),
           middle: Column(
             children: [
               const Divider(
@@ -127,7 +127,8 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
               ),
             ],
           ),
-          onDone: (number) => widget.onDoneFunc(number, selectedDate, from, toSubCategory ?? to, _nameInput.text),
+          onDone: (number) =>
+              widget.onDoneFunc(number, selectedDate, fromSubCategory ?? from, toSubCategory ?? to, _nameInput.text),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
@@ -141,28 +142,15 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
 class FromToButton extends StatelessWidget {
   final TransferTarget entity;
   final Function(TransferTarget) onSelected;
-  final bool isLeft;
 
   const FromToButton({
     super.key,
     required this.entity,
     required this.onSelected,
-    required this.isLeft,
   });
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> box = [
-      Icon(
-        entity.icon,
-        color: entity.color,
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      Text(entity.name, style: const TextStyle(color: Colors.white)),
-    ];
-
     return TextButton(
       style: ButtonStyle(shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
       onPressed: () {
@@ -199,11 +187,14 @@ class FromToButton extends StatelessWidget {
           },
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          children: isLeft ? box : box.reversed.toList(),
-        ),
+      child: Column(
+        children: [
+          Icon(
+            entity.icon,
+            color: entity.color,
+          ),
+          Text(entity.name, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis),
+        ],
       ),
     );
   }
@@ -213,7 +204,9 @@ class SimpleNumPad extends StatefulWidget {
   final double number;
   final Currency currency;
   final List<NumPadButtonModel>? additionalButtons;
-  final Widget? tabloItem;
+  final Widget? underBalance;
+  final Widget? leftGuy;
+  final Widget? rightGuy;
   final Widget? middle;
   final Function(String char, BuildContext context)? handler;
   final Function(double number) onDone;
@@ -223,7 +216,9 @@ class SimpleNumPad extends StatefulWidget {
       this.number = 0,
       required this.currency,
       this.additionalButtons,
-      this.tabloItem,
+      this.underBalance,
+      this.leftGuy,
+      this.rightGuy,
       this.handler,
       this.middle,
       required this.onDone});
@@ -275,42 +270,51 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> sheet = [];
-    if (widget.tabloItem != null) {
-      sheet.add(widget.tabloItem!);
-    }
-
-    sheet.addAll([
-      Container(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 14)),
-            Text("$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
-                style: const TextStyle(fontSize: 24, color: Colors.white)),
-          ],
-        ),
-      ),
-      widget.middle ?? Container(),
-      const Divider(height: 1),
-      SpannableGrid(
-        columns: 5,
-        rows: 4,
-        cells: _getCells(context),
-        showGrid: true,
-        style: SpannableGridStyle(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          spacing: 0.5,
-        ),
-      ),
-      const Divider(height: 1),
-    ]);
-
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: sheet,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: widget.leftGuy ?? Container(),
+                  flex: 1,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 14)),
+                      Text("$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
+                          style: const TextStyle(fontSize: 24, color: Colors.white), overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: widget.rightGuy ?? Container(),
+                  flex: 1,
+                )
+              ],
+            ),
+          ),
+          widget.underBalance ?? Container(),
+          widget.middle ?? Container(),
+          const Divider(height: 1),
+          SpannableGrid(
+            columns: 5,
+            rows: 4,
+            cells: _getCells(context),
+            showGrid: true,
+            style: SpannableGridStyle(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              spacing: 0.5,
+            ),
+          ),
+          const Divider(height: 1),
+        ],
       ),
     );
   }
@@ -412,6 +416,10 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
         break;
       case "+":
         result = (double.parse(number1) + double.parse(number2));
+    }
+
+    if (result < 0) {
+      result = 0;
     }
 
     if (result == result.toInt()) {

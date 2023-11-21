@@ -22,6 +22,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   late IconData icon;
   late Color color;
   late Currency currency;
+  late CategoryType type;
   late final TextEditingController _nameInput;
   late List<Category> subcategories;
 
@@ -32,6 +33,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     icon = widget.category?.icon ?? Icons.hourglass_empty;
     color = widget.category?.color ?? Colors.blue;
     currency = widget.category?.currency ?? CommonCurrencies().euro;
+    type = widget.category?.type ?? CategoryType.expenses;
     _nameInput = TextEditingController(text: widget.category?.name);
     subcategories = widget.category?.subCategories ?? [];
   }
@@ -58,7 +60,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     icon: icon,
                     color: color,
                     currency: currency,
-                    type: CategoryType.expenses,
+                    type: type,
                     order: subcategories.isEmpty ? 0 : subcategories.last.order + 1,
                     parent: widget.category?.id));
               });
@@ -99,12 +101,13 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               IconButton(
                   onPressed: () {
                     if (widget.category == null) {
-                      provider.add(_nameInput.text, icon, color, currency, CategoryType.expenses, subcategories);
+                      provider.add(_nameInput.text, icon, color, currency, type, subcategories);
                     } else {
                       widget.category!
                         ..name = _nameInput.text
                         ..icon = icon
                         ..color = color
+                        ..type = type
                         ..currency = currency;
                       provider.update(widget.category!);
                     }
@@ -130,11 +133,34 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      const Text("Type", style: TextStyle(color: Colors.white, fontSize: 15)),
+                      Text(type.name.toUpperCase(),
+                          style:
+                              TextStyle(color: type == CategoryType.expenses ? Colors.red : Colors.green, fontSize: 15))
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (type == CategoryType.expenses) {
+                      type = CategoryType.income;
+                    } else {
+                      type = CategoryType.expenses;
+                    }
+                  });
+                },
+              ),
+              CustomButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
-                          Text(currency.name, style: TextStyle(color: color))
+                          Text(currency.name, style: TextStyle(color: color), overflow: TextOverflow.ellipsis)
                         ],
                       ),
                       Text(currency.code, style: TextStyle(color: color))

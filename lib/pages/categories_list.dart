@@ -1,3 +1,5 @@
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/transaction.dart';
@@ -49,8 +51,10 @@ class CategoriesListPage extends StatelessWidget {
                       transactionProvider.add(note, from, to, value, value, date);
                       Navigator.pop(context);
                     },
-                    from: accountProvider.items.last,
-                    to: category,
+                    from: (category.type == CategoryType.expenses ? accountProvider.items.last : category)
+                        as TransferTarget,
+                    to: (category.type == CategoryType.income ? accountProvider.items.last : category)
+                        as TransferTarget,
                   ),
                 ],
               ),

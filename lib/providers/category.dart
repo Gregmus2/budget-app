@@ -98,9 +98,12 @@ class CategoryProvider extends ChangeNotifier {
   void update(Category category) {
     final targetCategory = _categories.firstWhere((element) => element.id == category.id);
     for (var subCategory in targetCategory.subCategories) {
-      if (subCategory.color != category.color || subCategory.currency != category.currency) {
+      if (subCategory.color != category.color ||
+          subCategory.currency != category.currency ||
+          subCategory.type != category.type) {
         subCategory.color = category.color;
         subCategory.currency = category.currency;
+        subCategory.type = category.type;
         update(subCategory);
       }
     }

@@ -4,7 +4,8 @@ class Transaction implements Model {
   @override
   final int id;
   String note;
-  int from;
+  int? fromAccount;
+  int? fromCategory;
   int? toAccount;
   int? toCategory;
   double amountFrom;
@@ -14,7 +15,8 @@ class Transaction implements Model {
   Transaction({
     required this.id,
     required this.note,
-    required this.from,
+    required this.fromAccount,
+    required this.fromCategory,
     this.toAccount,
     this.toCategory,
     required this.amountFrom,
@@ -27,7 +29,8 @@ class Transaction implements Model {
     return {
       'id': id,
       'note': note,
-      'from': from,
+      'from_account': fromAccount,
+      'from_category': fromCategory,
       'to_account': toAccount,
       'to_category': toCategory,
       'amount_from': amountFrom,
@@ -43,7 +46,8 @@ class Transaction implements Model {
       amountFrom: map['amount_from']?.toDouble(),
       amountTo: map['amount_to']?.toDouble(),
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] * 1000),
-      from: map['from']?.toInt(),
+      fromAccount: map['from_account']?.toInt(),
+      fromCategory: map['from_category']?.toInt(),
       toAccount: map['to_account']?.toInt(),
       toCategory: map['to_category']?.toInt(),
     );

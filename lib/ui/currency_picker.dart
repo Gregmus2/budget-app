@@ -50,12 +50,11 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
             const SizedBox(
               width: 10,
             ),
-            Text(
-              element.name,
-              style: TextStyle(
-                color: (widget.currency == element) ? widget.color : Colors.white,
-              ),
-            ),
+            Text(element.name,
+                style: TextStyle(
+                  color: (widget.currency == element) ? widget.color : Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis),
           ],
         ),
         onPressed: () {
@@ -92,10 +91,7 @@ Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPress
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          currencies[index].name,
-                          style: textStyle,
-                        ),
+                        Text(currencies[index].name, style: textStyle, overflow: TextOverflow.ellipsis),
                         Text(currencies[index].code, style: textStyle)
                       ],
                     ),

@@ -26,7 +26,8 @@ class SubCategory extends StatelessWidget {
           shape: MaterialStatePropertyAll(RoundedRectangleBorder(
               borderRadius: const BorderRadius.all(Radius.circular(15)), side: BorderSide(color: color))),
           alignment: AlignmentDirectional.center,
-          backgroundColor: inverse ? MaterialStatePropertyAll(color) : const MaterialStatePropertyAll(Colors.transparent),
+          backgroundColor:
+              inverse ? MaterialStatePropertyAll(color) : const MaterialStatePropertyAll(Colors.transparent),
           shadowColor: const MaterialStatePropertyAll(Colors.transparent),
           overlayColor: const MaterialStatePropertyAll(Colors.transparent),
         ),
@@ -35,11 +36,10 @@ class SubCategory extends StatelessWidget {
           color: inverse ? Colors.white : color,
           size: 18,
         ),
-        label: Text(
-          label,
-          style: TextStyle(color: inverse ? Colors.white : color),
-          textAlign: TextAlign.center,
-        ),
+        label: Text(label,
+            style: TextStyle(color: inverse ? Colors.white : color),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis),
       ),
     );
   }

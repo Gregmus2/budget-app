@@ -36,9 +36,12 @@ class BudgetCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(category.name, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                              Text(category.name,
+                                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                                  overflow: TextOverflow.ellipsis),
                               Text("${budget - spent} ${category.currency.symbol}",
-                                  style: const TextStyle(color: Colors.red, fontSize: 18)),
+                                  style: const TextStyle(color: Colors.red, fontSize: 18),
+                                  overflow: TextOverflow.ellipsis),
                             ],
                           ),
                           const SizedBox(
@@ -58,9 +61,11 @@ class BudgetCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text("$spent ${category.currency.symbol}",
-                                  style: TextStyle(color: category.color, fontSize: 14)),
+                                  style: TextStyle(color: category.color, fontSize: 14),
+                                  overflow: TextOverflow.ellipsis),
                               Text("$budget ${category.currency.symbol}",
-                                  style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                  overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ],

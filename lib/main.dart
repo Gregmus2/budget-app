@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 
 import 'app.dart';
 
+// todo do refactoring to extract widgets and functions as much as possible (globally)
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Currencies().registerList(<Currency>[

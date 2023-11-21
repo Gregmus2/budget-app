@@ -67,6 +67,12 @@ const migrationScripts = [
   ''',
   '''
   ALTER TABLE $tableCategories ADD COLUMN type INT DEFAULT 0
+  ''',
+  '''
+  ALTER TABLE $tableTransactions ADD COLUMN from_category INT REFERENCES $tableCategories(id) ON DELETE CASCADE
+  ''',
+  '''
+  ALTER TABLE $tableTransactions RENAME COLUMN "from" TO from_account
   '''
 ];
 
@@ -87,8 +93,7 @@ class Repository {
       for (var i = oldVersion + 1; i <= newVersion; i++) {
         db.execute(migrationScripts[i - 1]);
       }
-    },
-    onConfigure: (Database db) async {
+    }, onConfigure: (Database db) async {
       await db.execute('PRAGMA foreign_keys = ON');
     });
   }

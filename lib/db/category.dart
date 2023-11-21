@@ -22,17 +22,16 @@ class Category implements Model, TransferTarget {
   CategoryType type;
   List<Category> subCategories = [];
 
-  Category({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.color,
-    required this.currency,
-    required this.order,
-    required this.type,
-    this.archived = false,
-    this.parent
-  });
+  Category(
+      {required this.id,
+      required this.name,
+      required this.icon,
+      required this.color,
+      required this.currency,
+      required this.order,
+      required this.type,
+      this.archived = false,
+      this.parent});
 
   @override
   Map<String, dynamic> toMap() {
@@ -46,6 +45,7 @@ class Category implements Model, TransferTarget {
       'currency': currency.code,
       'order': order,
       'parent': parent,
+      'type': type,
     };
   }
 
