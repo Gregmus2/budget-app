@@ -26,6 +26,11 @@ Future<void> main() async {
         country: 'Ukraine',
         pattern: 'S0.00',
         unit: 'hryvnia'),
+    Currency.create('AED', 2,
+        symbol: 'د.إ',
+        name: 'The United Arab Emirates dirham',
+        country: 'The United Arab Emirate',
+        unit: 'dirham'),
   ]);
 
   HomeWidget.initiallyLaunchedFromHomeWidget().then((value) {
@@ -46,11 +51,13 @@ Future<void> _runApp(Widget app, bool main) async {
   TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider);
   BudgetProvider budgetProvider = BudgetProvider(repo);
   StateProvider stateProvider = StateProvider(transactionProvider);
-  await catProvider.init();
-  await accountProvider.init();
-  await transactionProvider.init();
-  await budgetProvider.init();
-  await stateProvider.init();
+  await Future.wait([
+    catProvider.init(),
+    accountProvider.init(),
+    transactionProvider.init(),
+    budgetProvider.init(),
+    stateProvider.init(),
+  ]);
 
   runApp(
     MultiProvider(

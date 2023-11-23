@@ -37,6 +37,20 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Transaction createModel(
+      String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
+    return Transaction(
+        id: _transactions.length + 1,
+        note: note,
+        fromAccount: (from is Account) ? from.id : null,
+        fromCategory: (from is Category) ? from.id : null,
+        toAccount: (to is Account) ? to.id : null,
+        toCategory: (to is Category) ? to.id : null,
+        amountFrom: amountFrom,
+        amountTo: amountTo,
+        date: date);
+  }
+
   void add(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
     Transaction transaction = Transaction(
         id: _transactions.length + 1,
@@ -58,6 +72,12 @@ class TransactionProvider extends ChangeNotifier {
       accountProvider.addBalance(to, amountTo);
     }
 
+    notifyListeners();
+  }
+
+  void addBatch(List<Transaction> transactions) {
+    _transactions.addAll(transactions);
+    repo.createBatch(transactions);
     notifyListeners();
   }
 

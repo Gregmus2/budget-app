@@ -168,4 +168,10 @@ class CategoryProvider extends ChangeNotifier {
   Category getById(int id) {
     return _categories.firstWhere((element) => element.id == id);
   }
+
+  void deleteAll() {
+    _categories.clear();
+    repo.deleteAll(tableCategories);
+    notifyListeners();
+  }
 }

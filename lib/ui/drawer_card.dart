@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 class StringDrawerCard extends StatelessWidget {
   final String name;
-  final String value;
+  final String? value;
   final IconData icon;
   final Color color;
   final Function() onPressed;
 
   const StringDrawerCard(
-      {super.key,
-      required this.name,
-      required this.value,
-      required this.icon,
-      required this.color,
-      required this.onPressed});
+      {super.key, required this.name, this.value, required this.icon, required this.color, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> content = [Text(name, style: const TextStyle(color: Colors.white, fontSize: 18))];
+    if (value != null) {
+      content.add(Text(value!, style: TextStyle(color: color, fontSize: 16)));
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -36,10 +36,7 @@ class StringDrawerCard extends StatelessWidget {
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name, style: const TextStyle(color: Colors.white, fontSize: 18)),
-                        Text(value, style: TextStyle(color: color, fontSize: 16)),
-                      ],
+                      children: content,
                     ),
                   ],
                 ))),

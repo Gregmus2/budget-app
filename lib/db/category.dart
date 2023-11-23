@@ -45,7 +45,7 @@ class Category implements Model, TransferTarget {
       'currency': currency.code,
       'order': order,
       'parent': parent,
-      'type': type,
+      'type': type.index,
     };
   }
 

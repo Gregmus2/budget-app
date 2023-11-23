@@ -88,4 +88,10 @@ class AccountProvider extends ChangeNotifier {
   Account getById(int id) {
     return _accounts.firstWhere((element) => element.id == id);
   }
+
+  void deleteAll() {
+    _accounts.clear();
+    repo.deleteAll(tableCategories);
+    notifyListeners();
+  }
 }

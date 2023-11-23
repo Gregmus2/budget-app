@@ -3,6 +3,7 @@ import 'package:fb/providers/category.dart';
 import 'package:fb/ui/card_button.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
+import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:flutter/material.dart';
@@ -289,25 +290,19 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             ),
             actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: <Widget>[
-              TextButton(
+              DialogButton(
+                  text: 'OK',
                   onPressed: () {
                     onSubmit(subcategoryNameInput.text, icon);
                     Navigator.pop(context);
                   },
-                  style: const ButtonStyle(
-                      shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
-                      alignment: AlignmentDirectional.center,
-                      padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
-                  child: const Text('OK')),
-              TextButton(
+                  color: Colors.green),
+              DialogButton(
+                  text: 'CANCEL',
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  style: const ButtonStyle(
-                      shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
-                      alignment: AlignmentDirectional.center,
-                      padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
-                  child: const Text('CANCEL')),
+                  color: Colors.red)
             ],
           );
         });

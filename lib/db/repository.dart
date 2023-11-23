@@ -73,6 +73,12 @@ const migrationScripts = [
   ''',
   '''
   ALTER TABLE $tableTransactions RENAME COLUMN "from" TO from_account
+  ''',
+  '''
+  ALTER TABLE $tableTransactions RENAME COLUMN "from" TO from_account
+  ''',
+  '''
+  ALTER TABLE $tableTransactions ADD COLUMN from_category INT REFERENCES $tableCategories(id) ON DELETE CASCADE
   '''
 ];
 
@@ -157,6 +163,19 @@ class Repository {
       where: 'id = ?',
       whereArgs: [model.id],
     );
+  }
+
+  Future<void> deleteAll(String table) async {
+    await db.delete(table);
+  }
+
+  Future<void> createBatch(List<Model> models) async {
+    Batch batch = db.batch();
+    for (var model in models) {
+      batch.insert(model.tableName(), model.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await batch.commit(noResult: true);
   }
 }
 

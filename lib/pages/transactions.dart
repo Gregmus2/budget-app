@@ -146,6 +146,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
           );
         },
         order: GroupedListOrder.DESC,
+        sort: false,
       ),
     );
   }
