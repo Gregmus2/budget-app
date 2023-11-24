@@ -1,4 +1,4 @@
-import 'package:fb/ui/card_button.dart';
+import 'package:fb/ui/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 

@@ -46,7 +46,6 @@ class CategoriesListPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TransactionNumPad(
-                    currency: category.currency,
                     onDoneFunc: (value, date, from, to, note) {
                       transactionProvider.add(note, from, to, value, value, date);
                       Navigator.pop(context);

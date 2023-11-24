@@ -13,12 +13,6 @@ class CategoriesTab extends StatelessWidget implements page.Page {
   const CategoriesTab({super.key});
 
   @override
-  List<Widget>? getActions(BuildContext context) => null;
-
-  @override
-  bool ownAppBar() => true;
-
-  @override
   Widget build(BuildContext context) {
     return Navigator(
       initialRoute: CategoryNavigatorRoutes.root,
@@ -37,5 +31,21 @@ class CategoriesTab extends StatelessWidget implements page.Page {
         );
       },
     );
+  }
+
+  @override
+  List<Widget>? getActions(BuildContext context) => null;
+
+  @override
+  bool ownAppBar() => true;
+
+  @override
+  Icon getIcon(BuildContext _) {
+    return const Icon(Icons.list, color: Colors.white);
+  }
+
+  @override
+  String getLabel() {
+    return 'Categories';
   }
 }

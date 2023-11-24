@@ -30,6 +30,23 @@ class CategoryProvider extends ChangeNotifier {
 
   int get length => _categories.length;
 
+  void upsert(Category? category, String name, IconData icon, Color color, Currency currency, CategoryType type,
+      List<Category> subCategories) {
+    if (category == null) {
+      add(name, icon, color, currency, type, subCategories);
+
+      return;
+    }
+
+    category
+      ..name = name
+      ..icon = icon
+      ..color = color
+      ..type = type
+      ..currency = currency;
+    update(category);
+  }
+
   Category add(
       String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories) {
     Category category = Category(

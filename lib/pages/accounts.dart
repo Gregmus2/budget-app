@@ -10,18 +10,6 @@ class AccountsPage extends StatelessWidget implements page.Page {
   const AccountsPage({super.key});
 
   @override
-  List<Widget>? getActions(BuildContext context) => [
-        IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
-            },
-            icon: const Icon(Icons.add, color: Colors.white))
-      ];
-
-  @override
-  bool ownAppBar() => false;
-
-  @override
   Widget build(BuildContext context) {
     final AccountProvider provider = Provider.of<AccountProvider>(context);
 
@@ -45,6 +33,28 @@ class AccountsPage extends StatelessWidget implements page.Page {
         }),
       ),
     );
+  }
+
+  @override
+  List<Widget>? getActions(BuildContext context) => [
+    IconButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
+        },
+        icon: const Icon(Icons.add, color: Colors.white))
+  ];
+
+  @override
+  bool ownAppBar() => false;
+
+  @override
+  Icon getIcon(BuildContext _) {
+    return const Icon(Icons.account_balance_wallet, color: Colors.white);
+  }
+
+  @override
+  String getLabel() {
+    return 'Accounts';
   }
 }
 

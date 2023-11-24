@@ -122,7 +122,7 @@ class DataImport {
       Currency? currency = Currencies().findByCode(currencyField);
       currency ??= CommonCurrencies().euro;
       account =
-          accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, AccountType.regular, 0.0);
+          accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0);
     }
 
     if (account == null) {

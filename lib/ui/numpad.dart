@@ -9,14 +9,14 @@ import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 
+// todo implement double currencies if transfer targets has different currencies
 class TransactionNumPad extends StatefulWidget {
-  final Currency currency;
   final TransferTarget from;
   final TransferTarget to;
   final Function(double value, DateTime date, TransferTarget from, TransferTarget to, String note) onDoneFunc;
 
   const TransactionNumPad(
-      {super.key, required this.currency, required this.onDoneFunc, required this.from, required this.to});
+      {super.key, required this.onDoneFunc, required this.from, required this.to});
 
   @override
   State<TransactionNumPad> createState() => _TransactionNumPadState();
@@ -51,7 +51,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
     return Column(
       children: [
         SimpleNumPad(
-          currency: widget.currency,
+          currency: from.currency,
           additionalButtons: [
             NumPadButtonModel(5, 2, "Date", "D"),
           ],
@@ -280,8 +280,8 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
             child: Row(
               children: [
                 Expanded(
-                  child: widget.leftGuy ?? Container(),
                   flex: 1,
+                  child: widget.leftGuy ?? Container(),
                 ),
                 Expanded(
                   flex: 2,
@@ -294,8 +294,8 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
                   ),
                 ),
                 Expanded(
-                  child: widget.rightGuy ?? Container(),
                   flex: 1,
+                  child: widget.rightGuy ?? Container(),
                 )
               ],
             ),

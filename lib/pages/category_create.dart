@@ -1,11 +1,12 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/ui/card_button.dart';
+import 'package:fb/ui/custom_button.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/ui/subcategory.dart';
+import 'package:fb/ui/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
@@ -83,35 +84,13 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("New category"),
-                TextFormField(
-                  controller: _nameInput,
-                  decoration: const InputDecoration(
-                    hintText: 'Name',
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                )
+                EntityNameTextInput(nameInput: _nameInput, items: provider.items),
               ],
             ),
             actions: [
               IconButton(
                   onPressed: () {
-                    if (widget.category == null) {
-                      provider.add(_nameInput.text, icon, color, currency, type, subcategories);
-                    } else {
-                      widget.category!
-                        ..name = _nameInput.text
-                        ..icon = icon
-                        ..color = color
-                        ..type = type
-                        ..currency = currency;
-                      provider.update(widget.category!);
-                    }
+                    provider.upsert(widget.category, _nameInput.text, icon, color, currency, type, subcategories);
 
                     Navigator.pop(context);
                   },
@@ -128,92 +107,36 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           ),
           body: ListView(
             children: [
-              CustomButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Type", style: TextStyle(color: Colors.white, fontSize: 15)),
-                      Text(type.name.toUpperCase(),
-                          style:
-                              TextStyle(color: type == CategoryType.expenses ? Colors.red : Colors.green, fontSize: 15))
-                    ],
-                  ),
-                ),
-                onPressed: () {
+              keyStringValueCustomButton("Type", type.name.toUpperCase(), type == CategoryType.expenses ? Colors.red : Colors.green, () {
+                setState(() {
+                  if (type == CategoryType.expenses) {
+                    type = CategoryType.income;
+                  } else {
+                    type = CategoryType.expenses;
+                  }
+                });
+              }),
+              keyStringValueCustomButton("Currency", currency.code, color, () {
+                showCurrencyDialog(context, (currency) {
                   setState(() {
-                    if (type == CategoryType.expenses) {
-                      type = CategoryType.income;
-                    } else {
-                      type = CategoryType.expenses;
-                    }
+                    this.currency = currency;
                   });
-                },
-              ),
-              CustomButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Currency", style: TextStyle(color: Colors.white, fontSize: 15)),
-                          Text(currency.name, style: TextStyle(color: color), overflow: TextOverflow.ellipsis)
-                        ],
-                      ),
-                      Text(currency.code, style: TextStyle(color: color))
-                    ],
-                  ),
-                ),
-                onPressed: () {
-                  showCurrencyDialog(context, (currency) {
-                    setState(() {
-                      this.currency = currency;
-                    });
+                }, );
+              }, subtitle: currency.name),
+              keyValueCustomButton("Icon", Icon(icon, color: color), color, () {
+                showIconDialog(context, color, icon, (icon) {
+                  setState(() {
+                    this.icon = icon;
                   });
-                },
-              ),
-              CustomButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Icon", style: TextStyle(color: Colors.white, fontSize: 15)),
-                      Icon(icon, color: color)
-                    ],
-                  ),
-                ),
-                onPressed: () {
-                  showIconDialog(context, color, icon, (icon) {
-                    setState(() {
-                      this.icon = icon;
-                    });
+                });
+              }),
+              keyValueCustomButton("Color", Icon(Icons.circle, color: color), color, () {
+                showColorDialog(context, color, (color) {
+                  setState(() {
+                    this.color = color;
                   });
-                },
-              ),
-              CustomButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Color", style: TextStyle(color: Colors.white, fontSize: 15)),
-                      Icon(Icons.circle, color: color)
-                    ],
-                  ),
-                ),
-                onPressed: () {
-                  showColorDialog(context, color, (color) {
-                    setState(() {
-                      this.color = color;
-                    });
-                  });
-                },
-              ),
+                });
+              }),
               // todo show subcategories in the same way as in transactions, rounded boxes one by one with cross on edge to delete and plus icon for the last box
               Column(
                 children: [
@@ -248,6 +171,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       builder: (BuildContext context) {
         TextEditingController subcategoryNameInput = TextEditingController();
         IconData icon = Icons.shopping_cart;
+        CategoryProvider provider = Provider.of<CategoryProvider>(context);
 
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
@@ -256,19 +180,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               scrollDirection: Axis.vertical,
               child: Column(
                 children: [
-                  TextFormField(
-                    controller: subcategoryNameInput,
-                    decoration: const InputDecoration(
-                      hintText: 'Name',
-                    ),
-                    style: const TextStyle(color: Colors.white),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  ),
+                  EntityNameTextInput(nameInput: subcategoryNameInput, items: provider.items),
                   const SizedBox(
                     height: 10,
                   ),

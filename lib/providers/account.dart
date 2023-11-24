@@ -20,6 +20,24 @@ class AccountProvider extends ChangeNotifier {
 
   int get length => _accounts.length;
 
+  void upsert(
+      Account? account, String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
+    if (account == null) {
+      add(name, icon, color, currency, type, balance);
+
+      return;
+    }
+
+    account
+      ..name = name
+      ..icon = icon
+      ..color = color
+      ..type = type
+      ..balance = balance
+      ..currency = currency;
+    update(account);
+  }
+
   Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     Account account = Account(
         id: _accounts.length,

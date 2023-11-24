@@ -15,12 +15,6 @@ class BudgetPage extends StatelessWidget implements page.Page {
   const BudgetPage({super.key});
 
   @override
-  List<Widget>? getActions(BuildContext context) => null;
-
-  @override
-  bool ownAppBar() => true;
-
-  @override
   Widget build(BuildContext context) {
     final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
@@ -60,6 +54,24 @@ class BudgetPage extends StatelessWidget implements page.Page {
         ],
       ),
     );
+  }
+
+  @override
+  List<Widget>? getActions(BuildContext context) => null;
+
+  @override
+  bool ownAppBar() => true;
+
+  @override
+  Icon getIcon(BuildContext context) {
+    final StateProvider stateProvider = Provider.of<StateProvider>(context);
+
+    return Icon(Icons.savings, color: stateProvider.isMonthlyRange ? Colors.white : Colors.grey);
+  }
+
+  @override
+  String getLabel() {
+    return 'Budget';
   }
 }
 

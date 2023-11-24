@@ -11,53 +11,10 @@ import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class TransactionsPage extends StatelessWidget implements page.Page {
   const TransactionsPage({super.key});
-
-  @override
-  List<Widget>? getActions(BuildContext context) {
-    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-
-    List<Widget> actions = [];
-    if (accountProvider.items.isNotEmpty && categoryProvider.items.isNotEmpty) {
-      actions.add(
-        IconButton(
-          onPressed: () {
-            showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TransactionNumPad(
-                    currency: CommonCurrencies().euro,
-                    onDoneFunc: (value, date, from, to, note) {
-                      provider.add(note, from, to, value, value, date);
-                      Navigator.pop(context);
-                    },
-                    // todo replace with default currency from user configuration
-                    from: accountProvider.items.last,
-                    to: categoryProvider.items.where((element) => element.parent == null).first,
-                  ),
-                ],
-              ),
-            );
-          },
-          icon: const Icon(Icons.add, color: Colors.white),
-        ),
-      );
-    }
-
-    return actions;
-  }
-
-  @override
-  bool ownAppBar() => false;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +106,57 @@ class TransactionsPage extends StatelessWidget implements page.Page {
         sort: false,
       ),
     );
+  }
+
+  @override
+  List<Widget>? getActions(BuildContext context) {
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+
+    List<Widget> actions = [];
+    if (accountProvider.items.isNotEmpty && categoryProvider.items.isNotEmpty) {
+      actions.add(
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TransactionNumPad(
+                    onDoneFunc: (value, date, from, to, note) {
+                      provider.add(note, from, to, value, value, date);
+                      Navigator.pop(context);
+                    },
+                    // todo replace with default currency from user configuration
+                    from: accountProvider.items.last,
+                    to: categoryProvider.items.where((element) => element.parent == null).first,
+                  ),
+                ],
+              ),
+            );
+          },
+          icon: const Icon(Icons.add, color: Colors.white),
+        ),
+      );
+    }
+
+    return actions;
+  }
+
+  @override
+  bool ownAppBar() => false;
+
+  @override
+  Icon getIcon(BuildContext _) {
+    return const Icon(Icons.receipt, color: Colors.white);
+  }
+
+  @override
+  String getLabel() {
+    return 'Transactions';
   }
 }
 

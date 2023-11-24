@@ -1,3 +1,5 @@
+// ignore_for_file: sdk_version_since
+
 import 'dart:collection';
 
 import 'package:fb/db/repository.dart';
