@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
@@ -72,34 +73,65 @@ class TransactionsPage extends StatelessWidget implements page.Page {
             }
           }
 
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: to.color,
-              child: Icon(
-                to.icon,
-                color: Colors.white,
-              ),
-            ),
-            textColor: Colors.white,
-            title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          return InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) => Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(from.icon, color: Colors.grey.shade400, size: 16),
-                    Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
+                    TransactionNumPad(
+                      onDoneFunc: (value, date, from, to, note) {
+                        transaction
+                          ..amountFrom = value
+                          ..amountTo = value
+                          ..date = date
+                          ..fromAccount = from is Account ? from.id : null
+                          ..fromCategory = from is Category ? from.id : null
+                          ..toAccount = to is Account ? to.id : null
+                          ..toCategory = to is Category ? to.id : null
+                          ..note = note;
+                        provider.update(transaction);
+                        Navigator.pop(context);
+                      },
+                      transaction: transaction,
+                      from: from,
+                      to: to,
+                    ),
                   ],
                 ),
-                Text(transaction.note,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
-              ],
+              );
+            },
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: to.color,
+                child: Icon(
+                  to.icon,
+                  color: Colors.white,
+                ),
+              ),
+              textColor: Colors.white,
+              title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(from.icon, color: Colors.grey.shade400, size: 16),
+                      Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                  Text(transaction.note,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                ],
+              ),
+              trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
+                  style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
+                  overflow: TextOverflow.ellipsis),
+              contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+              shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
             ),
-            trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
-                style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
-                overflow: TextOverflow.ellipsis),
-            contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
-            shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
         order: GroupedListOrder.DESC,

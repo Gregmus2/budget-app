@@ -8,6 +8,7 @@ import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
+import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,17 +33,18 @@ class DataImport {
   late AccountProvider accountProvider;
   late CategoryProvider categoryProvider;
   late TransactionProvider transactionProvider;
+  late StateProvider stateProvider;
 
   DataImport(BuildContext context) {
     accountProvider = Provider.of<AccountProvider>(context, listen: false);
     categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    stateProvider = Provider.of<StateProvider>(context, listen: false);
   }
 
   void import(PlatformFile file) {
     EasyLoading.show(status: 'loading...');
 
-    List<Transaction> transactions = [];
     Stream<List<int>> stream = File(file.path!).openRead();
     stream.transform(utf8.decoder).transform(const CsvToListConverter(eol: "\n", shouldParseNumbers: false)).skip(1).listen((record) {
       // todo archive suggestions can be added globally
@@ -73,14 +75,15 @@ class DataImport {
           throw Exception('Unknown transaction type: ${record[_indexType]}');
       }
 
-      Transaction transaction = transactionProvider.createModel(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
+      transactionProvider.addDry(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
           double.parse(record[_indexAmountTo]), Jiffy.parse(record[_indexDate], pattern: "MM/dd/yy").dateTime);
-      transactions.add(transaction);
     }, onDone: () {
-      transactionProvider.addBatch(transactions);
+      transactionProvider.commitDries().then((_)  {
+        stateProvider.update();
 
-      EasyLoading.showSuccess('Imported successfully!');
-      EasyLoading.dismiss();
+        EasyLoading.showSuccess('Imported successfully!');
+        EasyLoading.dismiss();
+      });
     }, onError: (error) {
       EasyLoading.showError(error);
       EasyLoading.dismiss();
@@ -100,8 +103,8 @@ class DataImport {
       Currency? currency = Currencies().findByCode(currencyField);
       category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, []);
     }
-    if (categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
-      category = categoryProvider.addSubcategory(nameField, IconPicker.icons.first,
+    if (subCategory != null && categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
+      category = categoryProvider.addSubcategory(subCategory, IconPicker.icons.first,
           categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null).id);
     }
 

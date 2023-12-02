@@ -39,7 +39,7 @@ class StateProvider extends ChangeNotifier {
     if (rangeType == RangeType.monthly) {
       final start = range.start.copyWith(day: firstDayOfMonth);
       range = _buildMonthlyRange(start);
-      _update();
+      update();
     }
   }
 
@@ -72,7 +72,7 @@ class StateProvider extends ChangeNotifier {
       case RangeType.custom:
         return;
     }
-    _update();
+    update();
   }
 
   void previousRange() {
@@ -100,10 +100,10 @@ class StateProvider extends ChangeNotifier {
       case RangeType.custom:
         return;
     }
-    _update();
+    update();
   }
 
-  void _update() {
+  void update() {
     transactionProvider.updateRange(range);
     notifyListeners();
   }

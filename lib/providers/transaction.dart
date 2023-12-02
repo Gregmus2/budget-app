@@ -13,6 +13,7 @@ import '../db/category.dart';
 
 class TransactionProvider extends ChangeNotifier {
   List<Transaction> _transactions = [];
+  List<Transaction> _dryTransactions = [];
   final Repository repo;
   final AccountProvider accountProvider;
 
@@ -37,9 +38,8 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Transaction createModel(
-      String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
-    return Transaction(
+  void addDry(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
+    Transaction transaction = Transaction(
         id: _transactions.length + 1,
         note: note,
         fromAccount: (from is Account) ? from.id : null,
@@ -49,6 +49,21 @@ class TransactionProvider extends ChangeNotifier {
         amountFrom: amountFrom,
         amountTo: amountTo,
         date: date);
+    _transactions.add(transaction);
+    _dryTransactions.add(transaction);
+
+    if (from is Account) {
+      accountProvider.addBalance(from, -amountFrom);
+    }
+    if (to is Account) {
+      accountProvider.addBalance(to, amountTo);
+    }
+  }
+
+  Future<void> commitDries() async {
+    repo.createBatch(_dryTransactions);
+    _dryTransactions = [];
+    notifyListeners();
   }
 
   void add(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
@@ -72,12 +87,6 @@ class TransactionProvider extends ChangeNotifier {
       accountProvider.addBalance(to, amountTo);
     }
 
-    notifyListeners();
-  }
-
-  void addBatch(List<Transaction> transactions) {
-    _transactions.addAll(transactions);
-    repo.createBatch(transactions);
     notifyListeners();
   }
 

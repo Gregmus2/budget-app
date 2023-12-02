@@ -1,5 +1,6 @@
 import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
+import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/accounts.dart';
 import 'package:fb/ui/category_card.dart';
@@ -13,10 +14,11 @@ import 'package:spannable_grid/spannable_grid.dart';
 class TransactionNumPad extends StatefulWidget {
   final TransferTarget from;
   final TransferTarget to;
+  final Transaction? transaction;
   final Function(double value, DateTime date, TransferTarget from, TransferTarget to, String note) onDoneFunc;
 
   const TransactionNumPad(
-      {super.key, required this.onDoneFunc, required this.from, required this.to});
+      {super.key, required this.onDoneFunc, required this.from, required this.to, this.transaction});
 
   @override
   State<TransactionNumPad> createState() => _TransactionNumPadState();
@@ -34,6 +36,10 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
   void initState() {
     from = widget.from;
     to = widget.to;
+    if (widget.transaction != null) {
+      _nameInput.text = widget.transaction!.note;
+      selectedDate = widget.transaction!.date;
+    }
 
     super.initState();
   }
@@ -51,6 +57,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
     return Column(
       children: [
         SimpleNumPad(
+          number: widget.transaction?.amountTo ?? 0,
           currency: from.currency,
           additionalButtons: [
             NumPadButtonModel(5, 2, "Date", "D"),
