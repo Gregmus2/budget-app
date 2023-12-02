@@ -8,6 +8,7 @@ import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/transaction.dart';
+import 'package:fb/ui/context_menu.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -73,7 +74,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
             }
           }
 
-          return InkWell(
+          return ListTile(
             onTap: () {
               showModalBottomSheet(
                 isScrollControlled: true,
@@ -103,35 +104,33 @@ class TransactionsPage extends StatelessWidget implements page.Page {
                 ),
               );
             },
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: to.color,
-                child: Icon(
-                  to.icon,
-                  color: Colors.white,
-                ),
+            leading: CircleAvatar(
+              backgroundColor: to.color,
+              child: Icon(
+                to.icon,
+                color: Colors.white,
               ),
-              textColor: Colors.white,
-              title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(from.icon, color: Colors.grey.shade400, size: 16),
-                      Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
-                    ],
-                  ),
-                  Text(transaction.note,
-                      style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
-                ],
-              ),
-              trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
-                  style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
-                  overflow: TextOverflow.ellipsis),
-              contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
-              shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
             ),
+            textColor: Colors.white,
+            title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(from.icon, color: Colors.grey.shade400, size: 16),
+                    Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+                Text(transaction.note,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
+              ],
+            ),
+            trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
+                style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
+                overflow: TextOverflow.ellipsis),
+            contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
         order: GroupedListOrder.DESC,

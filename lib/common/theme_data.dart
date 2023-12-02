@@ -9,7 +9,7 @@ ThemeData getThemeData(BuildContext context) {
     colorScheme: const ColorScheme.dark(
       primary: Colors.blue,
     ),
-    textTheme: GoogleFonts.latoTextTheme(
+    textTheme: GoogleFonts.notoSansTextTheme(
       Theme.of(context).textTheme,
     ),
   );

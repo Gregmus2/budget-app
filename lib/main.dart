@@ -7,7 +7,9 @@ import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,12 @@ import 'app.dart';
 // todo do refactoring to extract widgets and functions as much as possible (globally)
 
 Future<void> main() async {
+  // todo download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
+  /*LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });*/
+
   WidgetsFlutterBinding.ensureInitialized();
   Currencies().registerList(<Currency>[
     Currency.create('UAH', 2,

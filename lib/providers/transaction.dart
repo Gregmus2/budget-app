@@ -51,13 +51,6 @@ class TransactionProvider extends ChangeNotifier {
         date: date);
     _transactions.add(transaction);
     _dryTransactions.add(transaction);
-
-    if (from is Account) {
-      accountProvider.addBalance(from, -amountFrom);
-    }
-    if (to is Account) {
-      accountProvider.addBalance(to, amountTo);
-    }
   }
 
   Future<void> commitDries() async {
