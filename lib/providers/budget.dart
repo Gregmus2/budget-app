@@ -2,10 +2,11 @@
 
 import 'dart:collection';
 
+import 'package:fb/db/budget.dart';
 import 'package:fb/db/repository.dart';
 import 'package:flutter/material.dart';
 
-import '../db/budget.dart';
+import '../models/budget.dart';
 
 class BudgetProvider extends ChangeNotifier {
   List<Budget> _budgets = [];
@@ -21,9 +22,8 @@ class BudgetProvider extends ChangeNotifier {
 
   int get length => _budgets.length;
 
-  void add(int category, int month, int year, double amount) {
+  void add(String category, int month, int year, double amount) {
     Budget budget = Budget(
-      id: _budgets.length,
       category: category,
       month: month,
       year: year,
@@ -55,8 +55,8 @@ class BudgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> getCategories() {
-    List<int> categories = [];
+  List<String> getCategories() {
+    List<String> categories = [];
     for (var budget in _budgets) {
       if (!categories.contains(budget.category)) {
         categories.add(budget.category);
@@ -66,7 +66,13 @@ class BudgetProvider extends ChangeNotifier {
     return categories;
   }
 
-  double? getBudgetAmount(int category, int month, int year) {
+  void deleteAll() {
+    _budgets.clear();
+    repo.deleteAll<BudgetModel>();
+    notifyListeners();
+  }
+
+  double? getBudgetAmount(String category, int month, int year) {
     return _budgets
         .where((element) => element.category == category && element.month == month && element.year == year)
         .firstOrNull

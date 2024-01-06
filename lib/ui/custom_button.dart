@@ -31,7 +31,8 @@ class CustomButton extends StatelessWidget {
 CustomButton keyStringValueCustomButton(String label, String value, Color? color, VoidCallback onPressed,
     {String? subtitle}) {
   return keyValueCustomButton(
-      label, Text(value, style: TextStyle(color: color), overflow: TextOverflow.ellipsis), color, onPressed, subtitle: subtitle);
+      label, Text(value, style: TextStyle(color: color), overflow: TextOverflow.ellipsis), color, onPressed,
+      subtitle: subtitle);
 }
 
 CustomButton keyValueCustomButton(String label, Widget value, Color? color, VoidCallback onPressed,

@@ -1,5 +1,13 @@
 # Budgeting app
 
+### Generate realm models
+
+Run `dart run realm generate` to generate realm models.
+
+Copy .secrets.json.example to .secrets.json and fill with data. 
+
+Add secrets to your flutter run: `flutter run --dart-define-from-file=.secrets.json`
+
 ### Category circle
 ![circle here](res/category_circle.gif)
 

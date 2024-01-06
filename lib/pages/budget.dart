@@ -44,7 +44,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
                   currency: category.currency,
                   onDone: (value) {
                     budgetProvider.add(
-                        category.id, stateProvider.range.start.month, stateProvider.range.start.year, value);
+                        category.id!, stateProvider.range.start.month, stateProvider.range.start.year, value);
                     Navigator.pop(context);
                   },
                 ),
@@ -79,7 +79,7 @@ List<Widget> buildBudgetCards(BuildContext context) {
   final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
   final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
   final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-  Map<int, double> totals = transactionProvider.getRangeExpenses();
+  Map<String, double> totals = transactionProvider.getRangeExpenses();
 
   return List.generate(budgetProvider.length, (index) {
     final budget = budgetProvider.get(index);

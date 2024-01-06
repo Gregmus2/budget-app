@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/models/account.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
@@ -40,7 +41,6 @@ class AccountProvider extends ChangeNotifier {
 
   Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     Account account = Account(
-        id: _accounts.length,
         name: name,
         icon: icon,
         color: color,
@@ -103,13 +103,13 @@ class AccountProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Account getById(int id) {
+  Account getById(String id) {
     return _accounts.firstWhere((element) => element.id == id);
   }
 
   void deleteAll() {
     _accounts.clear();
-    repo.deleteAll(tableCategories);
+    repo.deleteAll<AccountModel>();
     notifyListeners();
   }
 }

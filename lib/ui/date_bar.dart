@@ -1,4 +1,5 @@
 import 'package:fb/providers/state.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class _DateBarState extends State<DateBar> {
   @override
   Widget build(BuildContext context) {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -24,6 +26,7 @@ class _DateBarState extends State<DateBar> {
         IconButton(
           onPressed: () {
             stateProvider.previousRange();
+            transactionProvider.updateRange(stateProvider.range);
           },
           icon: Icon(Icons.arrow_back_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),
@@ -33,6 +36,7 @@ class _DateBarState extends State<DateBar> {
         IconButton(
           onPressed: () {
             stateProvider.nextRange();
+            transactionProvider.updateRange(stateProvider.range);
           },
           icon: Icon(Icons.arrow_forward_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),

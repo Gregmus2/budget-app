@@ -1,4 +1,4 @@
-import 'package:fb/db/category.dart';
+import 'package:fb/models/category.dart';
 
 class CategoryStat {
   final Category category;

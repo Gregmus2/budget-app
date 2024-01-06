@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
@@ -50,7 +51,6 @@ class CategoryProvider extends ChangeNotifier {
   Category add(
       String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories) {
     Category category = Category(
-      id: _categories.length,
       name: name,
       icon: icon,
       color: color,
@@ -63,7 +63,6 @@ class CategoryProvider extends ChangeNotifier {
 
     for (int i = 0; i < subCategories.length; i++) {
       Category subCategory = Category(
-        id: _categories.length + 1 + i,
         name: subCategories[i].name,
         icon: subCategories[i].icon,
         color: color,
@@ -83,10 +82,9 @@ class CategoryProvider extends ChangeNotifier {
     return category;
   }
 
-  Category addSubcategory(String name, IconData icon, int parentID) {
+  Category addSubcategory(String name, IconData icon, String parentID) {
     Category parent = getById(parentID);
     Category category = Category(
-      id: _categories.length,
       name: name,
       icon: icon,
       color: parent.color,
@@ -182,13 +180,13 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Category getById(int id) {
+  Category getById(String id) {
     return _categories.firstWhere((element) => element.id == id);
   }
 
   void deleteAll() {
     _categories.clear();
-    repo.deleteAll(tableCategories);
+    repo.deleteAll<CategoryModel>();
     notifyListeners();
   }
 }

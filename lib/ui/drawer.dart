@@ -1,6 +1,8 @@
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/drawer_card.dart';
 import 'package:fb/utils/import.dart';
@@ -19,6 +21,8 @@ class BudgetDrawer extends StatelessWidget {
     StateProvider stateProvider = Provider.of<StateProvider>(context);
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
     AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
 
     return Drawer(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -31,6 +35,16 @@ class BudgetDrawer extends StatelessWidget {
             ),
             child: null,
           ),
+          StringDrawerCard(
+              name: "Sign Out",
+              value: stateProvider.user?.profile.name,
+              icon: Icons.account_circle,
+              color: theme.colorScheme.primary,
+              onPressed: () {
+                stateProvider.user!.logOut();
+                // it will notify app page about that to rebuild body with LoginPage
+                stateProvider.user = null;
+              }),
           StringDrawerCard(
             name: "First day of month",
             value: stateProvider.firstDayOfMonth.toString(),
@@ -57,6 +71,7 @@ class BudgetDrawer extends StatelessWidget {
                                       onChanged: (int? value) {
                                         setState(() {
                                           stateProvider.setFirstDayOfMonth(value!);
+                                          transactionProvider.updateRange(stateProvider.range);
 
                                           Navigator.pop(context);
                                         });
@@ -94,13 +109,16 @@ class BudgetDrawer extends StatelessWidget {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text("Confirmation", style: TextStyle(color: Colors.white, fontSize: 18)),
-                      content: const Text("Would you like to remove all the data?", style: TextStyle(color: Colors.white)),
+                      content:
+                          const Text("Would you like to remove all the data?", style: TextStyle(color: Colors.white)),
                       actions: [
                         DialogButton(onPressed: () => Navigator.pop(context), color: Colors.red, text: "Cancel"),
                         DialogButton(
                           onPressed: () {
                             categoryProvider.deleteAll();
                             accountProvider.deleteAll();
+                            budgetProvider.deleteAll();
+                            transactionProvider.deleteAll();
 
                             Navigator.pop(context);
                           },

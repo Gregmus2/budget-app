@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:fb/db/account.dart';
-import 'package:fb/db/category.dart';
-import 'package:fb/db/transaction.dart';
-import 'package:fb/db/transfer_target.dart';
+import 'package:fb/models/account.dart';
+import 'package:fb/models/category.dart';
+import 'package:fb/models/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -46,7 +45,11 @@ class DataImport {
     EasyLoading.show(status: 'loading...');
 
     Stream<List<int>> stream = File(file.path!).openRead();
-    stream.transform(utf8.decoder).transform(const CsvToListConverter(eol: "\n", shouldParseNumbers: false)).skip(1).listen((record) {
+    stream
+        .transform(utf8.decoder)
+        .transform(const CsvToListConverter(eol: "\n", shouldParseNumbers: false))
+        .skip(1)
+        .listen((record) {
       // todo archive suggestions can be added globally
       TransferTarget from, to;
       switch (record[_indexType].toString().trim()) {
@@ -78,8 +81,8 @@ class DataImport {
       transactionProvider.addDry(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
           double.parse(record[_indexAmountTo]), Jiffy.parse(record[_indexDate], pattern: "MM/dd/yy").dateTime);
     }, onDone: () {
-      transactionProvider.commitDries().then((_)  {
-        stateProvider.update();
+      transactionProvider.commitDries().then((_) {
+        transactionProvider.updateRange(stateProvider.range);
 
         EasyLoading.showSuccess('Imported successfully!');
         EasyLoading.dismiss();
@@ -103,9 +106,10 @@ class DataImport {
       Currency? currency = Currencies().findByCode(currencyField);
       category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, []);
     }
-    if (subCategory != null && categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
+    if (subCategory != null &&
+        categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
       category = categoryProvider.addSubcategory(subCategory, IconPicker.icons.first,
-          categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null).id);
+          categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null).id!);
     }
 
     if (category == null) {
@@ -124,8 +128,7 @@ class DataImport {
     if (accountProvider.items.where((element) => element.name == nameField).isEmpty) {
       Currency? currency = Currencies().findByCode(currencyField);
       currency ??= CommonCurrencies().euro;
-      account =
-          accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0);
+      account = accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0);
     }
 
     if (account == null) {

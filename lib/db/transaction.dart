@@ -1,60 +1,22 @@
-import 'package:fb/db/repository.dart';
+import 'package:realm/realm.dart';
 
-class Transaction implements Model {
-  @override
-  final int id;
-  String note;
-  int? fromAccount;
-  int? fromCategory;
-  int? toAccount;
-  int? toCategory;
-  double amountFrom;
-  double amountTo;
-  DateTime date;
+part 'transaction.g.dart';
 
-  Transaction({
-    required this.id,
-    required this.note,
-    required this.fromAccount,
-    required this.fromCategory,
-    this.toAccount,
-    this.toCategory,
-    required this.amountFrom,
-    required this.amountTo,
-    required this.date,
-  });
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'note': note,
-      'from_account': fromAccount,
-      'from_category': fromCategory,
-      'to_account': toAccount,
-      'to_category': toCategory,
-      'amount_from': amountFrom,
-      'amount_to': amountTo,
-      'date': date.millisecondsSinceEpoch ~/ 1000,
-    };
-  }
-
-  static Transaction mapDatabase(Map<String, dynamic> map) {
-    return Transaction(
-      id: map['id'],
-      note: map['note'],
-      amountFrom: map['amount_from']?.toDouble(),
-      amountTo: map['amount_to']?.toDouble(),
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] * 1000),
-      fromAccount: map['from_account']?.toInt(),
-      fromCategory: map['from_category']?.toInt(),
-      toAccount: map['to_account']?.toInt(),
-      toCategory: map['to_category']?.toInt(),
-    );
-  }
-
-  @override
-  String tableName() {
-    return tableTransactions;
-  }
+@RealmModel()
+class _TransactionModel {
+  @MapTo("_id")
+  @PrimaryKey()
+  late final ObjectId id;
+  @MapTo("owner_id")
+  @Indexed()
+  late String ownerId;
+  late ObjectId? fromAccount;
+  late ObjectId? fromCategory;
+  late ObjectId? toAccount;
+  late ObjectId? toCategory;
+  late String note;
+  late double amountFrom;
+  late double amountTo;
+  @Indexed()
+  late int date;
 }

@@ -1,44 +1,19 @@
-import 'package:fb/db/repository.dart';
+import 'package:realm/realm.dart';
 
-class Budget implements Model {
-  @override
-  final int id;
-  int category;
-  int month;
-  int year;
-  double amount;
+part 'budget.g.dart';
 
-  Budget({
-    required this.id,
-    required this.category,
-    required this.month,
-    required this.year,
-    required this.amount,
-  });
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'category': category,
-      'month': month,
-      'year': year,
-      'amount': amount,
-    };
-  }
-
-  static Budget mapDatabase(Map<String, dynamic> map) {
-    return Budget(
-      id: map['id'],
-      category: map['category'],
-      month: map['month'],
-      year: map['year'],
-      amount: map['amount'],
-    );
-  }
-
-  @override
-  String tableName() {
-    return tableBudgets;
-  }
+@RealmModel()
+class _BudgetModel {
+  @MapTo("_id")
+  @PrimaryKey()
+  late final ObjectId id;
+  @MapTo("owner_id")
+  @Indexed()
+  late String ownerId;
+  late ObjectId category;
+  @Indexed()
+  late int month;
+  @Indexed()
+  late int year;
+  late double amount;
 }

@@ -1,8 +1,8 @@
-import 'package:fb/db/category.dart';
+import 'package:fb/models/category.dart';
 import 'package:fb/providers/category.dart';
-import 'package:fb/ui/custom_button.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
+import 'package:fb/ui/custom_button.dart';
 import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/ui/subcategory.dart';
@@ -53,11 +53,10 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         _showSubcategoryDialog(
           (name, icon) {
             if (widget.category != null) {
-              provider.addSubcategory(name, icon, widget.category!.id);
+              provider.addSubcategory(name, icon, widget.category!.id!);
             } else {
               setState(() {
                 subcategories.add(Category(
-                    id: provider.length,
                     name: name,
                     icon: icon,
                     color: color,
@@ -107,7 +106,8 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           ),
           body: ListView(
             children: [
-              keyStringValueCustomButton("Type", type.name.toUpperCase(), type == CategoryType.expenses ? Colors.red : Colors.green, () {
+              keyStringValueCustomButton(
+                  "Type", type.name.toUpperCase(), type == CategoryType.expenses ? Colors.red : Colors.green, () {
                 setState(() {
                   if (type == CategoryType.expenses) {
                     type = CategoryType.income;
@@ -117,11 +117,14 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 });
               }),
               keyStringValueCustomButton("Currency", currency.code, color, () {
-                showCurrencyDialog(context, (currency) {
-                  setState(() {
-                    this.currency = currency;
-                  });
-                }, );
+                showCurrencyDialog(
+                  context,
+                  (currency) {
+                    setState(() {
+                      this.currency = currency;
+                    });
+                  },
+                );
               }, subtitle: currency.name),
               keyValueCustomButton("Icon", Icon(icon, color: color), color, () {
                 showIconDialog(context, color, icon, (icon) {

@@ -1,25 +1,27 @@
 import 'dart:collection';
 
-import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
-import 'package:fb/db/transfer_target.dart';
+import 'package:fb/models/account.dart';
+import 'package:fb/models/transaction.dart';
+import 'package:fb/models/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../db/category.dart';
+import '../models/category.dart';
 
 class TransactionProvider extends ChangeNotifier {
   List<Transaction> _transactions = [];
   List<Transaction> _dryTransactions = [];
   final Repository repo;
   final AccountProvider accountProvider;
+  final StateProvider stateProvider;
 
   UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
 
-  TransactionProvider(this.repo, this.accountProvider);
+  TransactionProvider(this.repo, this.accountProvider, this.stateProvider);
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,7 +42,6 @@ class TransactionProvider extends ChangeNotifier {
 
   void addDry(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
     Transaction transaction = Transaction(
-        id: _transactions.length + 1,
         note: note,
         fromAccount: (from is Account) ? from.id : null,
         fromCategory: (from is Category) ? from.id : null,
@@ -54,14 +55,14 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   Future<void> commitDries() async {
-    repo.createBatch(_dryTransactions);
+    repo.createBatch<TransactionModel>(_dryTransactions.map((e) => e.toRealmObject(stateProvider.userID!)).toList());
     _dryTransactions = [];
     notifyListeners();
   }
 
-  void add(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
+  Future<void> add(
+      String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) async {
     Transaction transaction = Transaction(
-        id: _transactions.length + 1,
         note: note,
         fromAccount: (from is Account) ? from.id : null,
         fromCategory: (from is Category) ? from.id : null,
@@ -97,8 +98,8 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   // todo check if db query would be faster and ?cache
-  Map<int, double> getRangeExpenses() {
-    Map<int, double> monthlyExpense = {};
+  Map<String, double> getRangeExpenses() {
+    Map<String, double> monthlyExpense = {};
     for (var i = 0; i < _transactions.length; i++) {
       if (_transactions[i].toCategory == null) {
         continue;
@@ -113,5 +114,11 @@ class TransactionProvider extends ChangeNotifier {
     }
 
     return monthlyExpense;
+  }
+
+  void deleteAll() {
+    _transactions.clear();
+    repo.deleteAll<TransactionModel>();
+    notifyListeners();
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:fb/common/models.dart';
-import 'package:fb/db/category.dart';
+import 'package:fb/models/category.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -10,13 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
-List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<int> exclude = const []}) {
+List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<String> exclude = const []}) {
   List<CategoryStat> categoriesStat = [];
   final CategoryProvider provider = Provider.of<CategoryProvider>(context);
   final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
   final StateProvider stateProvider = Provider.of<StateProvider>(context);
   final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-  Map<int, double> totals = transactionProvider.getRangeExpenses();
+  Map<String, double> totals = transactionProvider.getRangeExpenses();
 
   for (var i = 0; i < provider.length; i++) {
     if (exclude.contains(provider.get(i).id) || provider.get(i).isSubCategory()) {
@@ -27,7 +27,7 @@ List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPress
     // budgeting works only with standard monthly ranges
     if (stateProvider.isMonthlyRange) {
       budget = budgetProvider.getBudgetAmount(
-          provider.get(i).id, stateProvider.range.start.month, stateProvider.range.start.year);
+          provider.get(i).id!, stateProvider.range.start.month, stateProvider.range.start.year);
     }
     categoriesStat
         .add(CategoryStat(provider.get(i), totals[provider.get(i).id] ?? 0, budget, provider.get(i).currency.symbol));

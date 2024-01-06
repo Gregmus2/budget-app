@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 
 abstract class TransferTarget {
-  final int id;
+  final String id;
   String name;
   IconData icon;
   Color color;

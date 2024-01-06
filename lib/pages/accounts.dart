@@ -1,9 +1,12 @@
-import 'package:fb/db/account.dart';
+import 'package:fb/models/account.dart';
 import 'package:fb/pages/account_create.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/category.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/context_menu.dart';
+import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +16,8 @@ class AccountsPage extends StatelessWidget implements page.Page {
   @override
   Widget build(BuildContext context) {
     final AccountProvider provider = Provider.of<AccountProvider>(context);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
     return Scaffold(
       body: ReorderableListView(
@@ -42,8 +47,19 @@ class AccountsPage extends StatelessWidget implements page.Page {
                 icon: Icons.balance,
                 color: Colors.yellow,
                 onPressed: () {
-                  // todo
                   Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => SimpleNumPad(
+                      number: account.balance,
+                      currency: account.currency,
+                      onDone: (value) {
+                        provider.addBalance(account, value - account.balance);
+
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
                 },
               ),
               ContextMenuItem(
@@ -64,8 +80,18 @@ class AccountsPage extends StatelessWidget implements page.Page {
                 icon: Icons.arrow_downward,
                 color: Colors.green,
                 onPressed: () {
-                  // todo
                   Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => TransactionNumPad(
+                      onDoneFunc: (value, date, from, to, note) {
+                        transactionProvider.add(note, from, to, value, value, date);
+                        Navigator.pop(context);
+                      },
+                      from: categoryProvider.items.last,
+                      to: account,
+                    ),
+                  );
                 },
               ),
               ContextMenuItem(
@@ -73,8 +99,18 @@ class AccountsPage extends StatelessWidget implements page.Page {
                 icon: Icons.arrow_upward,
                 color: Colors.red,
                 onPressed: () {
-                  // todo
                   Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => TransactionNumPad(
+                      onDoneFunc: (value, date, from, to, note) {
+                        transactionProvider.add(note, from, to, value, value, date);
+                        Navigator.pop(context);
+                      },
+                      from: account,
+                      to: categoryProvider.items.last,
+                    ),
+                  );
                 },
               ),
               ContextMenuItem(
@@ -82,8 +118,18 @@ class AccountsPage extends StatelessWidget implements page.Page {
                 icon: Icons.arrow_forward,
                 color: Colors.grey,
                 onPressed: () {
-                  // todo
                   Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => TransactionNumPad(
+                      onDoneFunc: (value, date, from, to, note) {
+                        transactionProvider.add(note, from, to, value, value, date);
+                        Navigator.pop(context);
+                      },
+                      from: account,
+                      to: provider.items.last,
+                    ),
+                  );
                 },
               ),
             ],
