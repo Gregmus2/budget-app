@@ -39,6 +39,22 @@ class CategoryProvider extends ChangeNotifier {
       return;
     }
 
+    // todo handle deleted subcategories
+    List<Category> subCategoriesToAdd = [];
+    for (var subCategory in subCategories) {
+      final targetSubcategories = _categories.where((element) => element.id == subCategory.id);
+      if (targetSubcategories.isNotEmpty) {
+        if (subCategory.name != targetSubcategories.first.name || subCategory.icon != targetSubcategories.first.icon) {
+          update(subCategory);
+        }
+      } else {
+        subCategoriesToAdd.add(subCategory);
+      }
+    }
+    for (var subCategory in subCategoriesToAdd) {
+      addSubcategory(subCategory.id, subCategory.name, subCategory.icon, category.id);
+    }
+
     category
       ..name = name
       ..icon = icon
@@ -46,6 +62,8 @@ class CategoryProvider extends ChangeNotifier {
       ..type = type
       ..currency = currency;
     update(category);
+
+    notifyListeners();
   }
 
   Category add(
@@ -82,9 +100,10 @@ class CategoryProvider extends ChangeNotifier {
     return category;
   }
 
-  Category addSubcategory(String name, IconData icon, String parentID) {
+  Category addSubcategory(String id, String name, IconData icon, String parentID) {
     Category parent = getById(parentID);
     Category category = Category(
+      id: id,
       name: name,
       icon: icon,
       color: parent.color,
@@ -124,7 +143,6 @@ class CategoryProvider extends ChangeNotifier {
     }
     _categories[_categories.indexOf(targetCategory)] = category;
     repo.update(category);
-    notifyListeners();
   }
 
   void remove(Category category) {

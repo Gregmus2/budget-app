@@ -51,9 +51,10 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       inverse: true,
       onPressed: () {
         _showSubcategoryDialog(
+          null,
           (name, icon) {
             if (widget.category != null) {
-              provider.addSubcategory(name, icon, widget.category!.id!);
+              provider.addSubcategory(Object().toString(), name, icon, widget.category!.id);
             } else {
               setState(() {
                 subcategories.add(Category(
@@ -82,7 +83,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("New category"),
+                Text(widget.category != null ? "Update category" : "New category"),
                 EntityNameTextInput(nameInput: _nameInput, items: provider.items),
               ],
             ),
@@ -168,12 +169,12 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     super.dispose();
   }
 
-  Future<void> _showSubcategoryDialog(Function(String name, IconData icon) onSubmit) async {
+  Future<void> _showSubcategoryDialog(Category? subCategory, Function(String name, IconData icon) onSubmit) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController subcategoryNameInput = TextEditingController();
-        IconData icon = Icons.shopping_cart;
+        TextEditingController subcategoryNameInput = TextEditingController(text: subCategory?.name);
+        IconData icon = subCategory != null ? subCategory.icon : Icons.shopping_cart;
         CategoryProvider provider = Provider.of<CategoryProvider>(context);
 
         return StatefulBuilder(builder: (context, setState) {
@@ -224,23 +225,33 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       },
     );
   }
-}
 
-List<Widget> _buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
-  return List<Widget>.generate(
-    subcategories.length,
-    (index) {
-      Category subcategory = subcategories[index];
+  List<Widget> _buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
+    return List<Widget>.generate(
+      subcategories.length,
+          (index) {
+        Category subcategory = subcategories[index];
 
-      return SubCategory(
-        icon: subcategory.icon,
-        color: subcategory.color,
-        label: subcategory.name,
-        onPressed: () {
-          // todo subcategory edit (local if new category and provider if existing)
-          // todo add 'Convert to category', 'Merge with subcategory', 'archive', 'delete' options there
-        },
-      );
-    },
-  );
+        return SubCategory(
+          icon: subcategory.icon,
+          color: subcategory.color,
+          label: subcategory.name,
+          onPressed: () {
+            _showSubcategoryDialog(
+              subcategory,
+                  (name, icon) {
+                subcategory.name = name;
+                subcategory.icon = icon;
+                setState(() {
+                  subcategories[index] = subcategory;
+                });
+              },
+            );
+
+            // todo add 'Convert to category', 'Merge with subcategory', 'archive', 'delete' options there
+          },
+        );
+      },
+    );
+  }
 }

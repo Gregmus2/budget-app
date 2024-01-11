@@ -108,7 +108,7 @@ class DataImport {
     }
     if (subCategory != null &&
         categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
-      category = categoryProvider.addSubcategory(subCategory, IconPicker.icons.first,
+      category = categoryProvider.addSubcategory(Object().toString(), subCategory, IconPicker.icons.first,
           categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null).id!);
     }
 
