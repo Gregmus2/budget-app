@@ -16,7 +16,7 @@ class CategoriesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
     return Scaffold(
         drawer: const BudgetDrawer(),

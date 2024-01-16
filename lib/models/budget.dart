@@ -1,8 +1,7 @@
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/model.dart';
-import 'package:realm/realm.dart';
-
-import '../db/budget.dart';
+import 'package:sqflite/utils/utils.dart';
+import 'package:uuid/uuid.dart';
 
 class Budget implements Model {
   @override
@@ -13,7 +12,7 @@ class Budget implements Model {
   double amount;
 
   Budget({required this.category, required this.month, required this.year, required this.amount, id}) {
-    this.id = id ?? ObjectId().toString();
+    this.id = id ?? const Uuid().v4();
   }
 
   @override
@@ -29,7 +28,7 @@ class Budget implements Model {
 
   static Budget mapDatabase(Map<String, dynamic> map) {
     return Budget(
-      id: map['id'],
+      id: hex(map['id']),
       category: map['category'],
       month: map['month'],
       year: map['year'],
@@ -37,30 +36,8 @@ class Budget implements Model {
     );
   }
 
-  static Budget mapRealm(BudgetModel category) {
-    return Budget(
-      id: category.id.toString(),
-      category: category.category.toString(),
-      month: category.month,
-      year: category.year,
-      amount: category.amount,
-    );
-  }
-
   @override
   String tableName() {
     return tableBudgets;
-  }
-
-  @override
-  BudgetModel toRealmObject(String ownerID) {
-    return BudgetModel(
-      ObjectId.fromHexString(id),
-      ownerID,
-      ObjectId.fromHexString(category),
-      month,
-      year,
-      amount,
-    );
   }
 }

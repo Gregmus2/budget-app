@@ -1,4 +1,4 @@
-package com.gregmus.family_budget.fb
+package com.gregmus.budget
 
 import io.flutter.embedding.android.FlutterActivity
 

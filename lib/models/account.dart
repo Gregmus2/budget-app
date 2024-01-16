@@ -1,10 +1,10 @@
-import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/model.dart';
 import 'package:fb/models/transfer_target.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
-import 'package:realm/realm.dart';
+import 'package:sqflite/utils/utils.dart';
+import 'package:uuid/uuid.dart';
 
 enum AccountType { regular, debt, savings }
 
@@ -34,7 +34,7 @@ class Account implements Model, TransferTarget {
       this.archived = false,
       this.balance = 0.0,
       id}) {
-    this.id = id ?? ObjectId().toString();
+    this.id = id ?? const Uuid().v4();
   }
 
   @override
@@ -67,39 +67,8 @@ class Account implements Model, TransferTarget {
     );
   }
 
-  static Account mapRealm(AccountModel category) {
-    return Account(
-      id: category.id.toString(),
-      name: category.name,
-      type: AccountType.values[category.type],
-      icon: IconData(category.iconCode, fontFamily: category.iconFont),
-      color: Color(category.color).withOpacity(1),
-      archived: category.archived,
-      currency: Currencies().find(category.currency) ?? CommonCurrencies().euro,
-      order: category.order,
-      balance: category.balance,
-    );
-  }
-
   @override
   String tableName() {
     return tableAccounts;
-  }
-
-  @override
-  AccountModel toRealmObject(String ownerID) {
-    return AccountModel(
-      ObjectId.fromHexString(id),
-      ownerID,
-      name,
-      type.index,
-      icon.codePoint,
-      color.value,
-      archived,
-      currency.code,
-      order,
-      balance,
-      iconFont: icon.fontFamily,
-    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
+import 'package:uuid/v5.dart';
 
 abstract class TransferTarget {
   final String id;

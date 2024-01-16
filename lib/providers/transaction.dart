@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:fb/db/repository.dart';
-import 'package:fb/db/transaction.dart';
 import 'package:fb/models/account.dart';
 import 'package:fb/models/transaction.dart';
 import 'package:fb/models/transfer_target.dart';
@@ -55,7 +54,7 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   Future<void> commitDries() async {
-    repo.createBatch<TransactionModel>(_dryTransactions.map((e) => e.toRealmObject(stateProvider.userID!)).toList());
+    repo.createBatch(_dryTransactions);
     _dryTransactions = [];
     notifyListeners();
   }
@@ -118,7 +117,7 @@ class TransactionProvider extends ChangeNotifier {
 
   void deleteAll() {
     _transactions.clear();
-    repo.deleteAll<TransactionModel>();
+    repo.deleteAll(tableTransactions);
     notifyListeners();
   }
 }

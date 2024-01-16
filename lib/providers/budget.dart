@@ -2,9 +2,9 @@
 
 import 'dart:collection';
 
-import 'package:fb/db/budget.dart';
 import 'package:fb/db/repository.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/v5.dart';
 
 import '../models/budget.dart';
 
@@ -68,7 +68,7 @@ class BudgetProvider extends ChangeNotifier {
 
   void deleteAll() {
     _budgets.clear();
-    repo.deleteAll<BudgetModel>();
+    repo.deleteAll(tableBudgets);
     notifyListeners();
   }
 
