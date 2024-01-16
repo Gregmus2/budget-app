@@ -21,32 +21,34 @@ class CategoryCreatePage extends StatefulWidget {
 }
 
 class _CategoryCreatePageState extends State<CategoryCreatePage> {
-  late IconData icon;
-  late Color color;
-  late Currency currency;
-  late CategoryType type;
+  late IconData _icon;
+  late Color _color;
+  late Currency _currency;
+  late CategoryType _type;
   late final TextEditingController _nameInput;
-  late List<Category> subcategories;
+  late List<Category> _subcategories;
+  Offset? _longPressOffset;
+  final ContextMenuController _contextMenuController = ContextMenuController();
 
   @override
   void initState() {
     super.initState();
 
-    icon = widget.category?.icon ?? Icons.hourglass_empty;
-    color = widget.category?.color ?? Colors.blue;
-    currency = widget.category?.currency ?? CommonCurrencies().euro;
-    type = widget.category?.type ?? CategoryType.expenses;
+    _icon = widget.category?.icon ?? Icons.hourglass_empty;
+    _color = widget.category?.color ?? Colors.blue;
+    _currency = widget.category?.currency ?? CommonCurrencies().euro;
+    _type = widget.category?.type ?? CategoryType.expenses;
     _nameInput = TextEditingController(text: widget.category?.name);
-    subcategories = widget.category?.subCategories ?? [];
+    _subcategories = widget.category?.subCategories ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context, subcategories);
+    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context, _subcategories);
     subcategoriesCards.add(SubCategory(
       label: "Add",
-      color: color,
+      color: _color,
       icon: Icons.add,
       inverse: true,
       onPressed: () {
@@ -57,13 +59,13 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               provider.addSubcategory(Object().toString(), name, icon, widget.category!.id);
             } else {
               setState(() {
-                subcategories.add(Category(
+                _subcategories.add(Category(
                     name: name,
                     icon: icon,
-                    color: color,
-                    currency: currency,
-                    type: type,
-                    order: subcategories.isEmpty ? 0 : subcategories.last.order + 1,
+                    color: _color,
+                    currency: _currency,
+                    type: _type,
+                    order: _subcategories.isEmpty ? 0 : _subcategories.last.order + 1,
                     parent: widget.category?.id));
               });
             }
@@ -77,7 +79,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       length: 4,
       child: Scaffold(
           appBar: AppBar(
-            backgroundColor: color,
+            backgroundColor: _color,
             foregroundColor: Colors.white,
             toolbarHeight: 100,
             title: Column(
@@ -90,7 +92,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             actions: [
               IconButton(
                   onPressed: () {
-                    provider.upsert(widget.category, _nameInput.text, icon, color, currency, type, subcategories);
+                    provider.upsert(widget.category, _nameInput.text, _icon, _color, _currency, _type, _subcategories);
 
                     Navigator.pop(context);
                   },
@@ -108,36 +110,36 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           body: ListView(
             children: [
               keyStringValueCustomButton(
-                  "Type", type.name.toUpperCase(), type == CategoryType.expenses ? Colors.red : Colors.green, () {
+                  "Type", _type.name.toUpperCase(), _type == CategoryType.expenses ? Colors.red : Colors.green, () {
                 setState(() {
-                  if (type == CategoryType.expenses) {
-                    type = CategoryType.income;
+                  if (_type == CategoryType.expenses) {
+                    _type = CategoryType.income;
                   } else {
-                    type = CategoryType.expenses;
+                    _type = CategoryType.expenses;
                   }
                 });
               }),
-              keyStringValueCustomButton("Currency", currency.code, color, () {
+              keyStringValueCustomButton("Currency", _currency.code, _color, () {
                 showCurrencyDialog(
                   context,
                   (currency) {
                     setState(() {
-                      this.currency = currency;
+                      this._currency = currency;
                     });
                   },
                 );
-              }, subtitle: currency.name),
-              keyValueCustomButton("Icon", Icon(icon, color: color), color, () {
-                showIconDialog(context, color, icon, (icon) {
+              }, subtitle: _currency.name),
+              keyValueCustomButton("Icon", Icon(_icon, color: _color), _color, () {
+                showIconDialog(context, _color, _icon, (icon) {
                   setState(() {
-                    this.icon = icon;
+                    this._icon = icon;
                   });
                 });
               }),
-              keyValueCustomButton("Color", Icon(Icons.circle, color: color), color, () {
-                showColorDialog(context, color, (color) {
+              keyValueCustomButton("Color", Icon(Icons.circle, color: _color), _color, () {
+                showColorDialog(context, _color, (color) {
                   setState(() {
-                    this.color = color;
+                    this._color = color;
                   });
                 });
               }),
@@ -192,7 +194,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     width: double.maxFinite,
                     height: MediaQuery.of(context).size.height * 0.69,
                     child: IconPicker(
-                      color: color,
+                      color: _color,
                       icon: icon,
                       onChange: (pickedIcon) {
                         setState(() {
@@ -232,24 +234,72 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           (index) {
         Category subcategory = subcategories[index];
 
-        return SubCategory(
-          icon: subcategory.icon,
-          color: subcategory.color,
-          label: subcategory.name,
-          onPressed: () {
-            _showSubcategoryDialog(
-              subcategory,
-                  (name, icon) {
-                subcategory.name = name;
-                subcategory.icon = icon;
-                setState(() {
-                  subcategories[index] = subcategory;
-                });
-              },
-            );
-
-            // todo add 'Convert to category', 'Merge with subcategory', 'archive', 'delete' options there
+        return GestureDetector(
+          child: SubCategory(
+            icon: subcategory.icon,
+            color: subcategory.color,
+            label: subcategory.name,
+          ),
+            onTap: () {
+              _showSubcategoryDialog(
+                subcategory,
+                    (name, icon) {
+                  subcategory.name = name;
+                  subcategory.icon = icon;
+                  setState(() {
+                    subcategories[index] = subcategory;
+                  });
+                },
+              );
+            },
+          onLongPressStart: (details) {
+            setState(() {
+              _longPressOffset = details.globalPosition;
+            });
           },
+            onLongPress: () {
+            // todo finish implementation https://api.flutter.dev/flutter/widgets/ContextMenuController-class.html or https://pub.dev/packages/context_menus
+              _contextMenuController.show(
+                context: context,
+                contextMenuBuilder: (BuildContext context) {
+                  return AdaptiveTextSelectionToolbar.buttonItems(
+                    anchors: TextSelectionToolbarAnchors(
+                      primaryAnchor: _longPressOffset!,
+                    ),
+                    buttonItems: <ContextMenuButtonItem>[
+                      ContextMenuButtonItem(
+                        onPressed: () {
+                          ContextMenuController.removeAny();
+                          // todo implement
+                        },
+                        label: 'Convert to category',
+                      ),
+                      ContextMenuButtonItem(
+                        onPressed: () {
+                          ContextMenuController.removeAny();
+                          // todo implement
+                        },
+                        label: 'Merge',
+                      ),
+                      ContextMenuButtonItem(
+                        onPressed: () {
+                          ContextMenuController.removeAny();
+                          // todo implement
+                        },
+                        label: 'Archive',
+                      ),
+                      ContextMenuButtonItem(
+                        onPressed: () {
+                          ContextMenuController.removeAny();
+                          // todo implement
+                        },
+                        label: 'Delete',
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
         );
       },
     );

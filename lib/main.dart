@@ -21,6 +21,8 @@ import 'app.dart';
 
 // todo Obfuscate Dart code as part of CI/CD and https://codewithandrea.com/articles/flutter-api-keys-dart-define-env-files/
 
+// todo performance issues
+
 Future<void> main() async {
   // todo download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
   /*LicenseRegistry.addLicense(() async* {

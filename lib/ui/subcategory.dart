@@ -6,14 +6,14 @@ class SubCategory extends StatelessWidget {
     required this.label,
     required this.color,
     required this.icon,
-    required this.onPressed,
+    this.onPressed,
     this.inverse = false,
   });
 
   final String label;
   final Color color;
   final IconData icon;
-  final Function() onPressed;
+  final Function()? onPressed;
   final bool inverse;
 
   @override
