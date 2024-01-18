@@ -44,7 +44,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
                   currency: category.currency,
                   onDone: (value) {
                     budgetProvider.add(
-                        category.id, stateProvider.range.start.month, stateProvider.range.start.year, value);
+                        category.id!, stateProvider.range.start.month, stateProvider.range.start.year, value);
                     Navigator.pop(context);
                   },
                 ),

@@ -1,10 +1,10 @@
+import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/model.dart';
 import 'package:fb/models/transfer_target.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
-import 'package:sqflite/utils/utils.dart';
-import 'package:uuid/uuid.dart';
+import 'package:realm/realm.dart';
 
 enum CategoryType { expenses, income }
 
@@ -35,7 +35,7 @@ class Category implements Model, TransferTarget {
       this.archived = false,
       this.parent,
       id}) {
-    this.id = id ?? const Uuid().v4();
+    this.id = id ?? ObjectId().toString();
   }
 
   @override
@@ -63,8 +63,22 @@ class Category implements Model, TransferTarget {
       archived: map['archived'] == 1,
       currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
       order: map['order'],
-      parent: map['parent'],
+      parent: map['parent']?.toInt(),
       type: CategoryType.values[map['type']],
+    );
+  }
+
+  static Category mapRealm(CategoryModel category) {
+    return Category(
+      id: category.id.toString(),
+      name: category.name,
+      icon: IconData(category.iconCode, fontFamily: category.iconFont),
+      color: Color(category.color).withOpacity(1),
+      archived: category.archived,
+      currency: Currencies().find(category.currencyCode ?? '') ?? CommonCurrencies().euro,
+      order: category.order,
+      parent: category.parent,
+      type: CategoryType.values[category.type],
     );
   }
 
@@ -75,5 +89,22 @@ class Category implements Model, TransferTarget {
 
   bool isSubCategory() {
     return parent != null;
+  }
+
+  @override
+  CategoryModel toRealmObject(String ownerID) {
+    return CategoryModel(
+      ObjectId.fromHexString(id),
+      ownerID,
+      name,
+      icon.codePoint,
+      color.value,
+      archived,
+      currency.code,
+      order,
+      type.index,
+      parent: parent,
+      iconFont: icon.fontFamily,
+    );
   }
 }

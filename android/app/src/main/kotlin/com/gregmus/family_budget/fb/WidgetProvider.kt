@@ -1,4 +1,4 @@
-package com.gregmus.budget
+package com.gregmus.family_budget.fb
 
 import android.appwidget.AppWidgetManager
 import android.content.Context

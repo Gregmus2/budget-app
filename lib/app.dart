@@ -11,10 +11,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    StateProvider stateProvider = Provider.of<StateProvider>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gregmus Budget',
-      home: const HomePage(),
+      home: stateProvider.user != null ? const HomePage() : const LoginPage(),
       theme: getThemeData(context),
       builder: EasyLoading.init(),
     );

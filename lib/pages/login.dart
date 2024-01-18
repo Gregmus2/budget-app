@@ -4,9 +4,9 @@ import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/utils/sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -34,9 +34,9 @@ Future<void> _signIn(BuildContext context) async {
   CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
   AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
-  UserCredential user = await signInWithGoogle();
+  User user = await signInWithGoogle(stateProvider.app);
   // todo find repo better
-  await transactionProvider.repo.init();
+  await transactionProvider.repo.init(user);
   await Future.wait([
     categoryProvider.init(),
     accountProvider.init(),
@@ -45,5 +45,5 @@ Future<void> _signIn(BuildContext context) async {
   ]);
 
   // after user updates in state provider, it notify app page about that to rebuild body with HomePage
-  stateProvider.user = user.user;
+  stateProvider.user = user;
 }

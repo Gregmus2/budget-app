@@ -1,5 +1,4 @@
 .secrets.json
-android/app/google-services.json
 # Miscellaneous
 *.class
 *.log

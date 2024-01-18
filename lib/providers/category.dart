@@ -1,10 +1,10 @@
 import 'dart:collection';
 
+import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
-import 'package:uuid/v5.dart';
 
 class CategoryProvider extends ChangeNotifier {
   List<Category> _categories = [];
@@ -204,7 +204,7 @@ class CategoryProvider extends ChangeNotifier {
 
   void deleteAll() {
     _categories.clear();
-    repo.deleteAll(tableCategories);
+    repo.deleteAll<CategoryModel>();
     notifyListeners();
   }
 }

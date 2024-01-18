@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const firstDayOfMonthKey = 'firstDayOfMonth';
@@ -12,11 +12,12 @@ class StateProvider extends ChangeNotifier {
   late DateTimeRange range;
   RangeType rangeType = RangeType.monthly;
   int firstDayOfMonth = 1;
+  final App _app;
   late SharedPreferences _prefs;
   late User? _user;
   late String? userID;
 
-  StateProvider();
+  StateProvider(this._app);
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -35,8 +36,8 @@ class StateProvider extends ChangeNotifier {
   }
 
   void _initUser() {
-    _user = FirebaseAuth.instance.currentUser;
-    userID = _user?.uid;
+    _user = _app.currentUser;
+    userID = _user?.id;
   }
 
   void _initMonthlyRange() {
@@ -50,6 +51,8 @@ class StateProvider extends ChangeNotifier {
   bool get isCustomRange => rangeType == RangeType.custom;
 
   User? get user => _user;
+
+  App get app => _app;
 
   set user(User? user) {
     _initUser();

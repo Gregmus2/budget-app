@@ -10,7 +10,6 @@ import 'package:fb/ui/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class CategoryCreatePage extends StatefulWidget {
   final Category? category;
@@ -57,7 +56,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           null,
           (name, icon) {
             if (widget.category != null) {
-              provider.addSubcategory(const Uuid().v4(), name, icon, widget.category!.id);
+              provider.addSubcategory(Object().toString(), name, icon, widget.category!.id);
             } else {
               setState(() {
                 _subcategories.add(Category(

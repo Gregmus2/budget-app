@@ -52,9 +52,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   jiffy: ^6.2.1
   google_sign_in: ^6.1.6
-  uuid: ^4.2.2
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
+  realm: ^1.6.0
 
 dev_dependencies:
   flutter_test:

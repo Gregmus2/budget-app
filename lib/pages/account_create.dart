@@ -42,7 +42,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    final AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
+    final AccountProvider provider = Provider.of<AccountProvider>(context);
 
     return DefaultTabController(
       initialIndex: 0,

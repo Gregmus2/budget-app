@@ -27,7 +27,7 @@ List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPress
     // budgeting works only with standard monthly ranges
     if (stateProvider.isMonthlyRange) {
       budget = budgetProvider.getBudgetAmount(
-          provider.get(i).id, stateProvider.range.start.month, stateProvider.range.start.year);
+          provider.get(i).id!, stateProvider.range.start.month, stateProvider.range.start.year);
     }
     categoriesStat
         .add(CategoryStat(provider.get(i), totals[provider.get(i).id] ?? 0, budget, provider.get(i).currency.symbol));
