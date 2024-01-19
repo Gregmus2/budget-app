@@ -102,22 +102,24 @@ class DataImport {
     }
 
     Category? category;
-    if (categoryProvider.items.where((element) => element.name == nameField && element.parent == null).isEmpty) {
+    if (categoryProvider.isNotExists(nameField)) {
       Currency? currency = Currencies().findByCode(currencyField);
       category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, []);
     }
+
+    String parentID = categoryProvider.findCategoryByName(nameField)!.id;
     if (subCategory != null &&
-        categoryProvider.items.where((element) => element.name == subCategory && element.parent != null).isEmpty) {
+        categoryProvider.isSubCategoryNotExists(subCategory, parentID)) {
       category = categoryProvider.addSubcategory(Object().toString(), subCategory, IconPicker.icons.first,
-          categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null).id!);
+          parentID);
     }
 
     if (category == null) {
       if (subCategory != null) {
-        return categoryProvider.items.firstWhere((element) => element.name == subCategory && element.parent != null);
+        return categoryProvider.findSubcategoryByName(subCategory, parentID)!;
       }
 
-      return categoryProvider.items.firstWhere((element) => element.name == nameField && element.parent == null);
+      return categoryProvider.findCategoryByName(nameField)!;
     }
 
     return category;

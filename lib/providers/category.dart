@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/category.dart';
@@ -8,22 +6,21 @@ import 'package:money2/money2.dart';
 
 class CategoryProvider extends ChangeNotifier {
   List<Category> _categories = [];
+  List<Category> _subCategories = [];
   final Repository repo;
-
-  UnmodifiableListView<Category> get items => UnmodifiableListView(_categories);
 
   CategoryProvider(this.repo);
 
   Future<void> init() async {
-    _categories = await repo.listCategories();
+    final all = await repo.listCategories();
+    _categories = all.where((element) => element.parent == null).toList();
     _categories.sort((a, b) => a.order.compareTo(b.order));
+    _subCategories = all.where((element) => element.parent != null).toList();
+    _subCategories.sort((a, b) => a.order.compareTo(b.order));
 
-    for (var category in _categories) {
-      if (category.parent != null) {
-        getById(category.parent!).subCategories.add(category);
-      }
+    for (var subCategory in _subCategories) {
+      getByID(subCategory.parent!).subCategories.add(subCategory);
     }
-
     for (var category in _categories) {
       category.subCategories.sort((a, b) => a.order.compareTo(b.order));
     }
@@ -42,10 +39,10 @@ class CategoryProvider extends ChangeNotifier {
     // todo handle deleted subcategories
     List<Category> subCategoriesToAdd = [];
     for (var subCategory in subCategories) {
-      final targetSubcategories = _categories.where((element) => element.id == subCategory.id);
+      final targetSubcategories = _subCategories.where((element) => element.id == subCategory.id);
       if (targetSubcategories.isNotEmpty) {
         if (subCategory.name != targetSubcategories.first.name || subCategory.icon != targetSubcategories.first.icon) {
-          update(subCategory);
+          updateSubCategory(subCategory);
         }
       } else {
         subCategoriesToAdd.add(subCategory);
@@ -61,7 +58,7 @@ class CategoryProvider extends ChangeNotifier {
       ..color = color
       ..type = type
       ..currency = currency;
-    update(category);
+    updateCategory(category);
 
     notifyListeners();
   }
@@ -90,8 +87,7 @@ class CategoryProvider extends ChangeNotifier {
         type: type,
       );
       category.subCategories.add(subCategory);
-      _categories.add(subCategory);
-      // todo update or notify transactions
+      _subCategories.add(subCategory);
       repo.create(subCategory);
     }
 
@@ -101,35 +97,31 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   Category addSubcategory(String id, String name, IconData icon, String parentID) {
-    Category parent = getById(parentID);
-    Category category = Category(
+    Category parent = getByID(parentID);
+    Category subCategory = Category(
       id: id,
       name: name,
       icon: icon,
       color: parent.color,
       currency: parent.currency,
-      order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
+      order: parent.subCategories.isNotEmpty ? parent.subCategories.last.order + 1 : 0,
       parent: parentID,
       type: parent.type,
     );
-    _categories.add(category);
-    repo.create(category);
-    getById(category.parent!).subCategories.add(category);
+    _subCategories.add(subCategory);
+    repo.create(subCategory);
+    getByID(subCategory.parent!).subCategories.add(subCategory);
 
     notifyListeners();
 
-    return category;
+    return subCategory;
   }
 
-  Category get(int index) {
-    return _categories[index];
+  Category? getCategory(int index) {
+    return index < _categories.length ? _categories[index] : null;
   }
 
-  List<Category> list() {
-    return _categories;
-  }
-
-  void update(Category category) {
+  void updateCategory(Category category) {
     final targetCategory = _categories.firstWhere((element) => element.id == category.id);
     for (var subCategory in targetCategory.subCategories) {
       if (subCategory.color != category.color ||
@@ -138,22 +130,40 @@ class CategoryProvider extends ChangeNotifier {
         subCategory.color = category.color;
         subCategory.currency = category.currency;
         subCategory.type = category.type;
-        update(subCategory);
+        updateSubCategory(subCategory);
       }
     }
     _categories[_categories.indexOf(targetCategory)] = category;
     repo.update(category);
   }
 
+  void updateSubCategory(Category category) {
+    final targetCategory = _subCategories.firstWhere((element) => element.id == category.id);
+    _subCategories[_subCategories.indexOf(targetCategory)] = category;
+    repo.update(category);
+  }
+
   void remove(Category category) {
     _categories.remove(category);
+    _subCategories.remove(category);
+    for (var subCategory in category.subCategories) {
+      _removeSubcategory(subCategory);
+    }
+
     repo.delete(category);
     if (category.parent != null) {
-      getById(category.parent!).subCategories.remove(category);
+      getByID(category.parent!).subCategories.remove(category);
     }
+
     notifyListeners();
   }
 
+  void _removeSubcategory(Category subCategory) {
+    _subCategories.remove(subCategory);
+    repo.delete(subCategory);
+  }
+
+  // todo check if subcategories have the same order when reorder. It can be the case when they added on different devices offline
   void reOrderSubCategory(Category category, int from, int to) {
     if (from == to) {
       return;
@@ -176,6 +186,7 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // todo check if categories have the same order when reorder. It can be the case when they added on different devices offline
   void reOrderCategory(int from, int to) {
     if (from == to) {
       return;
@@ -198,12 +209,39 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Category getById(String id) {
-    return _categories.firstWhere((element) => element.id == id);
+  Category getByID(String id) {
+    return _categories.firstWhere((element) => element.id == id, orElse: () {
+      return _subCategories.firstWhere((element) => element.id == id);
+    });
+  }
+
+  bool isNotExists(String name) {
+    return !_categories.any((element) => element.name == name);
+  }
+
+  bool isSubCategoryNotExists(String name, String parentID) {
+    return !_subCategories.any((element) => element.name == name && element.parent == parentID);
+  }
+
+  bool isNotEmpty() {
+    return _categories.isNotEmpty;
+  }
+
+  Category? findCategoryByName(String name) {
+    return _categories.where((element) => element.name == name).firstOrNull;
+  }
+
+  Category? findSubcategoryByName(String name, String parentID) {
+    return _subCategories.where((element) => element.name == name).firstOrNull;
+  }
+
+  List<Category> getExclude(List<String> exclude) {
+    return _categories.where((element) => !exclude.contains(element.id)).toList();
   }
 
   void deleteAll() {
     _categories.clear();
+    _subCategories.clear();
     repo.deleteAll<CategoryModel>();
     notifyListeners();
   }

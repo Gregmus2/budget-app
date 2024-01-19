@@ -60,32 +60,35 @@ class _IconPickerState extends State<IconPicker> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-      return GridView.builder(
+      return GridView.count(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        itemCount: IconPicker.icons.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: (constraints.maxWidth / 100) / 4 * 10,
-            mainAxisExtent: (constraints.maxWidth / 100) / 4 * 100),
-        itemBuilder: (context, index) => Padding(
-          padding: EdgeInsets.all((constraints.maxWidth / 100) / 4 * 7),
-          child: OutlinedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    (widget.icon == IconPicker.icons[index]) ? widget.color : Colors.transparent),
-                shape: MaterialStateProperty.all(const CircleBorder())),
-            onPressed: () {
-              setState(() {
-                icon = IconPicker.icons[index];
-              });
-              widget.onChange(IconPicker.icons[index]);
-            },
-            child: Icon(
-              IconPicker.icons[index],
-              color: Colors.white,
-              size: (constraints.maxWidth / 100) / 4 * 30,
-            ),
-          ),
+        crossAxisCount: 4,
+        crossAxisSpacing: (constraints.maxWidth / 100) / 4 * 10,
+        mainAxisSpacing: (constraints.maxWidth / 100) / 4 * 16,
+        children: List.generate(
+          IconPicker.icons.length,
+          (index) {
+            return Padding(
+              padding: EdgeInsets.all((constraints.maxWidth / 100) / 4 * 7),
+              child: OutlinedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        (icon == IconPicker.icons[index]) ? widget.color : Colors.transparent),
+                    shape: MaterialStateProperty.all(const CircleBorder())),
+                onPressed: () {
+                  setState(() {
+                    icon = IconPicker.icons[index];
+                  });
+                  widget.onChange(IconPicker.icons[index]);
+                },
+                child: Icon(
+                  IconPicker.icons[index],
+                  color: Colors.white,
+                  size: (constraints.maxWidth / 100) / 4 * 30,
+                ),
+              ),
+            );
+          },
         ),
       );
     });

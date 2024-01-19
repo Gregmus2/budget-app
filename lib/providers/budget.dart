@@ -4,6 +4,8 @@ import 'dart:collection';
 
 import 'package:fb/db/budget.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/models/category.dart';
+import 'package:fb/providers/category.dart';
 import 'package:flutter/material.dart';
 
 import '../models/budget.dart';

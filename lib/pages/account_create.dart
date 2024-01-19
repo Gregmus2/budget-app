@@ -54,7 +54,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
           toolbarHeight: 100,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [const Text("New account"), EntityNameTextInput(nameInput: _nameInput, items: provider.items)],
+            children: [const Text("New account"), EntityNameTextInput(nameInput: _nameInput, isUnique: provider.isNotExists)],
           ),
           actions: [
             IconButton(

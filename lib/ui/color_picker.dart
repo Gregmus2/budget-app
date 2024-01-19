@@ -44,25 +44,30 @@ class _ColorPickerState extends State<ColorPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return GridView.count(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      itemCount: ColorPicker.primaryColors.length,
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5, crossAxisSpacing: 10, mainAxisExtent: 100),
-      itemBuilder: (context, index) => ElevatedButton(
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(ColorPicker.primaryColors[index]),
-            shape: MaterialStateProperty.all(CircleBorder(
-                side: (color.value == ColorPicker.primaryColors[index].value)
-                    ? const BorderSide(width: 2, color: Colors.white)
-                    : BorderSide.none))),
-        onPressed: () {
-          setState(() {
-            color = ColorPicker.primaryColors[index];
-          });
-          widget.onChange(ColorPicker.primaryColors[index]);
+      crossAxisCount: 5,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 16,
+      children: List.generate(
+        ColorPicker.primaryColors.length,
+        (index) {
+          return ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(ColorPicker.primaryColors[index]),
+                shape: MaterialStateProperty.all(CircleBorder(
+                    side: (color.value == ColorPicker.primaryColors[index].value)
+                        ? const BorderSide(width: 2, color: Colors.white)
+                        : BorderSide.none))),
+            onPressed: () {
+              setState(() {
+                color = ColorPicker.primaryColors[index];
+              });
+              widget.onChange(ColorPicker.primaryColors[index]);
+            },
+            child: null,
+          );
         },
-        child: null,
       ),
     );
   }

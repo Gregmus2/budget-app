@@ -2,7 +2,6 @@ import 'package:fb/models/account.dart';
 import 'package:fb/pages/account_create.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
-import 'package:fb/providers/category.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/context_menu.dart';
@@ -17,124 +16,135 @@ class AccountsPage extends StatelessWidget implements page.Page {
   Widget build(BuildContext context) {
     final AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
     return Scaffold(
-      body: ReorderableListView(
-        /*dragWidgetBuilder: (index, child) => Scaffold(
-          backgroundColor: Colors.transparent,
-          body: child,
-        ),*/
-        footer: const Divider(
-          color: Colors.grey,
-        ),
-        onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
-        children: buildAccountCards(context, (account) {
-          ContextMenu.showMenu(
-            context,
-            [
-              ContextMenuItem(
-                title: "Delete",
-                icon: Icons.delete,
-                color: Colors.red,
-                onPressed: () {
-                  provider.remove(account);
-                  Navigator.pop(context);
-                },
-              ),
-              ContextMenuItem(
-                title: "Balance",
-                icon: Icons.balance,
-                color: Colors.yellow,
-                onPressed: () {
-                  Navigator.pop(context);
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => SimpleNumPad(
-                      number: account.balance,
-                      currency: account.currency,
-                      onDone: (value) {
-                        provider.addBalance(account, value - account.balance);
+      body: SingleChildScrollView(
+        child: ReorderableListView(
+          shrinkWrap: true,
+          /*dragWidgetBuilder: (index, child) => Scaffold(
+            backgroundColor: Colors.transparent,
+            body: child,
+          ),*/
+          physics: const ScrollPhysics(),
+          footer: const Divider(
+            color: Colors.grey,
+          ),
+          onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
+          children: List.generate(provider.length, (index) {
+            Account? account = provider.get(index);
 
-                        Navigator.pop(context);
-                      },
-                    ),
-                  );
-                },
-              ),
-              ContextMenuItem(
-                title: "Edit",
-                icon: Icons.edit,
-                color: Colors.yellow,
+            return AccountCard(
+                key: ValueKey(index),
+                account: account!,
+                // todo move
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AccountCreatePage(
-                                account: account,
-                              )));
-                },
-              ),
-              ContextMenuItem(
-                title: "Recharge",
-                icon: Icons.arrow_downward,
-                color: Colors.green,
-                onPressed: () {
-                  Navigator.pop(context);
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => TransactionNumPad(
-                      onDoneFunc: (value, date, from, to, note) {
-                        transactionProvider.add(note, from, to, value, value, date);
-                        Navigator.pop(context);
-                      },
-                      from: categoryProvider.items.last,
-                      to: account,
-                    ),
+                  ContextMenu.showMenu(
+                    context,
+                    [
+                      ContextMenuItem(
+                        title: "Delete",
+                        icon: Icons.delete,
+                        color: Colors.red,
+                        onPressed: () {
+                          provider.remove(account);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ContextMenuItem(
+                        title: "Balance",
+                        icon: Icons.balance,
+                        color: Colors.yellow,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => SimpleNumPad(
+                              number: account.balance,
+                              currency: account.currency,
+                              onDone: (value) {
+                                provider.addBalance(account, value - account.balance);
+
+                                Navigator.pop(context);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      ContextMenuItem(
+                        title: "Edit",
+                        icon: Icons.edit,
+                        color: Colors.yellow,
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountCreatePage(
+                                        account: account,
+                                      )));
+                        },
+                      ),
+                      ContextMenuItem(
+                        title: "Recharge",
+                        icon: Icons.arrow_downward,
+                        color: Colors.green,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => TransactionNumPad(
+                              onDoneFunc: (value, date, from, to, note) {
+                                transactionProvider.add(note, from, to, value, value, date);
+                                Navigator.pop(context);
+                              },
+                              from: transactionProvider.getRecentFromTarget(),
+                              to: account,
+                            ),
+                          );
+                        },
+                      ),
+                      ContextMenuItem(
+                        title: "Withdraw",
+                        icon: Icons.arrow_upward,
+                        color: Colors.red,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => TransactionNumPad(
+                              onDoneFunc: (value, date, from, to, note) {
+                                transactionProvider.add(note, from, to, value, value, date);
+                                Navigator.pop(context);
+                              },
+                              from: account,
+                              to: transactionProvider.getRecentToTarget(),
+                            ),
+                          );
+                        },
+                      ),
+                      ContextMenuItem(
+                        title: "Transfer",
+                        icon: Icons.arrow_forward,
+                        color: Colors.grey,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => TransactionNumPad(
+                              onDoneFunc: (value, date, from, to, note) {
+                                transactionProvider.add(note, from, to, value, value, date);
+                                Navigator.pop(context);
+                              },
+                              from: account,
+                              to: provider.items.last,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   );
-                },
-              ),
-              ContextMenuItem(
-                title: "Withdraw",
-                icon: Icons.arrow_upward,
-                color: Colors.red,
-                onPressed: () {
-                  Navigator.pop(context);
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => TransactionNumPad(
-                      onDoneFunc: (value, date, from, to, note) {
-                        transactionProvider.add(note, from, to, value, value, date);
-                        Navigator.pop(context);
-                      },
-                      from: account,
-                      to: categoryProvider.items.last,
-                    ),
-                  );
-                },
-              ),
-              ContextMenuItem(
-                title: "Transfer",
-                icon: Icons.arrow_forward,
-                color: Colors.grey,
-                onPressed: () {
-                  Navigator.pop(context);
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => TransactionNumPad(
-                      onDoneFunc: (value, date, from, to, note) {
-                        transactionProvider.add(note, from, to, value, value, date);
-                        Navigator.pop(context);
-                      },
-                      from: account,
-                      to: provider.items.last,
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        }),
+                });
+          }),
+        ),
       ),
     );
   }
@@ -160,17 +170,4 @@ class AccountsPage extends StatelessWidget implements page.Page {
   String getLabel() {
     return 'Accounts';
   }
-}
-
-List<Widget> buildAccountCards(BuildContext context, Function(Account) onPressed) {
-  final AccountProvider provider = Provider.of<AccountProvider>(context);
-
-  return List.generate(
-      provider.length,
-      (index) => AccountCard(
-          key: ValueKey(index),
-          account: provider.get(index),
-          onPressed: () {
-            onPressed(provider.get(index));
-          }));
 }

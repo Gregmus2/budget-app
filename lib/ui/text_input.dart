@@ -7,11 +7,11 @@ class EntityNameTextInput extends StatelessWidget {
   const EntityNameTextInput({
     super.key,
     required TextEditingController nameInput,
-    required this.items,
+    required this.isUnique,
   }) : _nameInput = nameInput;
 
   final TextEditingController _nameInput;
-  final UnmodifiableListView<TransferTarget> items;
+  final Function(String) isUnique;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class EntityNameTextInput extends StatelessWidget {
         if (value == null || value.isEmpty) {
           return 'Please enter some text';
         }
-        if (items.any((element) => element.name == value)) {
+        if (!isUnique(value)) {
           return 'Entity with this name already exists';
         }
 

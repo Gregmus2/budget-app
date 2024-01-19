@@ -21,7 +21,9 @@ import 'app.dart';
 
 // todo Obfuscate Dart code as part of CI/CD and https://codewithandrea.com/articles/flutter-api-keys-dart-define-env-files/
 
-// todo performance issues (devtools in profile mode, find other ways to optimize)
+// todo performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
+
+// todo split into more widgets
 
 Future<void> main() async {
   // todo download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
@@ -60,7 +62,7 @@ Future<void> _runApp(Widget app) async {
   Repository repo = Repository(stateProvider);
   CategoryProvider categoryProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
-  TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider, stateProvider);
+  TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider, categoryProvider, stateProvider);
   BudgetProvider budgetProvider = BudgetProvider(repo);
 
   await stateProvider.init();

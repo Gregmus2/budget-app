@@ -26,8 +26,6 @@ class _QuickTransactionState extends State<QuickTransaction> {
   }
 
   Scaffold _buildHomeWidget(BuildContext context) {
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
     return Scaffold(
@@ -37,8 +35,8 @@ class _QuickTransactionState extends State<QuickTransaction> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           TransactionNumPad(
-            from: accountProvider.items.first,
-            to: categoryProvider.items.first,
+            from: transactionProvider.getRecentFromTarget(),
+            to: transactionProvider.getRecentToTarget(),
             onDoneFunc: (value, date, from, to, note) {
               transactionProvider.add(note, from, to, value, value, date);
 

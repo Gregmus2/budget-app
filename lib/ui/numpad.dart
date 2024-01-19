@@ -2,12 +2,15 @@ import 'package:fb/models/account.dart';
 import 'package:fb/models/category.dart';
 import 'package:fb/models/transaction.dart';
 import 'package:fb/models/transfer_target.dart';
-import 'package:fb/pages/accounts.dart';
+import 'package:fb/providers/account.dart';
+import 'package:fb/providers/category.dart';
+import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
+import 'package:provider/provider.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 
 // todo implement double currencies if transfer targets has different currencies
@@ -80,28 +83,30 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                   padding: const EdgeInsets.only(bottom: 5),
                   child: SizedBox(
                     height: 25,
-                    child: ListView.builder(
+                    child: ListView(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      itemCount: parentCategory.subCategories.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Category subcategory = parentCategory!.subCategories[index];
+                      children: List.generate(
+                        parentCategory.subCategories.length,
+                        (index) {
+                          Category subcategory = parentCategory!.subCategories[index];
 
-                        return SubCategory(
-                            label: subcategory.name,
-                            color: subcategory.color,
-                            icon: subcategory.icon,
-                            inverse: (toSubCategory == subcategory || fromSubCategory == subcategory),
-                            onPressed: () {
-                              setState(() {
-                                if (parentCategory == from) {
-                                  fromSubCategory = subcategory;
-                                } else {
-                                  toSubCategory = subcategory;
-                                }
+                          return SubCategory(
+                              label: subcategory.name,
+                              color: subcategory.color,
+                              icon: subcategory.icon,
+                              inverse: (toSubCategory == subcategory || fromSubCategory == subcategory),
+                              onPressed: () {
+                                setState(() {
+                                  if (parentCategory == from) {
+                                    fromSubCategory = subcategory;
+                                  } else {
+                                    toSubCategory = subcategory;
+                                  }
+                                });
                               });
-                            });
-                      },
+                        },
+                      ),
                     ),
                   ),
                 )
@@ -167,30 +172,23 @@ class FromToButton extends StatelessWidget {
           barrierDismissible: true,
           pageBuilder: (context, animation, secondaryAnimation) {
             return Center(
-                child: Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              height: MediaQuery.of(context).size.height * 0.7,
-              child: entity is Account
-                  ? ListView(
-                      children: buildAccountCards(context, (account) {
-                      onSelected(account);
+              child: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: entity is Account
+                    ? AccountSelectionPopup(onPressed: (account) {
+                        onSelected(account);
 
-                      Navigator.pop(context);
-                    }))
-                  : GridView.count(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      crossAxisCount: 4,
-                      childAspectRatio: 0.5,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 16,
-                      children: buildCategoryCards(context, (category) {
+                        Navigator.pop(context);
+                      })
+                    : CategorySelectionPopup(onPressed: (category) {
                         onSelected(category);
 
                         Navigator.pop(context);
                       }),
-                    ),
-            ));
+              ),
+            );
           },
         );
       },
@@ -203,6 +201,72 @@ class FromToButton extends StatelessWidget {
           Text(entity.name, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis),
         ],
       ),
+    );
+  }
+}
+
+class AccountSelectionPopup extends StatelessWidget {
+  const AccountSelectionPopup({
+    super.key,
+    required this.onPressed,
+  });
+
+  final Function(Account) onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
+
+    return SingleChildScrollView(
+      child: ListView(
+          shrinkWrap: true,
+          physics: const ScrollPhysics(),
+          children: List.generate(provider.length, (index) {
+            Account account = provider.get(index)!;
+
+            return AccountCard(
+                key: ValueKey(index),
+                account: account,
+                onPressed: () {
+                  onPressed(account);
+                });
+          })),
+    );
+  }
+}
+
+class CategorySelectionPopup extends StatelessWidget {
+  const CategorySelectionPopup({
+    super.key,
+    required this.onPressed,
+  });
+
+  final Function(Category) onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
+
+    return SingleChildScrollView(
+      child: GridView.count(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          crossAxisCount: 4,
+          childAspectRatio: 0.5,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 16,
+          shrinkWrap: true,
+          physics: const ScrollPhysics(),
+          children: List.generate(provider.length, (index) {
+            Category category = provider.getCategory(index)!;
+
+            return CategoryCard(
+              key: ValueKey(index),
+              category: category,
+              onPressed: () {
+                onPressed(category);
+              },
+            );
+          })),
     );
   }
 }

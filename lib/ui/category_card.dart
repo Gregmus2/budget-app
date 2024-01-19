@@ -10,28 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
-List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<String> exclude = const []}) {
-  final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-
-  List<Widget> cards = [];
-  for (var i = 0; i < provider.length; i++) {
-    Category category = provider.get(i);
-    if (exclude.contains(category.id) || category.isSubCategory()) {
-      continue;
-    }
-
-    cards.add(CategoryCard(
-      key: ValueKey(i),
-      category: category,
-      onPressed: () {
-        onPressed(category);
-      },
-    ));
-  }
-
-  return cards;
-}
-
 class CategoryCard extends StatelessWidget {
   final Category category;
   final Function()? onPressed;

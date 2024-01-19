@@ -53,6 +53,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       inverse: true,
       onPressed: () {
         _showSubcategoryDialog(
+          widget.category?.id,
           null,
           (name, icon) {
             if (widget.category != null) {
@@ -86,7 +87,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.category != null ? "Update category" : "New category"),
-                EntityNameTextInput(nameInput: _nameInput, items: provider.items),
+                EntityNameTextInput(nameInput: _nameInput, isUnique: provider.isNotExists),
               ],
             ),
             actions: [
@@ -171,7 +172,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     super.dispose();
   }
 
-  Future<void> _showSubcategoryDialog(Category? subCategory, Function(String name, IconData icon) onSubmit) async {
+  Future<void> _showSubcategoryDialog(String? parentID, Category? subCategory, Function(String name, IconData icon) onSubmit) async {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -186,7 +187,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               scrollDirection: Axis.vertical,
               child: Column(
                 children: [
-                  EntityNameTextInput(nameInput: subcategoryNameInput, items: provider.items),
+                  EntityNameTextInput(nameInput: subcategoryNameInput, isUnique: (value) => parentID == null ? true : provider.isSubCategoryNotExists(value, parentID)),
                   const SizedBox(
                     height: 10,
                   ),
@@ -242,6 +243,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           ),
             onTap: () {
               _showSubcategoryDialog(
+                widget.category?.id,
                 subcategory,
                     (name, icon) {
                   subcategory.name = name;

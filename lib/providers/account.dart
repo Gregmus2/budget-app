@@ -10,6 +10,7 @@ class AccountProvider extends ChangeNotifier {
   List<Account> _accounts = [];
   final Repository repo;
 
+  // todo get rid of direct call of items if not necessary
   UnmodifiableListView<Account> get items => UnmodifiableListView(_accounts);
 
   AccountProvider(this.repo);
@@ -55,8 +56,8 @@ class AccountProvider extends ChangeNotifier {
     return account;
   }
 
-  Account get(int index) {
-    return _accounts[index];
+  Account? get(int index) {
+    return index < _accounts.length ? _accounts[index] : null;
   }
 
   List<Account> list() {
@@ -105,6 +106,10 @@ class AccountProvider extends ChangeNotifier {
 
   Account getById(String id) {
     return _accounts.firstWhere((element) => element.id == id);
+  }
+
+  bool isNotExists(String name) {
+    return !_accounts.any((element) => element.name == name);
   }
 
   void deleteAll() {

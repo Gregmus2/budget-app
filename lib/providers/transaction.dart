@@ -3,25 +3,26 @@ import 'dart:collection';
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/models/account.dart';
+import 'package:fb/models/category.dart';
 import 'package:fb/models/transaction.dart';
 import 'package:fb/models/transfer_target.dart';
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/category.dart';
 
 class TransactionProvider extends ChangeNotifier {
   List<Transaction> _transactions = [];
   List<Transaction> _dryTransactions = [];
   final Repository repo;
   final AccountProvider accountProvider;
+  final CategoryProvider categoryProvider;
   final StateProvider stateProvider;
 
   UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
 
-  TransactionProvider(this.repo, this.accountProvider, this.stateProvider);
+  TransactionProvider(this.repo, this.accountProvider, this.categoryProvider, this.stateProvider);
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -109,6 +110,22 @@ class TransactionProvider extends ChangeNotifier {
     }
 
     return result;
+  }
+
+  TransferTarget getRecentFromTarget() {
+    if (_transactions.last.fromAccount != null) {
+      return accountProvider.getById(_transactions.last.fromAccount!);
+    }
+
+    return categoryProvider.getByID(_transactions.last.fromCategory!);
+  }
+
+  TransferTarget getRecentToTarget() {
+    if (_transactions.last.toAccount != null) {
+      return accountProvider.getById(_transactions.last.toAccount!);
+    }
+
+    return categoryProvider.getByID(_transactions.last.toCategory!);
   }
 
   void deleteAll() {

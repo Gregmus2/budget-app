@@ -19,12 +19,80 @@ class TransactionsPage extends StatelessWidget implements page.Page {
 
   @override
   Widget build(BuildContext context) {
+    return const Scaffold(
+      body: TransactionList(),
+    );
+  }
+
+  @override
+  List<Widget>? getActions(BuildContext context) {
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+
+    List<Widget> actions = [];
+    if (accountProvider.items.isNotEmpty && categoryProvider.isNotEmpty()) {
+      actions.add(
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TransactionNumPad(
+                    onDoneFunc: (value, date, from, to, note) {
+                      provider.add(note, from, to, value, value, date);
+                      Navigator.pop(context);
+                    },
+                    // todo replace with default currency from user configuration
+                    from: provider.getRecentFromTarget(),
+                    to: provider.getRecentToTarget(),
+                  ),
+                ],
+              ),
+            );
+          },
+          icon: const Icon(Icons.add, color: Colors.white),
+        ),
+      );
+    }
+
+    return actions;
+  }
+
+  @override
+  bool ownAppBar() => false;
+
+  @override
+  Icon getIcon(BuildContext _) {
+    return const Icon(Icons.receipt, color: Colors.white);
+  }
+
+  @override
+  String getLabel() {
+    return 'Transactions';
+  }
+}
+
+class TransactionList extends StatelessWidget {
+  const TransactionList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final TransactionProvider provider = Provider.of<TransactionProvider>(context);
     final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
     final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
-    return Scaffold(
-      body: GroupedListView<Transaction, String>(
+    // todo check for provider.items and if more than some value, render using builder. But first check if it's really needed using year data
+    // todo try List.separated
+    return SingleChildScrollView(
+      child: GroupedListView<Transaction, String>(
+        physics: const ScrollPhysics(),
+        shrinkWrap: true,
         elements: provider.items,
         groupBy: (element) => element.date.day.toString(),
         groupSeparatorBuilder: (String groupByValue) => Padding(
@@ -57,19 +125,19 @@ class TransactionsPage extends StatelessWidget implements page.Page {
           if (transaction.fromAccount != null) {
             from = accountProvider.getById(transaction.fromAccount!);
           } else {
-            Category category = categoryProvider.getById(transaction.fromCategory!);
+            Category category = categoryProvider.getByID(transaction.fromCategory!);
             from = category;
             if (category.parent != null) {
-              parent = categoryProvider.getById(category.parent!);
+              parent = categoryProvider.getByID(category.parent!);
             }
           }
           if (transaction.toAccount != null) {
             to = accountProvider.getById(transaction.toAccount!);
           } else {
-            Category category = categoryProvider.getById(transaction.toCategory!);
+            Category category = categoryProvider.getByID(transaction.toCategory!);
             to = category;
             if (category.parent != null) {
-              parent = categoryProvider.getById(category.parent!);
+              parent = categoryProvider.getByID(category.parent!);
             }
           }
 
@@ -136,57 +204,6 @@ class TransactionsPage extends StatelessWidget implements page.Page {
         sort: false,
       ),
     );
-  }
-
-  @override
-  List<Widget>? getActions(BuildContext context) {
-    final TransactionProvider provider = Provider.of<TransactionProvider>(context);
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-
-    List<Widget> actions = [];
-    if (accountProvider.items.isNotEmpty && categoryProvider.items.isNotEmpty) {
-      actions.add(
-        IconButton(
-          onPressed: () {
-            showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TransactionNumPad(
-                    onDoneFunc: (value, date, from, to, note) {
-                      provider.add(note, from, to, value, value, date);
-                      Navigator.pop(context);
-                    },
-                    // todo replace with default currency from user configuration
-                    from: accountProvider.items.last,
-                    to: categoryProvider.items.where((element) => element.parent == null).first,
-                  ),
-                ],
-              ),
-            );
-          },
-          icon: const Icon(Icons.add, color: Colors.white),
-        ),
-      );
-    }
-
-    return actions;
-  }
-
-  @override
-  bool ownAppBar() => false;
-
-  @override
-  Icon getIcon(BuildContext _) {
-    return const Icon(Icons.receipt, color: Colors.white);
-  }
-
-  @override
-  String getLabel() {
-    return 'Transactions';
   }
 }
 
