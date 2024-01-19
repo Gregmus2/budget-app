@@ -34,8 +34,8 @@ class TransactionProvider extends ChangeNotifier {
 
   int get length => _transactions.length;
 
-  Future<void> updateRange(DateTimeRange range) async {
-    _transactions = await repo.listTransactions(range); // get latest month
+  Future<void> updateRange() async {
+    _transactions = await repo.listTransactions(stateProvider.range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
     notifyListeners();
   }
@@ -98,22 +98,17 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   // todo check if db query would be faster and ?cache
-  Map<String, double> getRangeExpenses() {
-    Map<String, double> monthlyExpense = {};
+  double getRangeExpenses(String? categoryID) {
+    double result = 0;
     for (var i = 0; i < _transactions.length; i++) {
-      if (_transactions[i].toCategory == null) {
+      if (_transactions[i].toCategory != categoryID) {
         continue;
       }
 
-      if (monthlyExpense.containsKey(_transactions[i].toCategory)) {
-        monthlyExpense[_transactions[i].toCategory!] =
-            monthlyExpense[_transactions[i].toCategory]! + _transactions[i].amountTo;
-      } else {
-        monthlyExpense[_transactions[i].toCategory!] = _transactions[i].amountTo;
-      }
+      result += _transactions[i].amountTo;
     }
 
-    return monthlyExpense;
+    return result;
   }
 
   void deleteAll() {

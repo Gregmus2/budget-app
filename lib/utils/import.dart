@@ -82,7 +82,7 @@ class DataImport {
           double.parse(record[_indexAmountTo]), Jiffy.parse(record[_indexDate], pattern: "MM/dd/yy").dateTime);
     }, onDone: () {
       transactionProvider.commitDries().then((_) {
-        transactionProvider.updateRange(stateProvider.range);
+        transactionProvider.updateRange();
 
         EasyLoading.showSuccess('Imported successfully!');
         EasyLoading.dismiss();

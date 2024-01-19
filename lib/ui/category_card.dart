@@ -11,74 +11,51 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 List<Widget> buildCategoryCards(BuildContext context, Function(Category) onPressed, {List<String> exclude = const []}) {
-  List<CategoryStat> categoriesStat = [];
   final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-  final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-  final StateProvider stateProvider = Provider.of<StateProvider>(context);
-  final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-  Map<String, double> totals = transactionProvider.getRangeExpenses();
 
+  List<Widget> cards = [];
   for (var i = 0; i < provider.length; i++) {
-    if (exclude.contains(provider.get(i).id) || provider.get(i).isSubCategory()) {
+    Category category = provider.get(i);
+    if (exclude.contains(category.id) || category.isSubCategory()) {
       continue;
     }
 
-    double? budget;
-    // budgeting works only with standard monthly ranges
-    if (stateProvider.isMonthlyRange) {
-      budget = budgetProvider.getBudgetAmount(
-          provider.get(i).id!, stateProvider.range.start.month, stateProvider.range.start.year);
-    }
-    categoriesStat
-        .add(CategoryStat(provider.get(i), totals[provider.get(i).id] ?? 0, budget, provider.get(i).currency.symbol));
+    cards.add(CategoryCard(
+      key: ValueKey(i),
+      category: category,
+      onPressed: () {
+        onPressed(category);
+      },
+    ));
   }
 
-  return List.generate(
-      categoriesStat.length,
-      (index) => CategoryCard(
-            key: ValueKey(index),
-            color: categoriesStat[index].category.color,
-            name: categoriesStat[index].category.name,
-            spent: categoriesStat[index].spent,
-            total: categoriesStat[index].total,
-            icon: categoriesStat[index].category.icon,
-            currency: categoriesStat[index].category.currency,
-            onPressed: () {
-              onPressed(categoriesStat[index].category);
-            },
-            progress: categoriesStat[index].total == null || categoriesStat[index].spent > categoriesStat[index].total!
-                ? 100
-                : 100 * categoriesStat[index].spent / categoriesStat[index].total!,
-          ));
+  return cards;
 }
 
 class CategoryCard extends StatelessWidget {
-  final double progress;
-  final Color color;
-  final String name;
-  final double spent;
-  final double? total;
-  final IconData icon;
-  final Currency currency;
+  final Category category;
   final Function()? onPressed;
 
-  CategoryCard(
+  const CategoryCard(
       {super.key,
-      required this.progress,
-      required this.color,
-      required this.name,
-      required this.spent,
-      required this.total,
-      required this.icon,
-      required this.currency,
-      this.onPressed}) {
-    assert(progress >= 0 && progress <= 100);
-    assert(spent >= 0);
-    assert(total == null || total! >= 0);
-  }
+      required this.category,
+      this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
+
+    double spent = transactionProvider.getRangeExpenses(category.id);
+    double? total;
+    // budgeting works only with standard monthly ranges
+    if (stateProvider.isMonthlyRange) {
+      total = budgetProvider.getBudgetAmount(
+          category.id, stateProvider.range.start.month, stateProvider.range.start.year);
+    }
+    double progress = (total == null || spent > total) ? 100 : (100 * spent / total);
+
     return TextButton(
       style: ButtonStyle(
         padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
@@ -87,7 +64,7 @@ class CategoryCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(name,
+          Text(category.name,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
@@ -96,22 +73,22 @@ class CategoryCard extends StatelessWidget {
             height: 4,
           ),
           Text(
-            "${(total != null ? total! - spent : 0).toStringAsFixed(2)} ${currency.symbol}",
+            "${(total != null ? total - spent : 0).toStringAsFixed(2)} ${category.currency.symbol}",
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: color.withOpacity(0.5),
+              color: Color(category.color.value).withOpacity(0.5),
             ),
           ),
           const SizedBox(
             height: 4,
           ),
-          CategoryCircle(progress: progress, primaryColor: color, icon: icon),
+          CategoryCircle(progress: progress, primaryColor: category.color, icon: category.icon),
           const SizedBox(
             height: 4,
           ),
           Text(
-            "${spent.toStringAsFixed(2)} ${currency.symbol}",
-            style: TextStyle(color: color),
+            "${spent.toStringAsFixed(2)} ${category.currency.symbol}",
+            style: TextStyle(color: category.color),
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -121,13 +98,13 @@ class CategoryCard extends StatelessWidget {
 }
 
 class CategoryCircle extends StatelessWidget {
-  final double diameter;
+  final double diameter = 50;
   final double progress;
   final Color primaryColor;
   final IconData icon;
 
   const CategoryCircle(
-      {super.key, this.diameter = 50, required this.progress, required this.primaryColor, required this.icon});
+      {super.key, required this.progress, required this.primaryColor, required this.icon});
 
   @override
   Widget build(BuildContext context) {

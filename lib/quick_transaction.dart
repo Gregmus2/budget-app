@@ -26,9 +26,9 @@ class _QuickTransactionState extends State<QuickTransaction> {
   }
 
   Scaffold _buildHomeWidget(BuildContext context) {
-    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
     return Scaffold(
       body: Column(

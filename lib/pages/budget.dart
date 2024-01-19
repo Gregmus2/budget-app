@@ -17,7 +17,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
   @override
   Widget build(BuildContext context) {
     final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-    final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
 
     return Scaffold(
       drawer: const BudgetDrawer(),
@@ -44,7 +44,7 @@ class BudgetPage extends StatelessWidget implements page.Page {
                   currency: category.currency,
                   onDone: (value) {
                     budgetProvider.add(
-                        category.id!, stateProvider.range.start.month, stateProvider.range.start.year, value);
+                        category.id, stateProvider.range.start.month, stateProvider.range.start.year, value);
                     Navigator.pop(context);
                   },
                 ),
@@ -77,14 +77,14 @@ class BudgetPage extends StatelessWidget implements page.Page {
 
 List<Widget> buildBudgetCards(BuildContext context) {
   final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-  final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-  final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-  Map<String, double> totals = transactionProvider.getRangeExpenses();
+  final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
   return List.generate(budgetProvider.length, (index) {
     final budget = budgetProvider.get(index);
     final category = categoryProvider.getById(budget.category);
 
-    return BudgetCard(category: category, spent: totals[budget.category] ?? 0, budget: budget.amount, onPressed: () {});
+    return BudgetCard(category: category, budget: budget.amount, onPressed: () {
+      // todo edit budget
+    });
   });
 }

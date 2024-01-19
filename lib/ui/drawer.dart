@@ -19,10 +19,10 @@ class BudgetDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     StateProvider stateProvider = Provider.of<StateProvider>(context);
-    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
-    AccountProvider accountProvider = Provider.of<AccountProvider>(context);
-    TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
+    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     return Drawer(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -71,7 +71,7 @@ class BudgetDrawer extends StatelessWidget {
                                       onChanged: (int? value) {
                                         setState(() {
                                           stateProvider.setFirstDayOfMonth(value!);
-                                          transactionProvider.updateRange(stateProvider.range);
+                                          transactionProvider.updateRange();
 
                                           Navigator.pop(context);
                                         });

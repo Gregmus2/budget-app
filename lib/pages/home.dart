@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    StateProvider stateProvider = Provider.of<StateProvider>(context);
+    StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
 
     // run quick transaction from home widget
     HomeWidget.widgetClicked.listen((event) {

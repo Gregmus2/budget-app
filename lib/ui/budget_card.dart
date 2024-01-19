@@ -1,18 +1,22 @@
 import 'package:fb/models/category.dart';
+import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BudgetCard extends StatelessWidget {
   final Category category;
-  final double spent;
   final double budget;
   final Function() onPressed;
 
   const BudgetCard(
-      {super.key, required this.category, required this.spent, required this.budget, required this.onPressed});
+      {super.key, required this.category, required this.budget, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    double spent = transactionProvider.getRangeExpenses(category.id);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

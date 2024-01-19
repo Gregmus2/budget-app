@@ -15,9 +15,9 @@ class AccountsPage extends StatelessWidget implements page.Page {
 
   @override
   Widget build(BuildContext context) {
-    final AccountProvider provider = Provider.of<AccountProvider>(context);
-    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+    final AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
     return Scaffold(
       body: ReorderableListView(
