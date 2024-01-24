@@ -23,8 +23,6 @@ import 'app.dart';
 
 // todo performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
 
-// todo split into more widgets
-
 Future<void> main() async {
   // todo download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
   /*LicenseRegistry.addLicense(() async* {

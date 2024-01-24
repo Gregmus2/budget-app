@@ -35,6 +35,13 @@ CustomButton keyStringValueCustomButton(String label, String value, Color? color
       subtitle: subtitle);
 }
 
+CustomButton keyBoolValueCustomButton(String label, bool value, Color? color, Function(bool) onPressed,
+    {String? subtitle}) {
+  return keyValueCustomButton(
+      label, Switch(value: value, onChanged: onPressed, activeColor: color), color, (){},
+      subtitle: subtitle);
+}
+
 CustomButton keyValueCustomButton(String label, Widget value, Color? color, VoidCallback onPressed,
     {String? subtitle}) {
   Widget labelWidget = Text(label, style: const TextStyle(color: Colors.white, fontSize: 15));
@@ -61,3 +68,5 @@ CustomButton keyValueCustomButton(String label, Widget value, Color? color, Void
     ),
   );
 }
+
+

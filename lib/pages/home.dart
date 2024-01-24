@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   final List<page.Page> _pages = [
     const AccountsPage(),
     const TransactionsPage(),
-    const CategoriesTab(),
+    const CategoriesPage(),
     const BudgetPage(),
   ];
 
