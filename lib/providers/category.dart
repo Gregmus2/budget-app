@@ -13,7 +13,7 @@ class CategoryProvider extends ChangeNotifier {
 
   Future<void> init() async {
     final all = await repo.listCategories();
-    _categories = all.where((element) => element.parent == null).toList();
+    _categories = all.where((element) => element.parent == null && !element.archived).toList();
     _categories.sort((a, b) => a.order.compareTo(b.order));
     _subCategories = all.where((element) => element.parent != null).toList();
     _subCategories.sort((a, b) => a.order.compareTo(b.order));
@@ -26,12 +26,10 @@ class CategoryProvider extends ChangeNotifier {
     }
   }
 
-  int get length => _categories.length;
-
   void upsert(Category? category, String name, IconData icon, Color color, Currency currency, CategoryType type,
-      List<Category> subCategories) {
+      List<Category> subCategories, bool archived) {
     if (category == null) {
-      add(name, icon, color, currency, type, subCategories);
+      add(name, icon, color, currency, type, subCategories, archived);
 
       return;
     }
@@ -57,6 +55,7 @@ class CategoryProvider extends ChangeNotifier {
       ..icon = icon
       ..color = color
       ..type = type
+      ..archived = archived
       ..currency = currency;
     updateCategory(category);
 
@@ -64,7 +63,7 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   Category add(
-      String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories) {
+      String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories, bool archived) {
     Category category = Category(
       name: name,
       icon: icon,
@@ -72,6 +71,7 @@ class CategoryProvider extends ChangeNotifier {
       currency: currency,
       order: _categories.isNotEmpty ? _categories.last.order + 1 : 0,
       type: type,
+      archived: archived,
     );
     _categories.add(category);
     repo.create(category);
@@ -117,8 +117,8 @@ class CategoryProvider extends ChangeNotifier {
     return subCategory;
   }
 
-  Category? getCategory(int index) {
-    return index < _categories.length ? _categories[index] : null;
+  List<Category> getCategories({bool archived = false}) {
+    return _categories.where((element) => element.archived == archived).toList();
   }
 
   void updateCategory(Category category) {
@@ -187,10 +187,13 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   // todo check if categories have the same order when reorder. It can be the case when they added on different devices offline
-  void reOrderCategory(int from, int to) {
-    if (from == to) {
+  void reOrderCategory(Category fromCategory, toCategory) {
+    if (fromCategory.id == toCategory.id) {
       return;
     }
+
+    int from = _categories.indexOf(fromCategory);
+    int to = _categories.indexOf(toCategory);
 
     _categories[from].order = _categories[to].order;
     if (to > from) {
@@ -243,6 +246,14 @@ class CategoryProvider extends ChangeNotifier {
     _categories.clear();
     _subCategories.clear();
     repo.deleteAll<CategoryModel>();
+    notifyListeners();
+  }
+
+  void convertToCategory(Category subCategory) {
+    subCategory.parent = null;
+    repo.update(subCategory);
+    _subCategories.remove(subCategory);
+    _categories.add(subCategory);
     notifyListeners();
   }
 }

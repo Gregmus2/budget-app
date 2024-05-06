@@ -25,7 +25,7 @@ class AccountProvider extends ChangeNotifier {
   void upsert(
       Account? account, String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     if (account == null) {
-      add(name, icon, color, currency, type, balance);
+      add(name, icon, color, currency, type, balance, false);
 
       return;
     }
@@ -40,7 +40,7 @@ class AccountProvider extends ChangeNotifier {
     update(account);
   }
 
-  Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
+  Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance, bool archived) {
     Account account = Account(
         name: name,
         icon: icon,
@@ -48,6 +48,7 @@ class AccountProvider extends ChangeNotifier {
         currency: currency,
         type: type,
         balance: balance,
+        archived: archived,
         order: _accounts.isNotEmpty ? _accounts.last.order + 1 : 0);
     _accounts.add(account);
     repo.create(account);

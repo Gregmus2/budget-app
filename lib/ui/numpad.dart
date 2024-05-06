@@ -173,7 +173,7 @@ class FromToButton extends StatelessWidget {
           pageBuilder: (context, animation, secondaryAnimation) {
             return Center(
               child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme.of(context).colorScheme.background,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: entity is Account
@@ -246,6 +246,7 @@ class CategorySelectionPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
+    List<Category> categories = provider.getCategories();
 
     return SingleChildScrollView(
       child: GridView.count(
@@ -256,17 +257,13 @@ class CategorySelectionPopup extends StatelessWidget {
           mainAxisSpacing: 16,
           shrinkWrap: true,
           physics: const ScrollPhysics(),
-          children: List.generate(provider.length, (index) {
-            Category category = provider.getCategory(index)!;
-
-            return CategoryCard(
-              key: ValueKey(index),
-              category: category,
-              onPressed: () {
-                onPressed(category);
-              },
-            );
-          })),
+          children: categories
+              .map((category) => CategoryCard(
+                    key: ValueKey(category.id),
+                    category: category,
+                    onPressed: () => onPressed(category),
+                  ))
+              .toList()),
     );
   }
 }
@@ -342,7 +339,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Theme.of(context).colorScheme.background,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -380,7 +377,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
             cells: _getCells(context),
             showGrid: true,
             style: SpannableGridStyle(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              backgroundColor: Theme.of(context).colorScheme.background,
               spacing: 0.5,
             ),
           ),
@@ -553,7 +550,7 @@ class NumPadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(backgroundColor ?? Theme.of(context).scaffoldBackgroundColor),
+        backgroundColor: MaterialStateProperty.all(backgroundColor ?? Theme.of(context).colorScheme.background),
       ),
       onPressed: onPressed,
       child: Center(

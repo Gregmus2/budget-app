@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 import 'package:fb/models/account.dart';
 import 'package:fb/models/category.dart';
@@ -14,6 +13,7 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// todo add search, sort, filter
 class TransactionsPage extends StatelessWidget implements page.Page {
   const TransactionsPage({super.key});
 
@@ -194,9 +194,9 @@ class TransactionList extends StatelessWidget {
               ],
             ),
             trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
-                style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red),
+                style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red, fontSize: 16),
                 overflow: TextOverflow.ellipsis),
-            contentPadding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
             shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
           );
         },
@@ -205,34 +205,4 @@ class TransactionList extends StatelessWidget {
       ),
     );
   }
-}
-
-class ProgressCirclePainter extends CustomPainter {
-  final Color color;
-
-  const ProgressCirclePainter({super.repaint, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()..color = color;
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 1;
-
-    canvas.drawArc(
-      Rect.fromCenter(
-        center: Offset(size.height / 2, size.width / 2),
-        height: size.height,
-        width: size.width,
-      ),
-      // 90 to -90 start angle
-      (90 - 100 * 1.8) * math.pi / 180,
-      // 0 to 360 sweep angle
-      100 * 3.6 * math.pi / 180,
-      false,
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

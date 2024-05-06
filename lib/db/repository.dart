@@ -25,6 +25,7 @@ class Repository {
 
   Future init(User user) async {
     db = Realm(Configuration.flexibleSync(user, schemas));
+    // db = Realm(Configuration.local(schemas));
 
     // can be disabled for free users
     db.subscriptions.update((mutableSubscriptions) {

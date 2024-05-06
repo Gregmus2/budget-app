@@ -9,12 +9,41 @@ import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AccountsPage extends StatelessWidget implements page.Page {
+class AccountsPage extends StatefulWidget implements page.Page {
   const AccountsPage({super.key});
 
   @override
+  State<AccountsPage> createState() => _AccountsPageState();
+
+  @override
+  List<Widget>? getActions(BuildContext context) => [
+    IconButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
+        },
+        icon: const Icon(Icons.add, color: Colors.white))
+  ];
+
+  @override
+  bool ownAppBar() => false;
+
+  @override
+  Icon getIcon(BuildContext _) {
+    return const Icon(Icons.account_balance_wallet, color: Colors.white);
+  }
+
+  @override
+  String getLabel() {
+    return 'Accounts';
+  }
+}
+
+class _AccountsPageState extends State<AccountsPage> {
+  bool _archived = false;
+
+  @override
   Widget build(BuildContext context) {
-    final AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
+    final AccountProvider provider = Provider.of<AccountProvider>(context);
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
     return Scaffold(
@@ -147,27 +176,5 @@ class AccountsPage extends StatelessWidget implements page.Page {
         ),
       ),
     );
-  }
-
-  @override
-  List<Widget>? getActions(BuildContext context) => [
-        IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
-            },
-            icon: const Icon(Icons.add, color: Colors.white))
-      ];
-
-  @override
-  bool ownAppBar() => false;
-
-  @override
-  Icon getIcon(BuildContext _) {
-    return const Icon(Icons.account_balance_wallet, color: Colors.white);
-  }
-
-  @override
-  String getLabel() {
-    return 'Accounts';
   }
 }

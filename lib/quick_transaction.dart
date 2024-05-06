@@ -1,6 +1,4 @@
 import 'package:fb/common/theme_data.dart';
-import 'package:fb/providers/account.dart';
-import 'package:fb/providers/category.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';

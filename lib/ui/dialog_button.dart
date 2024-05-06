@@ -20,6 +20,6 @@ class DialogButton extends StatelessWidget {
             shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
             alignment: AlignmentDirectional.center,
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
-        child: Text(text, style: TextStyle(color: color, fontSize: 15)));
+        child: Text(text));
   }
 }

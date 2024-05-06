@@ -16,6 +16,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
 
 class DataImport {
   static const _indexDate = 0;
@@ -41,8 +42,8 @@ class DataImport {
     stateProvider = Provider.of<StateProvider>(context, listen: false);
   }
 
-  void import(PlatformFile file) {
-    EasyLoading.show(status: 'loading...');
+  void importAccounts(PlatformFile file) async {
+    await EasyLoading.show(status: 'loading...');
 
     Stream<List<int>> stream = File(file.path!).openRead();
     stream
@@ -50,24 +51,49 @@ class DataImport {
         .transform(const CsvToListConverter(eol: "\n", shouldParseNumbers: false))
         .skip(1)
         .listen((record) {
-      // todo archive suggestions can be added globally
+      record[0] = record[0].toString().trim();
+      record[2] = record[2].toString().trim();
+      addAccount(record[0], record[2], record[3] == '1');
+    }, onDone: () async {
+      await EasyLoading.showSuccess('Imported successfully!');
+      await EasyLoading.dismiss();
+    }, onError: (error) {
+      EasyLoading.showError(error).then((value) => EasyLoading.dismiss());
+    });
+  }
+
+  void importTransactions(PlatformFile file) async {
+    await EasyLoading.show(status: 'loading...');
+
+    Stream<List<int>> stream = File(file.path!).openRead();
+    stream
+        .transform(utf8.decoder)
+        .transform(const CsvToListConverter(eol: "\n", shouldParseNumbers: false))
+        .skip(1)
+        .listen((record) {
+      record[_indexType] = record[_indexType].toString().trim();
+      record[_indexFrom] = record[_indexFrom].toString().trim();
+      record[_indexTo] = record[_indexTo].toString().trim();
+      record[_indexCurrencyFrom] = record[_indexCurrencyFrom].toString().trim();
+      record[_indexCurrencyTo] = record[_indexCurrencyTo].toString().trim();
+
       TransferTarget from, to;
-      switch (record[_indexType].toString().trim()) {
+      switch (record[_indexType]) {
         case "Income":
-          from = addCategoryIfNew(record[_indexFrom], record[_indexCurrencyFrom], CategoryType.income);
-          to = addAccountIfNew(record[_indexTo], record[_indexCurrencyTo]);
+          from = getAccount(record[_indexFrom], record[_indexCurrencyFrom]);
+          to = getTransferTarget(record[_indexTo], record[_indexCurrencyTo], CategoryType.income);
 
           break;
 
         case "Expense":
-          from = addAccountIfNew(record[_indexFrom], record[_indexCurrencyFrom]);
-          to = addCategoryIfNew(record[_indexTo], record[_indexCurrencyTo], CategoryType.expenses);
+          from = getAccount(record[_indexFrom], record[_indexCurrencyFrom]);
+          to = getTransferTarget(record[_indexTo], record[_indexCurrencyTo], CategoryType.expenses);
 
           break;
 
         case "Transfer":
-          from = addAccountIfNew(record[_indexFrom], record[_indexCurrencyFrom]);
-          to = addAccountIfNew(record[_indexTo], record[_indexCurrencyTo]);
+          from = getAccount(record[_indexFrom], record[_indexCurrencyFrom]);
+          to = getAccount(record[_indexTo], record[_indexCurrencyTo]);
 
           break;
 
@@ -78,22 +104,23 @@ class DataImport {
           throw Exception('Unknown transaction type: ${record[_indexType]}');
       }
 
-      transactionProvider.addDry(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
+      transactionProvider.addOnly(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
           double.parse(record[_indexAmountTo]), Jiffy.parse(record[_indexDate], pattern: "MM/dd/yy").dateTime);
-    }, onDone: () {
-      transactionProvider.commitDries().then((_) {
-        transactionProvider.updateRange();
-
-        EasyLoading.showSuccess('Imported successfully!');
-        EasyLoading.dismiss();
-      });
+    }, onDone: () async {
+      transactionProvider.updateRange();
+      await EasyLoading.showSuccess('Imported successfully!');
+      await EasyLoading.dismiss();
     }, onError: (error) {
-      EasyLoading.showError(error);
-      EasyLoading.dismiss();
+      EasyLoading.showError(error).then((value) => EasyLoading.dismiss());
     });
   }
 
-  Category addCategoryIfNew(String nameField, String currencyField, CategoryType type) {
+  TransferTarget getTransferTarget(String nameField, String currencyField, CategoryType type) {
+    final accounts = accountProvider.items.where((element) => element.name == nameField);
+    if (accounts.isNotEmpty) {
+      return accounts.first;
+    }
+    
     String? subCategory;
     List<String> parts = nameField.split('(');
     if (parts.length > 1) {
@@ -104,14 +131,12 @@ class DataImport {
     Category? category;
     if (categoryProvider.isNotExists(nameField)) {
       Currency? currency = Currencies().findByCode(currencyField);
-      category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, []);
+      category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, [], false);
     }
 
     String parentID = categoryProvider.findCategoryByName(nameField)!.id;
-    if (subCategory != null &&
-        categoryProvider.isSubCategoryNotExists(subCategory, parentID)) {
-      category = categoryProvider.addSubcategory(Object().toString(), subCategory, IconPicker.icons.first,
-          parentID);
+    if (subCategory != null && categoryProvider.isSubCategoryNotExists(subCategory, parentID)) {
+      category = categoryProvider.addSubcategory(ObjectId().toString(), subCategory, IconPicker.icons.first, parentID);
     }
 
     if (category == null) {
@@ -125,18 +150,15 @@ class DataImport {
     return category;
   }
 
-  Account addAccountIfNew(String nameField, String currencyField) {
-    Account? account;
-    if (accountProvider.items.where((element) => element.name == nameField).isEmpty) {
-      Currency? currency = Currencies().findByCode(currencyField);
-      currency ??= CommonCurrencies().euro;
-      account = accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0);
-    }
-
-    if (account == null) {
-      return accountProvider.items.firstWhere((element) => element.name == nameField);
-    }
-
-    return account;
+  void addAccount(String nameField, String currencyField, bool archived) {
+    Currency? currency = Currencies().findByCode(currencyField);
+    currency ??= CommonCurrencies().euro;
+    accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0, archived);
+  }
+  
+  Account getAccount(String name, String currencyField) {
+    return accountProvider.items.firstWhere((element) => element.name == name && currencyField == element.currency.isoCode, orElse: () {
+      return accountProvider.items.last;
+    });
   }
 }

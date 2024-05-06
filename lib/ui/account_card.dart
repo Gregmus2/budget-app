@@ -1,3 +1,4 @@
+import 'package:fb/ext/double.dart';
 import 'package:fb/models/account.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class AccountCard extends StatelessWidget {
                             style: const TextStyle(color: Colors.white, fontSize: 18), overflow: TextOverflow.ellipsis),
                       ],
                     ),
-                    Text("${account.balance.toString()} ${account.currency.symbol}",
+                    Text("${account.balance.toPrecision(2)} ${account.currency.symbol}",
                         style: TextStyle(color: account.balance >= 0 ? Colors.green : Colors.red, fontSize: 18),
                         overflow: TextOverflow.ellipsis),
                   ],

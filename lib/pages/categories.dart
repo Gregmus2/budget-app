@@ -38,27 +38,47 @@ class CategoriesPage extends StatefulWidget implements page.Page {
 
 class _CategoriesPageState extends State<CategoriesPage> {
   bool _isEditing = false;
+  bool _isArchived = false;
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       drawer: _isEditing ? null : const BudgetDrawer(),
       appBar: _isEditing ? _editAppBar(context) : _listAppBar(context, () => setState(() => _isEditing = true)),
       // for some reason, SingleChildScrollView prevents elements from rerendering
       // todo show archived categories separately (ideally to render them only when open spoiler)
       body: SingleChildScrollView(
-          child: CategoriesGrid(
-        onPressed: (context, category) =>
-            _isEditing ? _navigateToCategoryCreate(context, category) : _openNumPad(context, category),
-      )),
-      floatingActionButton: _isEditing
-          ? FloatingActionButton(
+        child: CategoriesGrid(
+          archived: _isArchived,
+          onPressed: (context, category) =>
+              _isEditing ? _navigateToCategoryCreate(context, category) : _openNumPad(context, category),
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 30),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          FloatingActionButton(
+            heroTag: 'archive',
+            onPressed: () {
+              setState(() {
+                _isArchived = !_isArchived;
+              });
+            },
+            backgroundColor: _isArchived ? colorScheme.primary : Colors.grey,
+            child: const Icon(Icons.archive_rounded, color: Colors.white), // todo if archived show somehow it
+          ),
+          if (_isEditing)
+            FloatingActionButton(
+              heroTag: 'add',
               onPressed: () {
                 _navigateToCategoryCreate(context, null);
               },
               child: const Icon(Icons.add, color: Colors.white),
             )
-          : null,
+        ]),
+      ),
     );
   }
 
@@ -111,38 +131,35 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
 class CategoriesGrid extends StatelessWidget {
   final Function(BuildContext, Category) onPressed;
+  final bool archived;
 
   const CategoriesGrid({
     super.key,
     required this.onPressed,
+    required this.archived,
   });
 
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
+    final List<Category> categories = provider.getCategories(archived: archived);
 
     return ReorderableGridView.count(
-      onReorder: (oldIndex, newIndex) => provider.reOrderCategory(oldIndex, newIndex),
-      physics: const ScrollPhysics(),
-      crossAxisCount: 4,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 16,
-      childAspectRatio: 0.7,
-      mainAxisExtent: 120,
-      padding: const EdgeInsets.only(top: 10),
-      shrinkWrap: true,
-      children: List.generate(
-        provider.length,
-        (index) {
-          Category category = provider.getCategory(index)!;
-
-          return CategoryCard(
-            key: ValueKey(index),
-            category: category,
-            onPressed: () => onPressed(context, category),
-          );
-        },
-      ),
-    );
+        onReorder: (oldIndex, newIndex) => provider.reOrderCategory(categories[oldIndex], categories[newIndex]),
+        physics: const ScrollPhysics(),
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.7,
+        mainAxisExtent: 120,
+        padding: const EdgeInsets.only(top: 10),
+        shrinkWrap: true,
+        children: categories
+            .map((category) => CategoryCard(
+                  key: ValueKey(category.id),
+                  category: category,
+                  onPressed: () => onPressed(context, category),
+                ))
+            .toList());
   }
 }

@@ -17,7 +17,7 @@ class BudgetDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
     StateProvider stateProvider = Provider.of<StateProvider>(context);
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
@@ -25,21 +25,22 @@ class BudgetDrawer extends StatelessWidget {
     BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     return Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: colorScheme.background,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
+              color: colorScheme.primary,
             ),
             child: null,
           ),
+          // todo add automatic archive of old accounts and categories
           StringDrawerCard(
               name: "Sign Out",
               value: stateProvider.user?.profile.name,
               icon: Icons.account_circle,
-              color: theme.colorScheme.primary,
+              color: colorScheme.primary,
               onPressed: () {
                 stateProvider.user!.logOut();
                 // it will notify app page about that to rebuild body with LoginPage
@@ -49,14 +50,14 @@ class BudgetDrawer extends StatelessWidget {
             name: "First day of month",
             value: stateProvider.firstDayOfMonth.toString(),
             icon: Icons.calendar_month,
-            color: theme.colorScheme.primary,
+            color: colorScheme.primary,
             onPressed: () {
               // todo move
               showDialog<void>(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    backgroundColor: theme.scaffoldBackgroundColor,
+                    backgroundColor: colorScheme.background,
                     content: StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
                         return SingleChildScrollView(
@@ -64,8 +65,7 @@ class BudgetDrawer extends StatelessWidget {
                             children: List<Widget>.generate(
                                 30,
                                 (index) => RadioListTile<int>(
-                                      title: Text((index + 1).toString(),
-                                          style: const TextStyle(color: Colors.white, fontSize: 18)),
+                                      title: Text((index + 1).toString()),
                                       value: index + 1,
                                       groupValue: stateProvider.firstDayOfMonth,
                                       onChanged: (int? value) {
@@ -87,22 +87,35 @@ class BudgetDrawer extends StatelessWidget {
             },
           ),
           StringDrawerCard(
-              name: "Import CSV",
+              name: "Import Accounts",
               icon: Icons.upload,
-              color: theme.colorScheme.primary,
+              color: colorScheme.primary,
               onPressed: () {
                 FilePicker.platform.pickFiles().then((result) {
                   if (result == null) {
                     return;
                   }
 
-                  DataImport(context).import(result.files.first);
+                  DataImport(context).importAccounts(result.files.first);
+                });
+              }),
+          StringDrawerCard(
+              name: "Import Transactions",
+              icon: Icons.upload,
+              color: colorScheme.primary,
+              onPressed: () {
+                FilePicker.platform.pickFiles().then((result) {
+                  if (result == null) {
+                    return;
+                  }
+
+                  DataImport(context).importTransactions(result.files.first);
                 });
               }),
           StringDrawerCard(
               name: "Clean Data",
               icon: Icons.highlight_remove,
-              color: theme.colorScheme.primary,
+              color: colorScheme.primary,
               onPressed: () {
                 showDialog(
                   context: context,

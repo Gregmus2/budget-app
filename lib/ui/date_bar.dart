@@ -15,8 +15,6 @@ class DateBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _DateBarState extends State<DateBar> {
-  DateTimeRange range = DateTimeRange(start: DateTime.now(), end: DateTime.now());
-
   @override
   Widget build(BuildContext context) {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
@@ -33,7 +31,7 @@ class _DateBarState extends State<DateBar> {
           icon: Icon(Icons.arrow_back_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),
         Text(
-            "${DateFormat("dd MMM yyyy").format(range.start)} - ${DateFormat("dd MMM yyyy").format(stateProvider.range.end)}",
+            "${DateFormat("dd MMM yyyy").format(stateProvider.range.start)} - ${DateFormat("dd MMM yyyy").format(stateProvider.range.end)}",
             style: const TextStyle(color: Colors.white)),
         IconButton(
           onPressed: () {

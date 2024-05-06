@@ -23,6 +23,8 @@ import 'app.dart';
 
 // todo performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
 
+// todo https://pub.dev/packages/dynamic_color
+
 Future<void> main() async {
   // todo download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
   /*LicenseRegistry.addLicense(() async* {
@@ -34,7 +36,6 @@ Future<void> main() async {
   Currencies().registerList(<Currency>[
     Currency.create('UAH', 2,
         symbol: '₴',
-        invertSeparators: true,
         name: 'Ukrainian Hryvnia',
         country: 'Ukraine',
         pattern: 'S0.00',

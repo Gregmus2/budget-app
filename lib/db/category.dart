@@ -1,6 +1,6 @@
 import 'package:realm/realm.dart';
 
-part 'category.g.dart';
+part 'category.realm.dart';
 
 @RealmModel()
 class _CategoryModel {
@@ -8,7 +8,6 @@ class _CategoryModel {
   @PrimaryKey()
   late final ObjectId id;
   @MapTo("owner_id")
-  @Indexed()
   late String ownerId;
   late String name;
   late int iconCode;

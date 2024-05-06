@@ -1,6 +1,4 @@
-import 'dart:collection';
 
-import 'package:fb/models/transfer_target.dart';
 import 'package:flutter/material.dart';
 
 class EntityNameTextInput extends StatelessWidget {

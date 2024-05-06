@@ -1,13 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:fb/common/models.dart';
 import 'package:fb/models/category.dart';
 import 'package:fb/providers/budget.dart';
-import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class CategoryCard extends StatelessWidget {

@@ -47,7 +47,7 @@ class Account implements Model, TransferTarget {
       'icon_font': icon.fontFamily,
       'color': color.value,
       'archived': (archived) ? 1 : 0,
-      'currency': currency.code,
+      'currency': currency.isoCode,
       'order': order,
       'balance': balance,
     };
@@ -96,7 +96,7 @@ class Account implements Model, TransferTarget {
       icon.codePoint,
       color.value,
       archived,
-      currency.code,
+      currency.isoCode,
       order,
       balance,
       iconFont: icon.fontFamily,

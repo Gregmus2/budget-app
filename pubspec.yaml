@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.2 <3.0.0'
+  sdk: '>=3.0.2 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -40,19 +40,19 @@ dependencies:
   path: ^1.8.2
   provider: ^6.0.5
   english_words: ^4.0.0
-  money2: ^4.0.0
+  money2: ^5.0.1
   reorderable_grid_view: ^2.2.6
   spannable_grid: ^0.3.0
-  intl: ^0.18.1
+  intl: ^0.19.0
   grouped_list: ^5.1.2
-  home_widget: ^0.3.0
+  home_widget: ^0.5.0
   shared_preferences: ^2.2.0
-  file_picker: ^6.1.1
-  csv: ^5.1.1
+  file_picker: ^8.0.3
+  csv: ^6.0.0
   flutter_easyloading: ^3.0.5
   jiffy: ^6.2.1
-  google_sign_in: ^6.1.6
-  realm: ^1.6.0
+  google_sign_in: ^6.2.1
+  realm: ^2.2.1
 
 dev_dependencies:
   flutter_test:

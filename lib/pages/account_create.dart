@@ -21,22 +21,24 @@ class AccountCreatePage extends StatefulWidget {
 }
 
 class _AccountCreatePageState extends State<AccountCreatePage> {
-  late IconData icon;
-  late Color color;
-  late Currency currency;
-  late AccountType type;
-  late double balance;
+  late IconData _icon;
+  late Color _color;
+  late Currency _currency;
+  late AccountType _type;
+  late double _balance;
+  late bool _archived;
   late final TextEditingController _nameInput;
 
   @override
   void initState() {
     super.initState();
 
-    icon = widget.account?.icon ?? Icons.hourglass_empty;
-    color = widget.account?.color ?? Colors.blue;
-    currency = widget.account?.currency ?? CommonCurrencies().euro;
-    type = widget.account?.type ?? AccountType.regular;
-    balance = widget.account?.balance ?? 0;
+    _icon = widget.account?.icon ?? Icons.hourglass_empty;
+    _color = widget.account?.color ?? Colors.blue;
+    _currency = widget.account?.currency ?? CommonCurrencies().euro;
+    _type = widget.account?.type ?? AccountType.regular;
+    _balance = widget.account?.balance ?? 0;
+    _archived = widget.account?.archived ?? false;
     _nameInput = TextEditingController(text: widget.account?.name);
   }
 
@@ -49,7 +51,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: color,
+          backgroundColor: _color,
           foregroundColor: Colors.white,
           toolbarHeight: 100,
           title: Column(
@@ -62,7 +64,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  provider.upsert(widget.account, _nameInput.text, icon, color, currency, type, balance);
+                  provider.upsert(widget.account, _nameInput.text, _icon, _color, _currency, _type, _balance);
 
                   Navigator.pop(context);
                 },
@@ -78,46 +80,73 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
         ),
         body: ListView(
           children: <Widget>[
-            keyStringValueCustomButton("Type", type.name, color, () => _showTypeDialog()),
-            keyStringValueCustomButton("Balance", "${balance.toString()} ${currency.symbol}", color, () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => SimpleNumPad(
-                  number: balance,
-                  currency: currency,
-                  onDone: (value) {
-                    setState(() {
-                      balance = value;
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              );
-            }),
-            keyStringValueCustomButton("Currency", currency.code, color, () {
-              showCurrencyDialog(
-                context,
-                (currency) {
-                  setState(() {
-                    this.currency = currency;
-                  });
+            EntitySettingString(label: "Type", value: _type.name, color: _color, onPressed: () => _showTypeDialog()),
+            EntitySettingString(
+                label: "Balance",
+                value: "${_balance.toString()} ${_currency.symbol}",
+                color: _color,
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => SimpleNumPad(
+                      number: _balance,
+                      currency: _currency,
+                      onDone: (value) {
+                        setState(() {
+                          _balance = value;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                }),
+            EntitySettingString(
+                label: "Currency",
+                value: _currency.isoCode,
+                color: _color,
+                onPressed: () {
+                  showCurrencyDialog(
+                    context,
+                    (currency) {
+                      setState(() {
+                        this._currency = currency;
+                      });
+                    },
+                  );
                 },
-              );
-            }, subtitle: currency.name),
-            keyValueCustomButton("Icon", Icon(icon, color: color), color, () {
-              showIconDialog(context, color, icon, (icon) {
+                subtitle: _currency.name),
+            EntitySetting(
+                label: "Icon",
+                value: Icon(_icon, color: _color),
+                color: _color,
+                onPressed: () {
+                  showIconDialog(context, _color, _icon, (icon) {
+                    setState(() {
+                      this._icon = icon;
+                    });
+                  });
+                }),
+            EntitySetting(
+                label: "Color",
+                value: Icon(Icons.circle, color: _color),
+                color: _color,
+                onPressed: () {
+                  showColorDialog(context, _color, (color) {
+                    setState(() {
+                      this._color = color;
+                    });
+                  });
+                }),
+            EntitySettingBool(
+              label: "Archived",
+              value: _archived,
+              color: _color,
+              onPressed: (value) {
                 setState(() {
-                  this.icon = icon;
+                  _archived = value;
                 });
-              });
-            }),
-            keyValueCustomButton("Color", Icon(Icons.circle, color: color), color, () {
-              showColorDialog(context, color, (color) {
-                setState(() {
-                  this.color = color;
-                });
-              });
-            }),
+              },
+            ),
           ],
         ),
       ),
@@ -131,13 +160,13 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: Theme.of(context).colorScheme.background,
             children: List<Widget>.generate(
                 AccountType.values.length,
                 (index) => SimpleDialogOption(
                       onPressed: () {
                         setState(() {
-                          type = AccountType.values[index];
+                          _type = AccountType.values[index];
                         });
                         Navigator.pop(context);
                       },

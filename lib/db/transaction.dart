@@ -1,6 +1,6 @@
 import 'package:realm/realm.dart';
 
-part 'transaction.g.dart';
+part 'transaction.realm.dart';
 
 @RealmModel()
 class _TransactionModel {
@@ -8,7 +8,6 @@ class _TransactionModel {
   @PrimaryKey()
   late final ObjectId id;
   @MapTo("owner_id")
-  @Indexed()
   late String ownerId;
   late ObjectId? fromAccount;
   late ObjectId? fromCategory;
@@ -17,6 +16,5 @@ class _TransactionModel {
   late String note;
   late double amountFrom;
   late double amountTo;
-  @Indexed()
   late int date;
 }

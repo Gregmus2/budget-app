@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           items: List.generate(
               _pages.length,
               (index) =>
-                  BottomNavigationBarItem(icon: _pages[index].getIcon(context), label: _pages[index].getLabel())),
+                  NavigationDestination(icon: _pages[index].getIcon(context), label: _pages[index].getLabel())),
           pageIndex: pageIndex,
           onSelectTab: (int index) => setState(() {
             if (_pages[index] is BudgetPage && !stateProvider.isMonthlyRange) {

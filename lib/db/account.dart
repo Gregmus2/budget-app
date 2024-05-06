@@ -1,6 +1,6 @@
 import 'package:realm/realm.dart';
 
-part 'account.g.dart';
+part 'account.realm.dart';
 
 @RealmModel()
 class _AccountModel {
@@ -8,7 +8,6 @@ class _AccountModel {
   @PrimaryKey()
   late final ObjectId id;
   @MapTo("owner_id")
-  @Indexed()
   late String ownerId;
   late String name;
   late int type;

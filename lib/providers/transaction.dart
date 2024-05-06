@@ -41,6 +41,8 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int get dryLength => _dryTransactions.length;
+
   void addDry(String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) {
     Transaction transaction = Transaction(
         note: note,
@@ -56,12 +58,24 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   Future<void> commitDries() async {
-    repo.createBatch<TransactionModel>(_dryTransactions.map((e) => e.toRealmObject(stateProvider.userID!)).toList());
+    await repo.createBatch<TransactionModel>(_dryTransactions.map((e) => e.toRealmObject(stateProvider.userID!)).toList());
     _dryTransactions = [];
-    notifyListeners();
   }
 
   Future<void> add(
+      String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) async {
+    addOnly(note, from, to, amountFrom, amountTo, date);
+    if (from is Account) {
+      accountProvider.addBalance(from, -amountFrom);
+    }
+    if (to is Account) {
+      accountProvider.addBalance(to, amountTo);
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> addOnly(
       String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) async {
     Transaction transaction = Transaction(
         note: note,
@@ -74,15 +88,6 @@ class TransactionProvider extends ChangeNotifier {
         date: date);
     _transactions.add(transaction);
     repo.create(transaction);
-
-    if (from is Account) {
-      accountProvider.addBalance(from, -amountFrom);
-    }
-    if (to is Account) {
-      accountProvider.addBalance(to, amountTo);
-    }
-
-    notifyListeners();
   }
 
   void update(Transaction transaction) {
