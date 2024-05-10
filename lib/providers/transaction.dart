@@ -9,6 +9,7 @@ import 'package:fb/models/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
+import 'package:fb/utils/dates.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,7 +21,21 @@ class TransactionProvider extends ChangeNotifier {
   final CategoryProvider categoryProvider;
   final StateProvider stateProvider;
 
+  List<Transaction> get previousItems {
+    final range = getPreviousRange(stateProvider.range, stateProvider.rangeType);
+    final transactions = repo.listTransactions(range); // get latest month
+    transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+
+    return transactions;
+  }
   UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
+  List<Transaction> get nextItems {
+    final range = getNextRange(stateProvider.range, stateProvider.rangeType);
+    final transactions = repo.listTransactions(range); // get latest month
+    transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+
+    return transactions;
+  }
 
   TransactionProvider(this.repo, this.accountProvider, this.categoryProvider, this.stateProvider);
 
@@ -29,16 +44,23 @@ class TransactionProvider extends ChangeNotifier {
     final DateTime now = DateTime.now();
     final DateTime start = DateTime(now.year, now.month, prefs.getInt(firstDayOfMonthKey) ?? 1);
     final DateTime end = start.copyWith(month: start.month + 1);
-    _transactions = await repo.listTransactions(DateTimeRange(start: start, end: end)); // get latest month
+    final range = DateTimeRange(start: start, end: end);
+    _transactions = repo.listTransactions(range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
   int get length => _transactions.length;
 
-  Future<void> updateRange() async {
-    _transactions = await repo.listTransactions(stateProvider.range); // get latest month
+  void updateRange() {
+    _transactions = repo.listTransactions(stateProvider.range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
+
     notifyListeners();
+  }
+
+  void silentUpdateRange() async {
+    _transactions = repo.listTransactions(stateProvider.range); // get latest month
+    _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
   int get dryLength => _dryTransactions.length;

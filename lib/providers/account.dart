@@ -16,7 +16,7 @@ class AccountProvider extends ChangeNotifier {
   AccountProvider(this.repo);
 
   Future<void> init() async {
-    _accounts = await repo.listAccounts();
+    _accounts = repo.listAccounts();
     _accounts.sort((a, b) => a.order.compareTo(b.order));
   }
 

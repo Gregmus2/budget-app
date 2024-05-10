@@ -42,7 +42,7 @@ class Repository {
     db.write(() => db.add(model.toRealmObject(stateProvider.userID!)));
   }
 
-  Future<List<Category>> listCategories() async {
+  List<Category> listCategories() {
     final RealmResults<CategoryModel> results = db.all<CategoryModel>();
 
     return List.generate(results.length, (i) {
@@ -50,7 +50,7 @@ class Repository {
     });
   }
 
-  Future<List<Account>> listAccounts() async {
+  List<Account> listAccounts() {
     final RealmResults<AccountModel> results = db.all<AccountModel>();
 
     return List.generate(results.length, (i) {
@@ -58,7 +58,7 @@ class Repository {
     });
   }
 
-  Future<List<model.Transaction>> listTransactions(DateTimeRange range) async {
+  List<model.Transaction> listTransactions(DateTimeRange range) {
     final RealmResults<TransactionModel> results = db.query<TransactionModel>(
         'date >= \$0 AND date <= \$1 SORT(date ASC)',
         [range.start.millisecondsSinceEpoch ~/ 1000, range.end.millisecondsSinceEpoch ~/ 1000]);
@@ -68,7 +68,7 @@ class Repository {
     });
   }
 
-  Future<List<Budget>> listBudgets(int month, int year) async {
+  List<Budget> listBudgets(int month, int year) {
     final RealmResults<BudgetModel> results = db.query<BudgetModel>('month = \$0 AND year = \$1', [month, year]);
 
     return List.generate(results.length, (i) {

@@ -12,7 +12,7 @@ class CategoryProvider extends ChangeNotifier {
   CategoryProvider(this.repo);
 
   Future<void> init() async {
-    final all = await repo.listCategories();
+    final all = repo.listCategories();
     _categories = all.where((element) => element.parent == null && !element.archived).toList();
     _categories.sort((a, b) => a.order.compareTo(b.order));
     _subCategories = all.where((element) => element.parent != null).toList();

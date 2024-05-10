@@ -18,6 +18,7 @@ import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
+// todo check with profile mode and improve performance (Exhausted heap space)
 class DataImport {
   static const _indexDate = 0;
   static const _indexType = 1;
@@ -53,7 +54,7 @@ class DataImport {
         .listen((record) {
       record[0] = record[0].toString().trim();
       record[2] = record[2].toString().trim();
-      addAccount(record[0], record[2], record[3] == '1');
+      addAccount(record[0], record[2], false);
     }, onDone: () async {
       await EasyLoading.showSuccess('Imported successfully!');
       await EasyLoading.dismiss();
