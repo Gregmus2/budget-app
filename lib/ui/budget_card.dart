@@ -9,8 +9,7 @@ class BudgetCard extends StatelessWidget {
   final double budget;
   final Function() onPressed;
 
-  const BudgetCard(
-      {super.key, required this.category, required this.budget, required this.onPressed});
+  const BudgetCard({super.key, required this.category, required this.budget, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +24,12 @@ class BudgetCard extends StatelessWidget {
                 onPressed: onPressed,
                 style: const ButtonStyle(
                     alignment: AlignmentDirectional.centerStart,
-                    shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
-                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
+                    shape: WidgetStatePropertyAll(RoundedRectangleBorder()),
+                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    CategoryCircle(progress: 100, primaryColor: category.color, icon: category.icon),
+                    CategoryIcon(category: category),
                     const SizedBox(
                       width: 10,
                     ),

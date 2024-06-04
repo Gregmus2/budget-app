@@ -47,14 +47,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       drawer: _isEditing ? null : const BudgetDrawer(),
       appBar: _isEditing ? _editAppBar(context) : _listAppBar(context, () => setState(() => _isEditing = true)),
-      // for some reason, SingleChildScrollView prevents elements from rerendering
-      // todo show archived categories separately (ideally to render them only when open spoiler)
-      body: SingleChildScrollView(
-        child: CategoriesGrid(
-          archived: _isArchived,
-          onPressed: (context, category) =>
-              _isEditing ? _navigateToCategoryCreate(context, category) : _openNumPad(context, category),
-        ),
+      // todo show archived categories separately
+      body: CategoriesGrid(
+        archived: _isArchived,
+        onPressed: (context, category) =>
+            _isEditing ? _navigateToCategoryCreate(context, category) : _openNumPad(context, category),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(left: 30),
@@ -144,22 +141,23 @@ class CategoriesGrid extends StatelessWidget {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
     final List<Category> categories = provider.getCategories(archived: archived);
 
-    return ReorderableGridView.count(
+    return ReorderableGridView.builder(
         onReorder: (oldIndex, newIndex) => provider.reOrderCategory(categories[oldIndex], categories[newIndex]),
         physics: const ScrollPhysics(),
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.7,
-        mainAxisExtent: 120,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.7,
+          mainAxisExtent: 120,
+        ),
         padding: const EdgeInsets.only(top: 10),
         shrinkWrap: true,
-        children: categories
-            .map((category) => CategoryCard(
-                  key: ValueKey(category.id),
-                  category: category,
-                  onPressed: () => onPressed(context, category),
-                ))
-            .toList());
+        itemCount: categories.length,
+        itemBuilder: (context, index) => CategoryCard(
+              key: ValueKey(categories[index].id),
+              category: categories[index],
+              onPressed: () => onPressed(context, categories[index]),
+            ));
   }
 }

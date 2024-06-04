@@ -11,29 +11,13 @@ class CategoryCard extends StatelessWidget {
   final Category category;
   final Function()? onPressed;
 
-  const CategoryCard(
-      {super.key,
-      required this.category,
-      this.onPressed});
+  const CategoryCard({super.key, required this.category, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    final StateProvider stateProvider = Provider.of<StateProvider>(context);
-    final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
-
-    double spent = transactionProvider.getRangeExpenses(category.id);
-    double? total;
-    // budgeting works only with standard monthly ranges
-    if (stateProvider.isMonthlyRange) {
-      total = budgetProvider.getBudgetAmount(
-          category.id, stateProvider.range.start.month, stateProvider.range.start.year);
-    }
-    double progress = (total == null || spent > total) ? 100 : (100 * spent / total);
-
     return TextButton(
       style: ButtonStyle(
-        padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+        padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
       ),
       onPressed: onPressed,
       child: Column(
@@ -44,59 +28,102 @@ class CategoryCard extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
               )),
-          const SizedBox(
-            height: 4,
-          ),
-          Text(
-            "${(total != null ? total - spent : 0).toStringAsFixed(2)} ${category.currency.symbol}",
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Color(category.color.value).withOpacity(0.5),
-            ),
-          ),
-          const SizedBox(
-            height: 4,
-          ),
-          CategoryCircle(progress: progress, primaryColor: category.color, icon: category.icon),
-          const SizedBox(
-            height: 4,
-          ),
-          Text(
-            "${spent.toStringAsFixed(2)} ${category.currency.symbol}",
-            style: TextStyle(color: category.color),
-            overflow: TextOverflow.ellipsis,
-          ),
+          CategoryWithProgress(
+            category: category,
+            // optimization purpose
+            preRenderedIcon: CategoryIcon(category: category),
+          )
         ],
       ),
     );
   }
 }
 
-class CategoryCircle extends StatelessWidget {
-  final double diameter = 50;
-  final double progress;
-  final Color primaryColor;
-  final IconData icon;
+class CategoryIcon extends StatelessWidget {
+  const CategoryIcon({
+    super.key,
+    required this.category,
+  });
 
-  const CategoryCircle(
-      {super.key, required this.progress, required this.primaryColor, required this.icon});
+  final Category category;
 
   @override
   Widget build(BuildContext context) {
-    double iconSize = diameter / 2.2;
-
     return CircleAvatar(
-      maxRadius: diameter / 2,
-      backgroundColor: primaryColor.withOpacity(0.5),
-      child: CustomPaint(
-        painter: ProgressCirclePainter(progress: 100, color: primaryColor, stroke: true),
-        child: CustomPaint(
-          painter: ProgressCirclePainter(progress: progress, color: primaryColor),
-          child: Padding(
-            padding: EdgeInsets.all((diameter - iconSize) / 2),
-            child: Icon(icon, size: iconSize, color: Colors.white),
+      radius: diameter / 2,
+      backgroundColor: category.color.withOpacity(0.5),
+      child: Icon(category.icon, size: diameter / 2.2, color: Colors.white),
+    );
+  }
+}
+
+class CategoryWithProgress extends StatelessWidget {
+  final Category category;
+  final Widget preRenderedIcon;
+
+  const CategoryWithProgress({super.key, required this.category, required this.preRenderedIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
+    final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
+
+    double spent = transactionProvider.getRangeExpenses(category.id);
+    double? total;
+    // budgeting works only with standard monthly ranges
+    if (stateProvider.isMonthlyRange) {
+      total =
+          budgetProvider.getBudgetAmount(category.id, stateProvider.range.start.month, stateProvider.range.start.year);
+    }
+    double progress = (total == null || spent > total) ? 100 : (100 * spent / total);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${(total != null ? total - spent : 0).toStringAsFixed(2)} ${category.currency.symbol}",
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Color(category.color.value).withOpacity(0.5),
           ),
         ),
+        const SizedBox(
+          height: 4,
+        ),
+        Stack(children: [
+          ProgressCircle(progress: progress, primaryColor: category.color),
+          preRenderedIcon,
+        ]),
+        const SizedBox(
+          height: 4,
+        ),
+        Text(
+          "${spent.toStringAsFixed(2)} ${category.currency.symbol}",
+          style: TextStyle(color: category.color),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+const double diameter = 50;
+
+class ProgressCircle extends StatelessWidget {
+  final double progress;
+  final Color primaryColor;
+
+  const ProgressCircle({super.key, required this.progress, required this.primaryColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: ProgressCirclePainter(progress: progress, color: primaryColor),
+      foregroundPainter: ProgressCirclePainter(progress: 100, color: primaryColor, stroke: true),
+      child: const SizedBox(
+        height: diameter,
+        width: diameter,
       ),
     );
   }
