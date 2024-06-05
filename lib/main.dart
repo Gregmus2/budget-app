@@ -62,7 +62,7 @@ Future<void> _runApp(Widget app) async {
   CategoryProvider categoryProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
   TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider, categoryProvider, stateProvider);
-  BudgetProvider budgetProvider = BudgetProvider(repo);
+  BudgetProvider budgetProvider = BudgetProvider(repo, stateProvider);
 
   await stateProvider.init();
   if (realmApp.currentUser != null) {

@@ -4,6 +4,8 @@ import 'dart:collection';
 
 import 'package:fb/db/budget.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/providers/state.dart';
+import 'package:fb/utils/dates.dart';
 import 'package:flutter/material.dart';
 
 import '../models/budget.dart';
@@ -11,14 +13,15 @@ import '../models/budget.dart';
 class BudgetProvider extends ChangeNotifier {
   List<Budget> _budgets = [];
   final Repository repo;
+  final StateProvider stateProvider;
 
   UnmodifiableListView<Budget> get items => UnmodifiableListView(_budgets);
 
-  BudgetProvider(this.repo);
+  BudgetProvider(this.repo, this.stateProvider);
 
   Future<void> init() async {
     // todo update budgets every range change
-    _budgets = await repo.listBudgets(DateTime.now().month, DateTime.now().year);
+    _budgets = repo.listBudgets(DateTime.now().month, DateTime.now().year);
   }
 
   int get length => _budgets.length;
@@ -47,6 +50,15 @@ class BudgetProvider extends ChangeNotifier {
     final target = _budgets.firstWhere((element) => element.id == budget.id);
     _budgets[_budgets.indexOf(target)] = budget;
     repo.update(budget);
+    notifyListeners();
+  }
+
+  void updateRange() {
+    if (stateProvider.rangeType != RangeType.monthly) {
+      return;
+    }
+
+    _budgets = repo.listBudgets(stateProvider.range.start.month, stateProvider.range.start.year);
     notifyListeners();
   }
 

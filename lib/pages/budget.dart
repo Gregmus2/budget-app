@@ -86,27 +86,31 @@ class NoBudgetCategoriesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context);
+    BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
     List<Category> categories = categoryProvider.getExclude(budgetProvider.getCategories());
 
-    return GridView.count(
+    return GridView.builder(
       physics: const ScrollPhysics(),
       shrinkWrap: true,
-      crossAxisCount: 4,
-      childAspectRatio: 0.7,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 16,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.7,
+        mainAxisExtent: 120,
+      ),
       padding: const EdgeInsets.symmetric(vertical: 10),
-      children: List.generate(
-          categories.length,
-          (index) => CategoryCard(
-                key: ValueKey(index),
-                category: categories[index],
-                onPressed: () {
-                  _openNumPad(budgetProvider, context, categories[index]);
-                },
-              )),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        return CategoryCard(
+          key: ValueKey(index),
+          category: categories[index],
+          onPressed: () {
+            _openNumPad(budgetProvider, context, categories[index]);
+          },
+        );
+      },
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:fb/models/transaction.dart';
 import 'package:fb/models/transfer_target.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
@@ -95,6 +96,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget build(BuildContext context) {
     final TransactionProvider provider = Provider.of<TransactionProvider>(context);
     final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
+    final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     return PageView.builder(
       controller: _controller,
@@ -117,6 +119,7 @@ class _TransactionListState extends State<TransactionList> {
         }
         // to not cause page rebuild in this case
         provider.silentUpdateRange();
+        budgetProvider.updateRange();
         currentIndex = index;
       },
     );

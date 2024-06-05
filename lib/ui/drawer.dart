@@ -72,6 +72,7 @@ class BudgetDrawer extends StatelessWidget {
                                         setState(() {
                                           stateProvider.setFirstDayOfMonth(value!);
                                           transactionProvider.updateRange();
+                                          budgetProvider.updateRange();
 
                                           Navigator.pop(context);
                                         });
