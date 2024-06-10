@@ -223,7 +223,7 @@ class TransactionsGrid extends StatelessWidget {
                 ],
               ),
               Text(transaction.note,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                  style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
             ],
           ),
           trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
@@ -256,17 +256,18 @@ class TransactionsSeparator extends StatelessWidget {
       children: [
         Text(text,
             style: TextStyle(
-              fontSize: 20,
+              height: 1,
+              fontSize: 25,
               fontWeight: FontWeight.bold,
               color: Colors.grey.shade400,
             ),
             overflow: TextOverflow.ellipsis),
-        const SizedBox(width: 5),
+        const SizedBox(width: 3),
         Text(DateFormat(DateFormat.MONTH).format(date),
             style: TextStyle(
+              height: 1.3,
               fontSize: 16,
               color: Colors.grey.shade400,
-              fontWeight: FontWeight.bold,
             ),
             overflow: TextOverflow.ellipsis)
       ],

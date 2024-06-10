@@ -22,6 +22,10 @@ class AccountProvider extends ChangeNotifier {
 
   int get length => _accounts.length;
 
+  List<Account> getAccounts({bool archived = false, AccountType? type}) {
+    return _accounts.where((element) => element.archived == archived && (type == null || element.type == type)).toList();
+  }
+
   void upsert(
       Account? account, String name, IconData icon, Color color, Currency currency, AccountType type, double balance) {
     if (account == null) {

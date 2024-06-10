@@ -127,10 +127,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      "Subcategories",
-                      style: TextStyle(color: Colors.white, fontSize: 15),
-                    ),
+                    child: Text("Subcategories"),
                   ),
                 ),
                 Wrap(
