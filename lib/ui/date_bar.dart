@@ -40,6 +40,7 @@ class _DateBarState extends State<DateBar> {
           onPressed: () {
             stateProvider.nextRange();
             transactionProvider.updateRange();
+            budgetProvider.updateRange();
           },
           icon: Icon(Icons.arrow_forward_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
         ),

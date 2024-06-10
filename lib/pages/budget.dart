@@ -1,3 +1,4 @@
+import 'package:fb/models/budget.dart';
 import 'package:fb/models/category.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/budget.dart';
@@ -9,6 +10,7 @@ import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/drawer.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
+import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class BudgetPage extends StatelessWidget implements page.Page {
@@ -66,13 +68,30 @@ class BudgetList extends StatelessWidget {
         budgetProvider.length,
         (index) {
           final budget = budgetProvider.get(index);
+          final category = categoryProvider.getByID(budget.category);
 
           return BudgetCard(
-              category: categoryProvider.getByID(budget.category),
+              category: category,
               budget: budget.amount,
               onPressed: () {
-                // todo edit budget
+                _openNumPad(budgetProvider, context, budget, category.currency);
               });
+        },
+      ),
+    );
+  }
+
+  void _openNumPad(BudgetProvider budgetProvider, BuildContext context, Budget budget, Currency currency) {
+    final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SimpleNumPad(
+        number: budget.amount,
+        currency: currency,
+        onDone: (value) {
+          budgetProvider.update(budget..month = stateProvider.range.start.month..year = stateProvider.range.start.year..amount = value);
+          Navigator.pop(context);
         },
       ),
     );

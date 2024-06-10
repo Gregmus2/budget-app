@@ -47,7 +47,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       drawer: _isEditing ? null : const BudgetDrawer(),
       appBar: _isEditing ? _editAppBar(context) : _listAppBar(context, () => setState(() => _isEditing = true)),
-      // todo show archived categories separately
       body: CategoriesGrid(
         archived: _isArchived,
         onPressed: (context, category) =>
@@ -64,7 +63,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               });
             },
             backgroundColor: _isArchived ? colorScheme.primary : Colors.grey,
-            child: const Icon(Icons.archive_rounded, color: Colors.white), // todo if archived show somehow it
+            child: const Icon(Icons.archive_rounded, color: Colors.white),
           ),
           if (_isEditing)
             FloatingActionButton(
