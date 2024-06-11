@@ -35,7 +35,6 @@ Future<void> _signIn(BuildContext context) async {
   AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
   User user = await signInWithGoogle(stateProvider.app);
-  // todo find repo better
   await transactionProvider.repo.init(user);
   await Future.wait([
     categoryProvider.init(),

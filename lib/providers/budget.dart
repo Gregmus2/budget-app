@@ -20,7 +20,6 @@ class BudgetProvider extends ChangeNotifier {
   BudgetProvider(this.repo, this.stateProvider);
 
   Future<void> init() async {
-    // todo update budgets every range change
     _budgets = repo.listBudgets(DateTime.now().month, DateTime.now().year);
   }
 

@@ -91,6 +91,7 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                         (index) {
                           Category subcategory = parentCategory!.subCategories[index];
 
+                          // todo do not show archived
                           return SubCategory(
                               label: subcategory.name,
                               color: subcategory.color,

@@ -255,6 +255,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         Category subcategory = subcategories[index];
 
         return GestureDetector(
+          // todo show archived in different color
           child: SubCategory(
             icon: subcategory.icon,
             color: subcategory.color,
@@ -307,14 +308,20 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     ContextMenuButtonItem(
                       onPressed: () {
                         ContextMenuController.removeAny();
-                        // todo implement
+                        provider.updateSubCategory(subcategory..archived = true);
+                        setState(() {
+                          subcategories[index] = subcategory;
+                        });
                       },
                       label: 'Archive',
                     ),
                     ContextMenuButtonItem(
                       onPressed: () {
                         ContextMenuController.removeAny();
-                        // todo implement
+                        provider.remove(subcategory);
+                        setState(() {
+                          subcategories.remove(subcategory);
+                        });
                       },
                       label: 'Delete',
                     ),
