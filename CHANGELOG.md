@@ -8,6 +8,7 @@ Added:
 - Tabs on account page
 - Existing budget is editable
 - Implement archive and delete operations for subcategories
+- Category type switch
 
 Updated:
 - Replace count with builder mode on budget page

@@ -117,8 +117,8 @@ class CategoryProvider extends ChangeNotifier {
     return subCategory;
   }
 
-  List<Category> getCategories({bool archived = false}) {
-    return _categories.where((element) => element.archived == archived).toList();
+  List<Category> getCategories({bool archived = false, CategoryType? type}) {
+    return _categories.where((element) => element.archived == archived && (type == null || element.type == type)).toList();
   }
 
   void updateCategory(Category category) {

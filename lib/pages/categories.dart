@@ -39,6 +39,7 @@ class CategoriesPage extends StatefulWidget implements page.Page {
 class _CategoriesPageState extends State<CategoriesPage> {
   bool _isEditing = false;
   bool _isArchived = false;
+  bool _isIncome = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +47,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
     return Scaffold(
       drawer: _isEditing ? null : const BudgetDrawer(),
-      appBar: _isEditing ? _editAppBar(context) : _listAppBar(context, () => setState(() => _isEditing = true)),
+      appBar: _appBar(context),
       body: CategoriesGrid(
         archived: _isArchived,
+        type: _isIncome ? CategoryType.income : CategoryType.expenses,
         onPressed: (context, category) =>
             _isEditing ? _navigateToCategoryCreate(context, category) : _openNumPad(context, category),
       ),
@@ -108,19 +110,44 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  AppBar _editAppBar(BuildContext context) {
-    return AppBar(
+  AppBar _appBar(BuildContext context) {
+    return  AppBar(
       foregroundColor: Colors.white,
-      leading: IconButton(
-          onPressed: () => setState(() => _isEditing = false), icon: const Icon(Icons.arrow_back, color: Colors.white)),
-    );
-  }
-
-  AppBar _listAppBar(BuildContext context, VoidCallback onPressed) {
-    return AppBar(
-      actions: [IconButton(onPressed: onPressed, icon: const Icon(Icons.edit, color: Colors.white))],
-      foregroundColor: Colors.white,
-      bottom: const DateBar(),
+      leading: _isEditing
+          ? IconButton(
+          onPressed: () => setState(() => _isEditing = false),
+          icon: const Icon(Icons.arrow_back, color: Colors.white))
+          : null,
+      bottom: _isEditing ? null : const DateBar(),
+      actions: _isEditing
+          ? null
+          : [
+        IconButton(
+            onPressed: () => setState(() => _isEditing = true),
+            icon: const Icon(Icons.edit, color: Colors.white)),
+      ],
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          TextButton(
+              onPressed: () => setState(() {
+                _isIncome = false;
+              }),
+              child: Text(
+                'Expenses',
+                style: TextStyle(fontSize: 15, color: _isIncome ? Colors.grey : null),
+              )),
+          const SizedBox(width: 20),
+          TextButton(
+              onPressed: () => setState(() {
+                _isIncome = true;
+              }),
+              child: Text('Income',
+                  style: TextStyle(fontSize: 15, color: _isIncome ? Colors.greenAccent : Colors.grey))),
+        ],
+      ),
+      centerTitle: true,
     );
   }
 }
@@ -128,17 +155,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
 class CategoriesGrid extends StatelessWidget {
   final Function(BuildContext, Category) onPressed;
   final bool archived;
+  final CategoryType? type;
 
   const CategoriesGrid({
     super.key,
     required this.onPressed,
     required this.archived,
+    this.type,
   });
 
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-    final List<Category> categories = provider.getCategories(archived: archived);
+    final List<Category> categories = provider.getCategories(archived: archived, type: type);
 
     return ReorderableGridView.builder(
         onReorder: (oldIndex, newIndex) => provider.reOrderCategory(categories[oldIndex], categories[newIndex]),
