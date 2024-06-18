@@ -25,6 +25,8 @@ class Category implements Model, TransferTarget {
   CategoryType type;
   List<Category> subCategories = [];
 
+  get activeSubCategories => subCategories.where((element) => !element.archived).toList();
+
   Category(
       {required this.name,
       required this.icon,

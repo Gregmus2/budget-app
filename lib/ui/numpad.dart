@@ -87,11 +87,10 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       children: List.generate(
-                        parentCategory.subCategories.length,
+                        parentCategory.activeSubCategories.length,
                         (index) {
-                          Category subcategory = parentCategory!.subCategories[index];
+                          Category subcategory = parentCategory!.activeSubCategories[index];
 
-                          // todo do not show archived
                           return SubCategory(
                               label: subcategory.name,
                               color: subcategory.color,
@@ -99,7 +98,11 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                               inverse: (toSubCategory == subcategory || fromSubCategory == subcategory),
                               onPressed: () {
                                 setState(() {
-                                  if (parentCategory == from) {
+                                  if (toSubCategory == subcategory) {
+                                    toSubCategory = null;
+                                  } else if (fromSubCategory == subcategory) {
+                                    fromSubCategory = null;
+                                  } else if (parentCategory == from) {
                                     fromSubCategory = subcategory;
                                   } else {
                                     toSubCategory = subcategory;
