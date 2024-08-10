@@ -40,11 +40,10 @@ dependencies:
   path: ^1.8.2
   provider: ^6.0.5
   english_words: ^4.0.0
-  money2: ^5.0.1
   reorderable_grid_view: ^2.2.6
   spannable_grid: ^0.3.0
   intl: ^0.19.0
-  grouped_list: ^5.1.2
+  grouped_list: ^6.0.0
   home_widget: ^0.6.0
   shared_preferences: ^2.2.0
   file_picker: ^8.0.3
@@ -52,7 +51,8 @@ dependencies:
   flutter_easyloading: ^3.0.5
   jiffy: ^6.2.1
   google_sign_in: ^6.2.1
-  realm: ^2.2.1
+  realm: ^3.3.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

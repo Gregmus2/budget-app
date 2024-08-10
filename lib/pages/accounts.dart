@@ -210,8 +210,7 @@ class AccountTab extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 from: account,
-                // todo replace with recently used
-                to: provider.items.last,
+                to: transactionProvider.getRecentToTarget(),
               ),
             );
           },

@@ -9,8 +9,8 @@ import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/drawer.dart';
 import 'package:fb/ui/numpad.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class BudgetPage extends StatelessWidget implements page.Page {

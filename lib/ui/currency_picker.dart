@@ -1,6 +1,6 @@
 import 'package:fb/ui/custom_button.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 
 class CurrencyPicker extends StatefulWidget {
   final Function(Currency?) onChanged;
@@ -31,7 +31,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
 
   buildCurrencies() {
     var tiles = <CustomButton>[];
-    List<Currency> currencies = Currencies().getRegistered().toList();
+    List<Currency> currencies = Currency.getCurrencies();
     currencies.sort((a, b) => (a.name.compareTo(b.name)));
 
     for (var element in currencies) {
@@ -76,7 +76,7 @@ Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPress
   await showDialog<void>(
     context: context,
     builder: (BuildContext context) {
-      List<Currency> currencies = Currencies().getRegistered().toList();
+      List<Currency> currencies = Currency.getCurrencies();
       currencies.sort((a, b) => (a.name.compareTo(b.name)));
 
       return SimpleDialog(

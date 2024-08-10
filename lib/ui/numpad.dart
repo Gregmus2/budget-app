@@ -7,9 +7,9 @@ import 'package:fb/providers/category.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/subcategory.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 

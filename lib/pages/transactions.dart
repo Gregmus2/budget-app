@@ -14,7 +14,6 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-// todo add search, sort, filter
 class TransactionsPage extends StatelessWidget implements page.Page {
   const TransactionsPage({super.key});
 
@@ -31,7 +30,40 @@ class TransactionsPage extends StatelessWidget implements page.Page {
     final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
     final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
-    List<Widget> actions = [];
+    List<Widget> actions = [
+      IconButton(
+          onPressed: () {
+            // todo search sort filter
+            showGeneralDialog(
+              context: context,
+              barrierLabel: "Barrier",
+              barrierDismissible: true,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return Center(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.background,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // todo add reset
+                          // todo add filter by notes
+                          TargetGrids(onPressed: (target) {
+                            provider.filterByTarget(target);
+
+                            Navigator.pop(context);
+                          })
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          icon: const Icon(Icons.filter_alt_rounded))
+    ];
     if (accountProvider.items.isNotEmpty && categoryProvider.isNotEmpty()) {
       actions.add(
         IconButton(
@@ -47,7 +79,6 @@ class TransactionsPage extends StatelessWidget implements page.Page {
                       provider.add(note, from, to, value, value, date);
                       Navigator.pop(context);
                     },
-                    // todo replace with default currency from user configuration
                     from: provider.getRecentFromTarget(),
                     to: provider.getRecentToTarget(),
                   ),
@@ -55,7 +86,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
               ),
             );
           },
-          icon: const Icon(Icons.add, color: Colors.white),
+          icon: const Icon(Icons.add),
         ),
       );
     }
@@ -101,13 +132,24 @@ class _TransactionListState extends State<TransactionList> {
     return PageView.builder(
       controller: _controller,
       itemBuilder: (context, index) {
-        if (currentIndex == index) {
-          return TransactionsGrid(items: provider.items);
-        } else if (currentIndex > index) {
-          return TransactionsGrid(items: provider.previousItems);
-        } else {
-          return TransactionsGrid(items: provider.nextItems);
+        List<Transaction> items = provider.items;
+        if (currentIndex > index) {
+          items = provider.previousItems;
+        } else if (currentIndex < index) {
+          items = provider.nextItems;
         }
+        if (provider.targetFilter != null) {
+          // todo handle categories and accounts with the same id
+          items = items
+              .where((element) =>
+                  element.fromAccount == provider.targetFilter!.id ||
+                  element.fromCategory == provider.targetFilter!.id ||
+                  element.toAccount == provider.targetFilter!.id ||
+                  element.toCategory == provider.targetFilter!.id)
+              .toList();
+        }
+
+        return TransactionsGrid(items: items);
       },
       onPageChanged: (index) {
         if (currentIndex == index) {
@@ -222,8 +264,7 @@ class TransactionsGrid extends StatelessWidget {
                   Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
                 ],
               ),
-              Text(transaction.note,
-                  style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
+              Text(transaction.note, style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
             ],
           ),
           trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
@@ -271,6 +312,56 @@ class TransactionsSeparator extends StatelessWidget {
             ),
             overflow: TextOverflow.ellipsis)
       ],
+    );
+  }
+}
+
+class TargetGrids extends StatefulWidget {
+  final Function(TransferTarget) onPressed;
+
+  const TargetGrids({super.key, required this.onPressed});
+
+  @override
+  State<TargetGrids> createState() => _TargetGridsState();
+}
+
+class _TargetGridsState extends State<TargetGrids> {
+  bool _isAccount = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                  onPressed: () => setState(() {
+                        _isAccount = true;
+                      }),
+                  child: Text(
+                    'Accounts',
+                    style: TextStyle(fontSize: 15, color: _isAccount ? null : Colors.grey),
+                  )),
+              const SizedBox(width: 20),
+              TextButton(
+                  onPressed: () => setState(() {
+                        _isAccount = false;
+                      }),
+                  child: Text('Categories', style: TextStyle(fontSize: 15, color: _isAccount ? Colors.grey : null))),
+            ],
+          ),
+          _isAccount
+              ? AccountSelectionPopup(onPressed: (account) {
+                  widget.onPressed(account);
+                })
+              : CategorySelectionPopup(onPressed: (category) {
+                  widget.onPressed(category);
+                }),
+        ],
+      ),
     );
   }
 }

@@ -21,6 +21,8 @@ class TransactionProvider extends ChangeNotifier {
   final CategoryProvider categoryProvider;
   final StateProvider stateProvider;
 
+  TransferTarget? targetFilter;
+
   List<Transaction> get previousItems {
     final range = getPreviousRange(stateProvider.range, stateProvider.rangeType);
     final transactions = repo.listTransactions(range); // get latest month
@@ -139,6 +141,7 @@ class TransactionProvider extends ChangeNotifier {
     return result;
   }
 
+  // todo make it recent, not last
   TransferTarget getRecentFromTarget() {
     if (_transactions.last.fromAccount != null) {
       return accountProvider.getById(_transactions.last.fromAccount!);
@@ -147,12 +150,18 @@ class TransactionProvider extends ChangeNotifier {
     return categoryProvider.getByID(_transactions.last.fromCategory!);
   }
 
+  // todo make it recent, not last
   TransferTarget getRecentToTarget() {
     if (_transactions.last.toAccount != null) {
       return accountProvider.getById(_transactions.last.toAccount!);
     }
 
     return categoryProvider.getByID(_transactions.last.toCategory!);
+  }
+
+  void filterByTarget(TransferTarget target) {
+    targetFilter = target;
+    notifyListeners();
   }
 
   void deleteAll() {

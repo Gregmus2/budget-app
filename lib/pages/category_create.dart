@@ -1,5 +1,6 @@
 import 'package:fb/models/category.dart';
 import 'package:fb/providers/category.dart';
+import 'package:fb/providers/state.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/custom_button.dart';
@@ -7,8 +8,8 @@ import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:fb/ui/text_input.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
@@ -24,7 +25,7 @@ class CategoryCreatePage extends StatefulWidget {
 class _CategoryCreatePageState extends State<CategoryCreatePage> {
   late IconData _icon;
   late Color _color;
-  late Currency _currency;
+  late Currency? _currency;
   late CategoryType _type;
   late bool _archived;
   late final TextEditingController _nameInput;
@@ -38,7 +39,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
     _icon = widget.category?.icon ?? Icons.hourglass_empty;
     _color = widget.category?.color ?? Colors.blue;
-    _currency = widget.category?.currency ?? CommonCurrencies().euro;
+    _currency = widget.category?.currency;
     _type = widget.category?.type ?? CategoryType.expenses;
     _nameInput = TextEditingController(text: widget.category?.name);
     _subcategories = widget.category?.subCategories ?? [];
@@ -48,7 +49,9 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   @override
   Widget build(BuildContext context) {
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context, _subcategories);
+    final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
+    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context);
+    _currency ??= stateProvider.defaultCurrency;
 
     return Scaffold(
       appBar: AppBar(
@@ -76,7 +79,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 }),
             EntitySettingString(
                 label: "Currency",
-                value: _currency.isoCode,
+                value: _currency!.isoCode,
                 color: _color,
                 onPressed: () {
                   showCurrencyDialog(
@@ -88,7 +91,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     },
                   );
                 },
-                subtitle: _currency.name),
+                subtitle: _currency!.name),
             EntitySetting(
                 label: "Icon",
                 value: Icon(_icon, color: _color),
@@ -121,7 +124,6 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 });
               },
             ),
-            // todo show subcategories in the same way as in transactions, rounded boxes one by one with cross on edge to delete and plus icon for the last box
             Column(
               children: [
                 const Center(
@@ -157,7 +159,8 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           FloatingActionButton(
             heroTag: "save",
             onPressed: () {
-              provider.upsert(widget.category, _nameInput.text, _icon, _color, _currency, _type, _subcategories, _archived);
+              provider.upsert(
+                  widget.category, _nameInput.text, _icon, _color, _currency!, _type, _subcategories, _archived);
 
               Navigator.pop(context);
             },
@@ -171,12 +174,12 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
   Column _title(bool Function(String) isUnique) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.category != null ? "Update category" : "New category"),
-          EntityNameTextInput(nameInput: _nameInput, isUnique: isUnique),
-        ],
-      );
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(widget.category != null ? "Update category" : "New category"),
+        EntityNameTextInput(nameInput: _nameInput, isUnique: isUnique),
+      ],
+    );
   }
 
   @override
@@ -246,19 +249,18 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     );
   }
 
-  List<Widget> _buildSubCategoriesCards(BuildContext context, List<Category> subcategories) {
+  List<Widget> _buildSubCategoriesCards(BuildContext context) {
     CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
 
     List<Widget> result = List<Widget>.generate(
-      subcategories.length,
+      _subcategories.length,
       (index) {
-        Category subcategory = subcategories[index];
+        Category subcategory = _subcategories[index];
 
         return GestureDetector(
-          // todo show archived in different color
           child: SubCategory(
             icon: subcategory.icon,
-            color: subcategory.color,
+            color: subcategory.archived ? Colors.grey : subcategory.color,
             label: subcategory.name,
           ),
           onTap: () {
@@ -269,7 +271,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                 subcategory.name = name;
                 subcategory.icon = icon;
                 setState(() {
-                  subcategories[index] = subcategory;
+                  _subcategories[index] = subcategory;
                 });
               },
             );
@@ -285,48 +287,10 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               context: context,
               contextMenuBuilder: (BuildContext context) {
                 return AdaptiveTextSelectionToolbar.buttonItems(
-                  anchors: TextSelectionToolbarAnchors(
-                    primaryAnchor: _longPressOffset!,
-                  ),
-                  buttonItems: <ContextMenuButtonItem>[
-                    // todo show only if this is category update, not create
-                    ContextMenuButtonItem(
-                      onPressed: () {
-                        ContextMenuController.removeAny();
-                        provider.convertToCategory(subcategory);
-                        _subcategories.remove(subcategory);
-                      },
-                      label: 'Convert to category',
+                    anchors: TextSelectionToolbarAnchors(
+                      primaryAnchor: _longPressOffset!,
                     ),
-                    ContextMenuButtonItem(
-                      onPressed: () {
-                        ContextMenuController.removeAny();
-                        // todo implement
-                      },
-                      label: 'Merge',
-                    ),
-                    ContextMenuButtonItem(
-                      onPressed: () {
-                        ContextMenuController.removeAny();
-                        provider.updateSubCategory(subcategory..archived = true);
-                        setState(() {
-                          subcategories[index] = subcategory;
-                        });
-                      },
-                      label: 'Archive',
-                    ),
-                    ContextMenuButtonItem(
-                      onPressed: () {
-                        ContextMenuController.removeAny();
-                        provider.remove(subcategory);
-                        setState(() {
-                          subcategories.remove(subcategory);
-                        });
-                      },
-                      label: 'Delete',
-                    ),
-                  ],
-                );
+                    buttonItems: _buildContextMenuItems(context, subcategory));
               },
             );
           },
@@ -342,7 +306,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         _showSubcategoryDialog(
           widget.category?.id,
           null,
-              (name, icon) {
+          (name, icon) {
             if (widget.category != null) {
               provider.addSubcategory(ObjectId().toString(), name, icon, widget.category!.id);
             } else {
@@ -351,7 +315,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                     name: name,
                     icon: icon,
                     color: _color,
-                    currency: _currency,
+                    currency: _currency!,
                     type: _type,
                     order: _subcategories.isEmpty ? 0 : _subcategories.last.order + 1,
                     parent: widget.category?.id));
@@ -361,8 +325,56 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         );
       },
     ));
-    
+
     return result;
+  }
+
+  List<ContextMenuButtonItem> _buildContextMenuItems(BuildContext context, Category subcategory) {
+    CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
+
+    List<ContextMenuButtonItem> contextMenuItems = [];
+    if (widget.category != null) {
+      contextMenuItems.addAll([
+        ContextMenuButtonItem(
+          onPressed: () {
+            ContextMenuController.removeAny();
+            provider.convertToCategory(widget.category!);
+            Navigator.pop(context);
+          },
+          label: 'Convert to category',
+        ),
+        ContextMenuButtonItem(
+          onPressed: () {
+            ContextMenuController.removeAny();
+            // todo implement
+          },
+          label: 'Merge',
+        ),
+        ContextMenuButtonItem(
+          onPressed: () {
+            ContextMenuController.removeAny();
+            provider.updateSubCategory(subcategory..archived = !subcategory.archived);
+/*            setState(() {
+              _subcategories[index] = subcategory;
+            });*/
+          },
+          label: subcategory.archived ? 'Unarchive' : 'Archive',
+        ),
+      ]);
+    }
+
+    contextMenuItems.add(ContextMenuButtonItem(onPressed: () {
+      ContextMenuController.removeAny();
+      if (widget.category != null) {
+        provider.remove(subcategory);
+      }
+      setState(() {
+        _subcategories.remove(subcategory);
+      });
+    },
+    label: 'Delete',));
+
+    return contextMenuItems;
   }
 
   void _hideContextMenuIfShown() {

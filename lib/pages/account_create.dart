@@ -1,14 +1,15 @@
 import 'package:fb/ext/string.dart';
 import 'package:fb/models/account.dart';
 import 'package:fb/providers/account.dart';
+import 'package:fb/providers/state.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/custom_button.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:fb/ui/text_input.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 
 class AccountCreatePage extends StatefulWidget {
@@ -23,7 +24,7 @@ class AccountCreatePage extends StatefulWidget {
 class _AccountCreatePageState extends State<AccountCreatePage> {
   late IconData _icon;
   late Color _color;
-  late Currency _currency;
+  late Currency? _currency;
   late AccountType _type;
   late double _balance;
   late bool _archived;
@@ -35,7 +36,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
 
     _icon = widget.account?.icon ?? Icons.hourglass_empty;
     _color = widget.account?.color ?? Colors.blue;
-    _currency = widget.account?.currency ?? CommonCurrencies().euro;
+    _currency = widget.account?.currency;
     _type = widget.account?.type ?? AccountType.regular;
     _balance = widget.account?.balance ?? 0;
     _archived = widget.account?.archived ?? false;
@@ -45,6 +46,11 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
   @override
   Widget build(BuildContext context) {
     final AccountProvider provider = Provider.of<AccountProvider>(context);
+    final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
+
+    if (_currency == null) {
+      _currency = stateProvider.defaultCurrency;
+    }
 
     return DefaultTabController(
       initialIndex: 0,
@@ -64,7 +70,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  provider.upsert(widget.account, _nameInput.text, _icon, _color, _currency, _type, _balance);
+                  provider.upsert(widget.account, _nameInput.text, _icon, _color, _currency!, _type, _balance);
 
                   Navigator.pop(context);
                 },
@@ -83,14 +89,14 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
             EntitySettingString(label: "Type", value: _type.name, color: _color, onPressed: () => _showTypeDialog()),
             EntitySettingString(
                 label: "Balance",
-                value: "${_balance.toString()} ${_currency.symbol}",
+                value: "${_balance.toString()} ${_currency!.symbol}",
                 color: _color,
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => SimpleNumPad(
                       number: _balance,
-                      currency: _currency,
+                      currency: _currency!,
                       onDone: (value) {
                         setState(() {
                           _balance = value;
@@ -102,19 +108,19 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                 }),
             EntitySettingString(
                 label: "Currency",
-                value: _currency.isoCode,
+                value: _currency!.isoCode,
                 color: _color,
                 onPressed: () {
                   showCurrencyDialog(
                     context,
                     (currency) {
                       setState(() {
-                        this._currency = currency;
+                        _currency = currency;
                       });
                     },
                   );
                 },
-                subtitle: _currency.name),
+                subtitle: _currency!.name),
             EntitySetting(
                 label: "Icon",
                 value: Icon(_icon, color: _color),
@@ -122,7 +128,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                 onPressed: () {
                   showIconDialog(context, _color, _icon, (icon) {
                     setState(() {
-                      this._icon = icon;
+                      _icon = icon;
                     });
                   });
                 }),
@@ -133,7 +139,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                 onPressed: () {
                   showColorDialog(context, _color, (color) {
                     setState(() {
-                      this._color = color;
+                      _color = color;
                     });
                   });
                 }),

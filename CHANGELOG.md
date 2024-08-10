@@ -14,6 +14,7 @@ Updated:
 - Replace count with builder mode on budget page
 - Subcategory choice in transaction numpad can de unchecked
 - Only non-archived subcategories are shown in transaction numpad
+- Replace money2 library to own implementation
 
 Fixed:
 - Progress indicator on budget page

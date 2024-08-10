@@ -2,8 +2,8 @@ import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/model.dart';
 import 'package:fb/models/transfer_target.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:realm/realm.dart';
 
 enum AccountType { regular, debt, savings }
@@ -61,7 +61,7 @@ class Account implements Model, TransferTarget {
       icon: IconData(map['icon_code'], fontFamily: map['icon_font']),
       color: Color(map['color']).withOpacity(1),
       archived: map['archived'] == 1,
-      currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
+      currency: Currency.fromISOCode(map['currency']),
       order: map['order'],
       balance: map['balance'] ?? 0.0,
     );
@@ -75,7 +75,7 @@ class Account implements Model, TransferTarget {
       icon: IconData(category.iconCode, fontFamily: category.iconFont),
       color: Color(category.color).withOpacity(1),
       archived: category.archived,
-      currency: Currencies().find(category.currency) ?? CommonCurrencies().euro,
+      currency:Currency.fromISOCode(category.currency),
       order: category.order,
       balance: category.balance,
     );

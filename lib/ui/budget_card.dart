@@ -52,7 +52,6 @@ class BudgetCard extends StatelessWidget {
                           ),
                           LinearProgressIndicator(
                             value: spent / budget,
-                            // todo fill math about current sum transactions for this category
                             color: category.color,
                             minHeight: 5,
                             backgroundColor: Colors.grey[800],

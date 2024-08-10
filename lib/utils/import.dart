@@ -10,11 +10,11 @@ import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/icon_picker.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:money2/money2.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
@@ -131,8 +131,8 @@ class DataImport {
 
     Category? category;
     if (categoryProvider.isNotExists(nameField)) {
-      Currency? currency = Currencies().findByCode(currencyField);
-      category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency!, type, [], false);
+      Currency? currency = Currency.fromISOCode(currencyField);
+      category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, type, [], false);
     }
 
     String parentID = categoryProvider.findCategoryByName(nameField)!.id;
@@ -152,8 +152,8 @@ class DataImport {
   }
 
   void addAccount(String nameField, String currencyField, bool archived) {
-    Currency? currency = Currencies().findByCode(currencyField);
-    currency ??= CommonCurrencies().euro;
+    Currency? currency = Currency.fromISOCode(currencyField);
+    currency ??= stateProvider.defaultCurrency;
     accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0, archived);
   }
   

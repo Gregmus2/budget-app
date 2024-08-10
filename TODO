@@ -1,0 +1,18 @@
+Basic Features
+- TODOs
+
+Design
+- download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
+/*LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+});*/
+
+Polishing
+- do refactoring to extract widgets and functions as much as possible (globally)
+- performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
+- https://pub.dev/packages/dynamic_color
+
+Production
+- Add your own signing config for the release build. (android/app/build.gradle:38)
+- Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html). (android/app/build.gradle:26)

@@ -1,5 +1,5 @@
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 
 abstract class TransferTarget {
   final String id;

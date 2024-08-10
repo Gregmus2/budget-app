@@ -1,3 +1,4 @@
+import 'package:fb/utils/currency.dart';
 import 'package:fb/utils/dates.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
@@ -12,6 +13,7 @@ class StateProvider extends ChangeNotifier {
   late DateTimeRange range;
   RangeType rangeType = RangeType.monthly;
   int firstDayOfMonth = 1;
+  Currency defaultCurrency = Currency();
   final App _app;
   late SharedPreferences _prefs;
   late User? _user;

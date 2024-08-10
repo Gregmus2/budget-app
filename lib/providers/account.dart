@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
 import 'package:fb/models/account.dart';
+import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 
 class AccountProvider extends ChangeNotifier {
   List<Account> _accounts = [];

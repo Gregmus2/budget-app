@@ -3,8 +3,8 @@ import 'package:fb/db/repository.dart';
 import 'package:fb/models/model.dart';
 import 'package:fb/models/transfer_target.dart';
 import 'package:flutter/material.dart';
-import 'package:money2/money2.dart';
 import 'package:realm/realm.dart';
+import 'package:fb/utils/currency.dart';
 
 enum CategoryType { expenses, income }
 
@@ -63,7 +63,7 @@ class Category implements Model, TransferTarget {
       icon: IconData(map['icon_code'], fontFamily: map['icon_font']),
       color: Color(map['color']).withOpacity(1),
       archived: map['archived'] == 1,
-      currency: Currencies().find(map['currency'] ?? '') ?? CommonCurrencies().euro,
+      currency: Currency.fromISOCode(map['currency']),
       order: map['order'],
       parent: map['parent']?.toInt(),
       type: CategoryType.values[map['type']],
@@ -77,7 +77,7 @@ class Category implements Model, TransferTarget {
       icon: IconData(category.iconCode, fontFamily: category.iconFont),
       color: Color(category.color).withOpacity(1),
       archived: category.archived,
-      currency: Currencies().find(category.currencyCode ?? '') ?? CommonCurrencies().euro,
+      currency: Currency.fromISOCode(category.currencyCode),
       order: category.order,
       parent: category.parent,
       type: CategoryType.values[category.type],
