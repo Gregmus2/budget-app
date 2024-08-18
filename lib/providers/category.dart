@@ -1,6 +1,6 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
-import 'package:fb/models/category.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,7 @@ class CategoryProvider extends ChangeNotifier {
   CategoryProvider(this.repo);
 
   Future<void> init() async {
-    final all = repo.listCategories();
+    final all = await repo.listCategories();
     _categories = all.where((element) => element.parent == null && !element.archived).toList();
     _categories.sort((a, b) => a.order.compareTo(b.order));
     _subCategories = all.where((element) => element.parent != null).toList();
@@ -245,7 +245,7 @@ class CategoryProvider extends ChangeNotifier {
   void deleteAll() {
     _categories.clear();
     _subCategories.clear();
-    repo.deleteAll<CategoryModel>();
+    repo.deleteAll(tableCategories);
     notifyListeners();
   }
 

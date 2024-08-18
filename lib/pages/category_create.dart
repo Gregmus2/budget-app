@@ -1,4 +1,4 @@
-import 'package:fb/models/category.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/ui/color_picker.dart';
@@ -11,7 +11,7 @@ import 'package:fb/ui/text_input.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:realm/realm.dart';
+import 'package:uuid/v4.dart';
 
 class CategoryCreatePage extends StatefulWidget {
   final Category? category;
@@ -308,7 +308,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
           null,
           (name, icon) {
             if (widget.category != null) {
-              provider.addSubcategory(ObjectId().toString(), name, icon, widget.category!.id);
+              provider.addSubcategory(const UuidV4().generate(), name, icon, widget.category!.id);
             } else {
               setState(() {
                 _subcategories.add(Category(

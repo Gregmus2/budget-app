@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:fb/models/category.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';

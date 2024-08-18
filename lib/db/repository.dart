@@ -1,94 +1,160 @@
 import 'package:fb/db/account.dart';
 import 'package:fb/db/budget.dart';
 import 'package:fb/db/category.dart';
-import 'package:fb/db/transaction.dart';
-import 'package:fb/models/account.dart';
-import 'package:fb/models/budget.dart';
-import 'package:fb/models/category.dart';
-import 'package:fb/models/model.dart';
-import 'package:fb/models/transaction.dart' as model;
-import 'package:fb/providers/state.dart';
+import 'package:fb/db/model.dart';
+import 'package:fb/db/transaction.dart' as model;
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 const String tableCategories = 'categories';
 const String tableAccounts = 'accounts';
 const String tableTransactions = 'transactions';
 const String tableBudgets = 'budgets';
+const migrationScripts = [
+  '''CREATE TABLE $tableCategories(
+          id BLOB PRIMARY KEY, 
+          name TEXT, 
+          icon_code INT,
+          icon_font TEXT,
+          color INT,
+          archived BOOL,
+          currency TEXT,
+          "order" INT,
+          type INT DEFAULT 0,
+          parent BLOB REFERENCES $tableCategories(id) ON DELETE CASCADE
+        )''',
+  '''
+  CREATE TABLE $tableAccounts(
+          id BLOB PRIMARY KEY, 
+          name TEXT,
+          type INT,
+          icon_code INT,
+          icon_font TEXT,
+          color INT,
+          archived BOOL,
+          currency TEXT,
+          "order" INT,
+          balance REAL
+        )
+  ''',
+  '''
+  CREATE TABLE $tableTransactions(
+          id BLOB PRIMARY KEY, 
+          note TEXT,
+          from_account BLOB REFERENCES $tableAccounts(id) ON DELETE CASCADE,
+          from_category BLOB REFERENCES $tableCategories(id) ON DELETE CASCADE,
+          to_account BLOB REFERENCES $tableAccounts(id) ON DELETE CASCADE,
+          to_category BLOB REFERENCES $tableCategories(id) ON DELETE CASCADE,
+          amount_from REAL,
+          amount_to REAL,
+          date INT
+        )
+  ''',
+  '''
+  CREATE TABLE $tableBudgets(
+          id BLOB PRIMARY KEY, 
+          category BLOB REFERENCES $tableCategories(id) ON DELETE CASCADE,
+          month INT,
+          amount REAL,
+          year INT
+        )
+  '''
+];
 
 class Repository {
-  List<SchemaObject> schemas = [CategoryModel.schema, AccountModel.schema, TransactionModel.schema, BudgetModel.schema];
-  StateProvider stateProvider;
-  late Realm db;
+  late Database db;
 
-  Repository(this.stateProvider);
-
-  Future init(User user) async {
-    db = Realm(Configuration.flexibleSync(user, schemas));
-    // db = Realm(Configuration.local(schemas));
-
-    // can be disabled for free users
-    db.subscriptions.update((mutableSubscriptions) {
-      mutableSubscriptions.add(db.all<CategoryModel>());
-      mutableSubscriptions.add(db.all<AccountModel>());
-      mutableSubscriptions.add(db.all<TransactionModel>());
-      mutableSubscriptions.add(db.all<BudgetModel>());
+  Future init() async {
+    db = await openDatabase(
+        version: migrationScripts.length,
+        // Set the path to the database. Note: Using the `join` function from the
+        // `path` package is best practice to ensure the path is correctly
+        // constructed for each platform.
+        join(await getDatabasesPath(), 'main.db'), onCreate: (Database db, int version) async {
+      for (var element in migrationScripts) {
+        db.execute(element);
+      }
+    }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
+      for (var i = oldVersion + 1; i <= newVersion; i++) {
+        db.execute(migrationScripts[i - 1]);
+      }
+    }, onConfigure: (Database db) async {
+      await db.execute('PRAGMA foreign_keys = ON');
     });
-
-    await db.subscriptions.waitForSynchronization();
   }
 
   Future<void> create(Model model) async {
-    db.write(() => db.add(model.toRealmObject(stateProvider.userID!)));
+    db.insert(
+      model.tableName(),
+      model.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  List<Category> listCategories() {
-    final RealmResults<CategoryModel> results = db.all<CategoryModel>();
+  Future<List<Category>> listCategories() async {
+    final List<Map<String, dynamic>> maps = await db.query(tableCategories);
 
-    return List.generate(results.length, (i) {
-      return Category.mapRealm(results[i]);
+    return List.generate(maps.length, (i) {
+      return Category.mapDatabase(maps[i]);
     });
   }
 
-  List<Account> listAccounts() {
-    final RealmResults<AccountModel> results = db.all<AccountModel>();
+  Future<List<Account>> listAccounts() async {
+    final List<Map<String, dynamic>> maps = await db.query(tableAccounts);
 
-    return List.generate(results.length, (i) {
-      return Account.mapRealm(results[i]);
+    return List.generate(maps.length, (i) {
+      return Account.mapDatabase(maps[i]);
     });
   }
 
-  List<model.Transaction> listTransactions(DateTimeRange range) {
-    final RealmResults<TransactionModel> results = db.query<TransactionModel>(
-        'date >= \$0 AND date <= \$1 SORT(date ASC)',
-        [range.start.millisecondsSinceEpoch ~/ 1000, range.end.millisecondsSinceEpoch ~/ 1000]);
+  Future<List<model.Transaction>> listTransactions(DateTimeRange range) async {
+    final List<Map<String, dynamic>> maps = await db.query(tableTransactions,
+        where: 'date >= ? AND date <= ?',
+        whereArgs: [range.start.millisecondsSinceEpoch ~/ 1000, range.end.millisecondsSinceEpoch ~/ 1000],
+        orderBy: 'date DESC');
 
-    return List.generate(results.length, (i) {
-      return model.Transaction.mapRealm(results[i]);
+    return List.generate(maps.length, (i) {
+      return model.Transaction.mapDatabase(maps[i]);
     });
   }
 
-  List<Budget> listBudgets(int month, int year) {
-    final RealmResults<BudgetModel> results = db.query<BudgetModel>('month = \$0 AND year = \$1', [month, year]);
+  Future<List<Budget>> listBudgets(int month, int year) async {
+    final List<Map<String, dynamic>> maps =
+        await db.query(tableBudgets, where: 'month = ? AND year = ?', whereArgs: [month, year]);
 
-    return List.generate(results.length, (i) {
-      return Budget.mapRealm(results[i]);
+    return List.generate(maps.length, (i) {
+      return Budget.mapDatabase(maps[i]);
     });
   }
 
   Future<void> update(Model model) async {
-    db.write(() => db.add(model.toRealmObject(stateProvider.userID!), update: true));
+    db.update(
+      model.tableName(),
+      model.toMap(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
   }
 
   Future<void> delete(Model model) async {
-    db.write(() => db.delete(model.toRealmObject(stateProvider.userID!)));
+    db.delete(
+      model.tableName(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
   }
 
-  Future<void> deleteAll<T extends RealmObject>() async {
-    db.write(() => db.deleteAll<T>());
+  Future<void> deleteAll(String table) async {
+    await db.delete(table);
   }
 
-  Future<void> createBatch<T extends RealmObject>(List<T> models) async {
-    db.write(() => db.addAll<T>(models));
+  Future<void> createBatch(List<Model> models) async {
+    Batch batch = db.batch();
+    for (var model in models) {
+      batch.insert(model.tableName(), model.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await batch.commit(noResult: true);
   }
 }

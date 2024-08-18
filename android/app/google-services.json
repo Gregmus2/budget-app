@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1001986413695",
+    "project_id": "family-budget-cee03",
+    "storage_bucket": "family-budget-cee03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001986413695:android:4b2e0fdb6a2ea8da981b4a",
+        "android_client_info": {
+          "package_name": "com.gregmus.budget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1001986413695-m2brn355qkhoo5iunko8ibapqj3roau9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqgZ-1kyi93f57PiIX921CF2xPzHruwsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1001986413695-m2brn355qkhoo5iunko8ibapqj3roau9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001986413695:android:40479e9f3d5d193a981b4a",
+        "android_client_info": {
+          "package_name": "com.gregmus.family_budget.fb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1001986413695-m2brn355qkhoo5iunko8ibapqj3roau9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqgZ-1kyi93f57PiIX921CF2xPzHruwsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1001986413695-m2brn355qkhoo5iunko8ibapqj3roau9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

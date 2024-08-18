@@ -2,10 +2,10 @@ import 'dart:collection';
 
 import 'package:fb/db/repository.dart';
 import 'package:fb/db/transaction.dart';
-import 'package:fb/models/account.dart';
-import 'package:fb/models/category.dart';
-import 'package:fb/models/transaction.dart';
-import 'package:fb/models/transfer_target.dart';
+import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transaction.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -23,17 +23,17 @@ class TransactionProvider extends ChangeNotifier {
 
   TransferTarget? targetFilter;
 
-  List<Transaction> get previousItems {
+  Future<List<Transaction>> get previousItems async {
     final range = getPreviousRange(stateProvider.range, stateProvider.rangeType);
-    final transactions = repo.listTransactions(range); // get latest month
+    final transactions = await repo.listTransactions(range); // get latest month
     transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
 
     return transactions;
   }
   UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
-  List<Transaction> get nextItems {
+  Future<List<Transaction>> get nextItems async {
     final range = getNextRange(stateProvider.range, stateProvider.rangeType);
-    final transactions = repo.listTransactions(range); // get latest month
+    final transactions = await repo.listTransactions(range); // get latest month
     transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
 
     return transactions;
@@ -47,21 +47,21 @@ class TransactionProvider extends ChangeNotifier {
     final DateTime start = DateTime(now.year, now.month, prefs.getInt(firstDayOfMonthKey) ?? 1);
     final DateTime end = start.copyWith(month: start.month + 1);
     final range = DateTimeRange(start: start, end: end);
-    _transactions = repo.listTransactions(range); // get latest month
+    _transactions = await repo.listTransactions(range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
   int get length => _transactions.length;
 
-  void updateRange() {
-    _transactions = repo.listTransactions(stateProvider.range); // get latest month
+  Future<void> updateRange() async {
+    _transactions = await repo.listTransactions(stateProvider.range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
 
     notifyListeners();
   }
 
   void silentUpdateRange() async {
-    _transactions = repo.listTransactions(stateProvider.range); // get latest month
+    _transactions = await repo.listTransactions(stateProvider.range); // get latest month
     _transactions.sort((a, b) => b.date.compareTo(a.date)); // sort and group by date
   }
 
@@ -82,7 +82,7 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   Future<void> commitDries() async {
-    await repo.createBatch<TransactionModel>(_dryTransactions.map((e) => e.toRealmObject(stateProvider.userID!)).toList());
+    await repo.createBatch(_dryTransactions);
     _dryTransactions = [];
   }
 
@@ -166,7 +166,7 @@ class TransactionProvider extends ChangeNotifier {
 
   void deleteAll() {
     _transactions.clear();
-    repo.deleteAll<TransactionModel>();
+    repo.deleteAll(tableTransactions);
     notifyListeners();
   }
 }

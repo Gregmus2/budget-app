@@ -1,5 +1,3 @@
-import 'package:realm/realm.dart';
-
 abstract class Model {
   final String id;
 
@@ -13,9 +11,5 @@ abstract class Model {
     return {
       'id': id,
     };
-  }
-
-  RealmObject toRealmObject(String ownerID) {
-    throw UnimplementedError();
   }
 }

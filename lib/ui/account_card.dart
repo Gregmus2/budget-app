@@ -1,5 +1,5 @@
 import 'package:fb/ext/double.dart';
-import 'package:fb/models/account.dart';
+import 'package:fb/db/account.dart';
 import 'package:flutter/material.dart';
 
 class AccountCard extends StatelessWidget {

@@ -1,19 +1,18 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:fb/config.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/firebase_options.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/quick_transaction.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:http/io_client.dart';
 import 'package:provider/provider.dart';
-import 'package:realm/realm.dart' as realm;
 
 import 'app.dart';
 
@@ -30,28 +29,25 @@ Future<void> main() async {
 }
 
 Future<void> _runApp(Widget app) async {
-  final realmApp = realm.App(realm.AppConfiguration(GlobalConfig().realmAppID, httpClient: IOClient(HttpClient())));
-  app = const App();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  StateProvider stateProvider = StateProvider(realmApp);
-  Repository repo = Repository(stateProvider);
+  StateProvider stateProvider = StateProvider();
+  Repository repo = Repository();
   CategoryProvider categoryProvider = CategoryProvider(repo);
   AccountProvider accountProvider = AccountProvider(repo);
   TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider, categoryProvider, stateProvider);
   BudgetProvider budgetProvider = BudgetProvider(repo, stateProvider);
 
   await stateProvider.init();
-  if (realmApp.currentUser != null) {
-    await repo.init(realmApp.currentUser!);
-    await Future.wait([
-      categoryProvider.init(),
-      accountProvider.init(),
-      transactionProvider.init(),
-      budgetProvider.init(),
-    ]);
-  } else {
-    app = const App();
-  }
+  await repo.init();
+  await Future.wait([
+    categoryProvider.init(),
+    accountProvider.init(),
+    transactionProvider.init(),
+    budgetProvider.init(),
+  ]);
 
   runApp(
     MultiProvider(

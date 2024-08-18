@@ -8,7 +8,7 @@ import 'package:fb/providers/state.dart';
 import 'package:fb/utils/dates.dart';
 import 'package:flutter/material.dart';
 
-import '../models/budget.dart';
+import '../db/budget.dart';
 
 class BudgetProvider extends ChangeNotifier {
   List<Budget> _budgets = [];
@@ -20,7 +20,7 @@ class BudgetProvider extends ChangeNotifier {
   BudgetProvider(this.repo, this.stateProvider);
 
   Future<void> init() async {
-    _budgets = repo.listBudgets(DateTime.now().month, DateTime.now().year);
+    _budgets = await repo.listBudgets(DateTime.now().month, DateTime.now().year);
   }
 
   int get length => _budgets.length;
@@ -52,12 +52,12 @@ class BudgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateRange() {
+  Future<void> updateRange() async {
     if (stateProvider.rangeType != RangeType.monthly) {
       return;
     }
 
-    _budgets = repo.listBudgets(stateProvider.range.start.month, stateProvider.range.start.year);
+    _budgets = await repo.listBudgets(stateProvider.range.start.month, stateProvider.range.start.year);
     notifyListeners();
   }
 
@@ -80,7 +80,7 @@ class BudgetProvider extends ChangeNotifier {
 
   void deleteAll() {
     _budgets.clear();
-    repo.deleteAll<BudgetModel>();
+    repo.deleteAll(tableBudgets);
     notifyListeners();
   }
 

@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:fb/db/account.dart';
 import 'package:fb/db/repository.dart';
-import 'package:fb/models/account.dart';
+import 'package:fb/db/account.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class AccountProvider extends ChangeNotifier {
   AccountProvider(this.repo);
 
   Future<void> init() async {
-    _accounts = repo.listAccounts();
+    _accounts = await repo.listAccounts();
     _accounts.sort((a, b) => a.order.compareTo(b.order));
   }
 
@@ -119,7 +119,7 @@ class AccountProvider extends ChangeNotifier {
 
   void deleteAll() {
     _accounts.clear();
-    repo.deleteAll<AccountModel>();
+    repo.deleteAll(tableAccounts);
     notifyListeners();
   }
 }

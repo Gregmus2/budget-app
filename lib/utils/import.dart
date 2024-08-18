@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:fb/models/account.dart';
-import 'package:fb/models/category.dart';
-import 'package:fb/models/transfer_target.dart';
+import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
-import 'package:realm/realm.dart';
+import 'package:uuid/v4.dart';
 
 // todo check with profile mode and improve performance (Exhausted heap space)
 class DataImport {
@@ -137,7 +137,7 @@ class DataImport {
 
     String parentID = categoryProvider.findCategoryByName(nameField)!.id;
     if (subCategory != null && categoryProvider.isSubCategoryNotExists(subCategory, parentID)) {
-      category = categoryProvider.addSubcategory(ObjectId().toString(), subCategory, IconPicker.icons.first, parentID);
+      category = categoryProvider.addSubcategory(const UuidV4().generate(), subCategory, IconPicker.icons.first, parentID);
     }
 
     if (category == null) {

@@ -1,5 +1,5 @@
 import 'package:fb/ext/string.dart';
-import 'package:fb/models/account.dart';
+import 'package:fb/db/account.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/ui/color_picker.dart';

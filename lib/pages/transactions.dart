@@ -1,7 +1,7 @@
-import 'package:fb/models/account.dart';
-import 'package:fb/models/category.dart';
-import 'package:fb/models/transaction.dart';
-import 'package:fb/models/transfer_target.dart';
+import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transaction.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/budget.dart';
@@ -132,24 +132,34 @@ class _TransactionListState extends State<TransactionList> {
     return PageView.builder(
       controller: _controller,
       itemBuilder: (context, index) {
-        List<Transaction> items = provider.items;
+        Future<List<Transaction>> items = Future<List<Transaction>>.value(provider.items);
         if (currentIndex > index) {
           items = provider.previousItems;
         } else if (currentIndex < index) {
           items = provider.nextItems;
         }
-        if (provider.targetFilter != null) {
-          // todo handle categories and accounts with the same id
-          items = items
-              .where((element) =>
-                  element.fromAccount == provider.targetFilter!.id ||
-                  element.fromCategory == provider.targetFilter!.id ||
-                  element.toAccount == provider.targetFilter!.id ||
-                  element.toCategory == provider.targetFilter!.id)
-              .toList();
-        }
 
-        return TransactionsGrid(items: items);
+        return FutureBuilder(
+            future: items,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              List<Transaction>? dataItems = snapshot.data;
+              if (provider.targetFilter != null) {
+                // todo handle categories and accounts with the same id
+                dataItems = dataItems
+                    ?.where((element) =>
+                        element.fromAccount == provider.targetFilter!.id ||
+                        element.fromCategory == provider.targetFilter!.id ||
+                        element.toAccount == provider.targetFilter!.id ||
+                        element.toCategory == provider.targetFilter!.id)
+                    .toList();
+              }
+
+              return TransactionsGrid(items: dataItems!);
+            });
       },
       onPageChanged: (index) {
         if (currentIndex == index) {
@@ -161,8 +171,7 @@ class _TransactionListState extends State<TransactionList> {
         }
         // to not cause page rebuild in this case
         provider.silentUpdateRange();
-        budgetProvider.updateRange();
-        currentIndex = index;
+        budgetProvider.updateRange().then((value) => currentIndex = index);
       },
     );
   }

@@ -1,4 +1,4 @@
-import 'package:fb/models/category.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:flutter/material.dart';

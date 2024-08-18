@@ -1,5 +1,5 @@
-import 'package:fb/models/budget.dart';
-import 'package:fb/models/category.dart';
+import 'package:fb/db/budget.dart';
+import 'package:fb/db/category.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';

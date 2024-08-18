@@ -1,8 +1,8 @@
 import 'package:fb/config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:realm/realm.dart';
 
-Future<User> signInWithGoogle(App app) async {
+Future<UserCredential> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn(
     serverClientId: GlobalConfig().clientID,
   ).signIn();
@@ -10,5 +10,10 @@ Future<User> signInWithGoogle(App app) async {
   // todo handle error
   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-  return await app.logIn(Credentials.googleIdToken(googleAuth!.idToken!));
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  return await FirebaseAuth.instance.signInWithCredential(credential);
 }

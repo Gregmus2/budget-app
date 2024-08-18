@@ -1,7 +1,7 @@
-import 'package:fb/models/account.dart';
-import 'package:fb/models/category.dart';
-import 'package:fb/models/transaction.dart';
-import 'package:fb/models/transfer_target.dart';
+import 'package:fb/db/account.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transaction.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/ui/account_card.dart';

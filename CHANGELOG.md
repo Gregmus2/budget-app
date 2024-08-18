@@ -15,6 +15,7 @@ Updated:
 - Subcategory choice in transaction numpad can de unchecked
 - Only non-archived subcategories are shown in transaction numpad
 - Replace money2 library to own implementation
+- Replace realm to sqlflite
 
 Fixed:
 - Progress indicator on budget page

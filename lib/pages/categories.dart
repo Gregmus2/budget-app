@@ -1,5 +1,5 @@
-import 'package:fb/models/category.dart';
-import 'package:fb/models/transfer_target.dart';
+import 'package:fb/db/category.dart';
+import 'package:fb/db/transfer_target.dart';
 import 'package:fb/pages/category_create.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';

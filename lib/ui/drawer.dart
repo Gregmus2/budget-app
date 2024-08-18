@@ -6,7 +6,9 @@ import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/dialog_button.dart';
 import 'package:fb/ui/drawer_card.dart';
 import 'package:fb/utils/import.dart';
+import 'package:fb/utils/sign_in.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,14 +39,20 @@ class BudgetDrawer extends StatelessWidget {
           ),
           // todo add automatic archive of old accounts and categories
           StringDrawerCard(
-              name: "Sign Out",
-              value: stateProvider.user?.profile.name,
+              name: stateProvider.user == null ? "Sign In" : "Sign Out",
+              value: stateProvider.user?.displayName,
               icon: Icons.account_circle,
               color: colorScheme.primary,
               onPressed: () {
-                stateProvider.user!.logOut();
-                // it will notify app page about that to rebuild body with LoginPage
-                stateProvider.user = null;
+                if (stateProvider.user != null) {
+                  FirebaseAuth.instance.signOut();
+                  stateProvider.user = null;
+                  return;
+                }
+
+                signInWithGoogle().then((user) {
+                  stateProvider.user = user.user;
+                });
               }),
           StringDrawerCard(
             name: "First day of month",
@@ -72,9 +80,7 @@ class BudgetDrawer extends StatelessWidget {
                                         setState(() {
                                           stateProvider.setFirstDayOfMonth(value!);
                                           transactionProvider.updateRange();
-                                          budgetProvider.updateRange();
-
-                                          Navigator.pop(context);
+                                          budgetProvider.updateRange().then((value) => Navigator.pop(context));
                                         });
                                       },
                                     )),

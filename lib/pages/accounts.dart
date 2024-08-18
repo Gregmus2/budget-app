@@ -1,4 +1,4 @@
-import 'package:fb/models/account.dart';
+import 'package:fb/db/account.dart';
 import 'package:fb/pages/account_create.dart';
 import 'package:fb/pages/page.dart' as page;
 import 'package:fb/providers/account.dart';
