@@ -1,6 +1,7 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
+import 'package:fb/ui/categories_popup.dart';
 import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/custom_button.dart';
@@ -48,127 +49,163 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    final CategoryProvider provider = Provider.of<CategoryProvider>(context);
     final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
-    List<Widget> subcategoriesCards = _buildSubCategoriesCards(context);
     _currency ??= stateProvider.defaultCurrency;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _color,
-        foregroundColor: Colors.white,
-        toolbarHeight: 100,
-        title: _title(provider.isNotExists),
-      ),
-      body: GestureDetector(
-        onTap: _hideContextMenuIfShown,
-        child: ListView(
-          children: [
-            EntitySettingString(
-                label: "Type",
-                value: _type.name.toUpperCase(),
-                color: _type == CategoryType.expenses ? Colors.red : Colors.green,
-                onPressed: () {
-                  setState(() {
-                    if (_type == CategoryType.expenses) {
-                      _type = CategoryType.income;
-                    } else {
-                      _type = CategoryType.expenses;
-                    }
-                  });
-                }),
-            EntitySettingString(
-                label: "Currency",
-                value: _currency!.isoCode,
-                color: _color,
-                onPressed: () {
-                  showCurrencyDialog(
-                    context,
-                    (currency) {
-                      setState(() {
-                        _currency = currency;
-                      });
-                    },
-                  );
-                },
-                subtitle: _currency!.name),
-            EntitySetting(
-                label: "Icon",
-                value: Icon(_icon, color: _color),
-                color: _color,
-                onPressed: () {
-                  showIconDialog(context, _color, _icon, (icon) {
-                    setState(() {
-                      _icon = icon;
-                    });
-                  });
-                }),
-            EntitySetting(
-                label: "Color",
-                value: Icon(Icons.circle, color: _color),
-                color: _color,
-                onPressed: () {
-                  showColorDialog(context, _color, (color) {
-                    setState(() {
-                      _color = color;
-                    });
-                  });
-                }),
-            EntitySettingBool(
-              label: "Archived",
-              value: _archived,
-              color: _color,
-              onPressed: (value) {
-                setState(() {
-                  _archived = value;
-                });
-              },
-            ),
-            Column(
-              children: [
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text("Subcategories"),
-                  ),
-                ),
-                Wrap(
-                  children: subcategoriesCards,
-                ),
-              ],
-            ),
-          ],
+      appBar: _buildAppBar(),
+      body: _buildBody(context),
+      floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  Row _buildFloatingActionButton() {
+    CategoryProvider provider = Provider.of<CategoryProvider>(context);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        FloatingActionButton(
+          heroTag: "delete",
+          onPressed: () {
+            provider.remove(widget.category!);
+
+            Navigator.pop(context);
+          },
+          backgroundColor: Colors.red,
+          child: const Icon(Icons.delete, color: Colors.white),
         ),
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        const SizedBox(
+          width: 10,
+        ),
+        FloatingActionButton(
+          heroTag: "save",
+          onPressed: () {
+            provider.upsert(
+                widget.category, _nameInput.text, _icon, _color, _currency!, _type, _subcategories, _archived);
+
+            Navigator.pop(context);
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.check, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  GestureDetector _buildBody(BuildContext context) {
+    return GestureDetector(
+      onTap: _hideContextMenuIfShown,
+      child: ListView(
         children: [
-          FloatingActionButton(
-            heroTag: "delete",
-            onPressed: () {
-              provider.remove(widget.category!);
-
-              Navigator.pop(context);
-            },
-            backgroundColor: Colors.red,
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          FloatingActionButton(
-            heroTag: "save",
-            onPressed: () {
-              provider.upsert(
-                  widget.category, _nameInput.text, _icon, _color, _currency!, _type, _subcategories, _archived);
-
-              Navigator.pop(context);
-            },
-            backgroundColor: Colors.green,
-            child: const Icon(Icons.check, color: Colors.white),
-          ),
+          _buildTypeSetting(),
+          _buildCurrencySetting(context),
+          _buildIconSetting(context),
+          _buildColorSetting(context),
+          _buildArchivedSetting(),
+          _buildSubcategoriesSection(context),
         ],
       ),
+    );
+  }
+
+  Column _buildSubcategoriesSection(BuildContext context) {
+    return Column(
+      children: [
+        const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text("Subcategories"),
+          ),
+        ),
+        Wrap(
+          children: _buildSubCategoriesCards(context),
+        ),
+      ],
+    );
+  }
+
+  EntitySettingBool _buildArchivedSetting() {
+    return EntitySettingBool(
+      label: "Archived",
+      value: _archived,
+      color: _color,
+      onPressed: (value) {
+        setState(() {
+          _archived = value;
+        });
+      },
+    );
+  }
+
+  EntitySetting _buildColorSetting(BuildContext context) {
+    return EntitySetting(
+        label: "Color",
+        value: Icon(Icons.circle, color: _color),
+        color: _color,
+        onPressed: () {
+          showColorDialog(context, _color, (color) {
+            setState(() {
+              _color = color;
+            });
+          });
+        });
+  }
+
+  EntitySetting _buildIconSetting(BuildContext context) {
+    return EntitySetting(
+        label: "Icon",
+        value: Icon(_icon, color: _color),
+        color: _color,
+        onPressed: () {
+          showIconDialog(context, _color, _icon, (icon) {
+            setState(() {
+              _icon = icon;
+            });
+          });
+        });
+  }
+
+  EntitySettingString _buildCurrencySetting(BuildContext context) {
+    return EntitySettingString(
+        label: "Currency",
+        value: _currency!.isoCode,
+        color: _color,
+        onPressed: () {
+          showCurrencyDialog(
+            context,
+            (currency) {
+              setState(() {
+                _currency = currency;
+              });
+            },
+          );
+        },
+        subtitle: _currency!.name);
+  }
+
+  EntitySettingString _buildTypeSetting() {
+    return EntitySettingString(
+        label: "Type",
+        value: _type.name.toUpperCase(),
+        color: _type == CategoryType.expenses ? Colors.red : Colors.green,
+        onPressed: () {
+          setState(() {
+            if (_type == CategoryType.expenses) {
+              _type = CategoryType.income;
+            } else {
+              _type = CategoryType.expenses;
+            }
+          });
+        });
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: _color,
+      foregroundColor: Colors.white,
+      toolbarHeight: 100,
+      title: _title(Provider.of<CategoryProvider>(context).isNotExists),
     );
   }
 
@@ -250,7 +287,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   }
 
   List<Widget> _buildSubCategoriesCards(BuildContext context) {
-    CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
+    CategoryProvider provider = Provider.of<CategoryProvider>(context);
 
     List<Widget> result = List<Widget>.generate(
       _subcategories.length,
@@ -282,10 +319,9 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             });
           },
           onLongPress: () {
-            // todo finish implementation https://api.flutter.dev/flutter/widgets/ContextMenuController-class.html or https://pub.dev/packages/context_menus
             _contextMenuController.show(
               context: context,
-              contextMenuBuilder: (BuildContext context) {
+              contextMenuBuilder: (BuildContext _) {
                 return AdaptiveTextSelectionToolbar.buttonItems(
                     anchors: TextSelectionToolbarAnchors(
                       primaryAnchor: _longPressOffset!,
@@ -338,17 +374,59 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         ContextMenuButtonItem(
           onPressed: () {
             ContextMenuController.removeAny();
-            provider.convertToCategory(widget.category!);
-            Navigator.pop(context);
+            provider.convertToCategory(subcategory);
           },
           label: 'Convert to category',
         ),
         ContextMenuButtonItem(
           onPressed: () {
             ContextMenuController.removeAny();
-            // todo implement
+
+            showGeneralDialog(
+              context: context,
+              barrierLabel: "Barrier",
+              barrierDismissible: true,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return Center(
+                  child: Container(
+                      color: Theme.of(context).colorScheme.background,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: CategorySelectionPopup(onPressed: (category) {
+                        provider.merge(subcategory, category).then((value) {
+                          Navigator.pop(context);
+                        });
+                      })),
+                );
+              },
+            );
           },
           label: 'Merge',
+        ),
+        ContextMenuButtonItem(
+          onPressed: () {
+            ContextMenuController.removeAny();
+
+            showGeneralDialog(
+              context: context,
+              barrierLabel: "Barrier",
+              barrierDismissible: true,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return Center(
+                  child: Container(
+                      color: Theme.of(context).colorScheme.background,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: CategorySelectionPopup(onPressed: (category) {
+                        provider.move(subcategory, category).then((value) {
+                          Navigator.pop(context);
+                        });
+                      })),
+                );
+              },
+            );
+          },
+          label: 'Move',
         ),
         ContextMenuButtonItem(
           onPressed: () {
@@ -363,16 +441,18 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       ]);
     }
 
-    contextMenuItems.add(ContextMenuButtonItem(onPressed: () {
-      ContextMenuController.removeAny();
-      if (widget.category != null) {
-        provider.remove(subcategory);
-      }
-      setState(() {
-        _subcategories.remove(subcategory);
-      });
-    },
-    label: 'Delete',));
+    contextMenuItems.add(ContextMenuButtonItem(
+      onPressed: () {
+        ContextMenuController.removeAny();
+        if (widget.category != null) {
+          provider.remove(subcategory);
+        }
+        setState(() {
+          _subcategories.remove(subcategory);
+        });
+      },
+      label: 'Delete',
+    ));
 
     return contextMenuItems;
   }

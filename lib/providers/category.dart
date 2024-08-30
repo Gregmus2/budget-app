@@ -143,14 +143,30 @@ class CategoryProvider extends ChangeNotifier {
     repo.update(category);
   }
 
-  void remove(Category category) {
+  Future<void> merge(Category subCategory, Category category) async {
+    category.subCategories.remove(subCategory);
+    _subCategories.remove(subCategory);
+    await repo.updateTransferTargets(subCategory, category);
+    await repo.delete(subCategory);
+    notifyListeners();
+  }
+
+  Future<void> move(Category subCategory, Category category) async {
+    _categories.firstWhere((element) => element.id == subCategory.parent).subCategories.remove(subCategory);
+    category.subCategories.add(subCategory);
+    subCategory.parent = category.id;
+    await repo.update(subCategory);
+    notifyListeners();
+  }
+
+  void remove(Category category) async {
     _categories.remove(category);
     _subCategories.remove(category);
     for (var subCategory in category.subCategories) {
       _removeSubcategory(subCategory);
     }
 
-    repo.delete(category);
+    await repo.delete(category);
     if (category.parent != null) {
       getByID(category.parent!).subCategories.remove(category);
     }
@@ -158,9 +174,9 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _removeSubcategory(Category subCategory) {
+  void _removeSubcategory(Category subCategory) async {
     _subCategories.remove(subCategory);
-    repo.delete(subCategory);
+    await repo.delete(subCategory);
   }
 
   // todo check if subcategories have the same order when reorder. It can be the case when they added on different devices offline
@@ -249,11 +265,13 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void convertToCategory(Category subCategory) {
+  Future<void> convertToCategory(Category subCategory) async {
+    _categories.firstWhere((element) => element.id == subCategory.parent).subCategories.remove(subCategory);
     subCategory.parent = null;
-    repo.update(subCategory);
+    await repo.update(subCategory);
     _subCategories.remove(subCategory);
     _categories.add(subCategory);
+    _categories.sort((a, b) => a.order.compareTo(b.order));
     notifyListeners();
   }
 }

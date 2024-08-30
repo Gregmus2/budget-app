@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 0.2.0
+
+Added:
+- Subcategory context items implementation
+
+Fixed:
+- Small async fixes
+
 ## 0.1.0
 
 Added:

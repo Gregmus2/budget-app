@@ -143,6 +143,10 @@ class TransactionProvider extends ChangeNotifier {
 
   // todo make it recent, not last
   TransferTarget getRecentFromTarget() {
+    if (_transactions.isEmpty) {
+      return accountProvider.items.first;
+    }
+
     if (_transactions.last.fromAccount != null) {
       return accountProvider.getById(_transactions.last.fromAccount!);
     }
@@ -152,6 +156,10 @@ class TransactionProvider extends ChangeNotifier {
 
   // todo make it recent, not last
   TransferTarget getRecentToTarget() {
+    if (_transactions.isEmpty) {
+      return categoryProvider.getCategories().first;
+    }
+
     if (_transactions.last.toAccount != null) {
       return accountProvider.getById(_transactions.last.toAccount!);
     }

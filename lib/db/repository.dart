@@ -85,7 +85,7 @@ class Repository {
   }
 
   Future<void> create(Model model) async {
-    db.insert(
+    await db.insert(
       model.tableName(),
       model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -106,6 +106,25 @@ class Repository {
     return List.generate(maps.length, (i) {
       return Account.mapDatabase(maps[i]);
     });
+  }
+
+  Future<void> updateTransferTargets(Category from, Category to) async {
+    await db.update(
+      tableTransactions,
+      {
+        'from_category': to.id,
+      },
+      where: 'from_category = ?',
+      whereArgs: [from.id],
+    );
+    db.update(
+      tableTransactions,
+      {
+        'to_category': to.id,
+      },
+      where: 'to_category = ?',
+      whereArgs: [from.id],
+    );
   }
 
   Future<List<model.Transaction>> listTransactions(DateTimeRange range) async {
@@ -129,7 +148,7 @@ class Repository {
   }
 
   Future<void> update(Model model) async {
-    db.update(
+    await db.update(
       model.tableName(),
       model.toMap(),
       where: 'id = ?',
@@ -138,7 +157,7 @@ class Repository {
   }
 
   Future<void> delete(Model model) async {
-    db.delete(
+    await db.delete(
       model.tableName(),
       where: 'id = ?',
       whereArgs: [model.id],

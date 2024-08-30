@@ -5,6 +5,7 @@ import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/ui/account_card.dart';
+import 'package:fb/ui/categories_popup.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:fb/utils/currency.dart';
@@ -235,39 +236,6 @@ class AccountSelectionPopup extends StatelessWidget {
                   onPressed(account);
                 });
           })),
-    );
-  }
-}
-
-class CategorySelectionPopup extends StatelessWidget {
-  const CategorySelectionPopup({
-    super.key,
-    required this.onPressed,
-  });
-
-  final Function(Category) onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    CategoryProvider provider = Provider.of<CategoryProvider>(context, listen: false);
-    List<Category> categories = provider.getCategories();
-
-    return SingleChildScrollView(
-      child: GridView.count(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          crossAxisCount: 4,
-          childAspectRatio: 0.5,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 16,
-          shrinkWrap: true,
-          physics: const ScrollPhysics(),
-          children: categories
-              .map((category) => CategoryCard(
-                    key: ValueKey(category.id),
-                    category: category,
-                    onPressed: () => onPressed(category),
-                  ))
-              .toList()),
     );
   }
 }
