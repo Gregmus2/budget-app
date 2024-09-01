@@ -5,6 +5,9 @@
 Added:
 - Subcategory context items implementation
 
+Updated:
+- Rebuilt transaction filters to allow multiple selections and improve ui
+
 Fixed:
 - Small async fixes
 

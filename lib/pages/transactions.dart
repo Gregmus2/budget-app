@@ -8,7 +8,8 @@ import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
-import 'package:fb/ui/categories_popup.dart';
+import 'package:fb/ui/account_card.dart';
+import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -27,68 +28,13 @@ class TransactionsPage extends StatelessWidget implements page.Page {
 
   @override
   List<Widget>? getActions(BuildContext context) {
-    final TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
     final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
     final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
-    List<Widget> actions = [
-      IconButton(
-          onPressed: () {
-            // todo search sort filter
-            showGeneralDialog(
-              context: context,
-              barrierLabel: "Barrier",
-              barrierDismissible: true,
-              pageBuilder: (context, animation, secondaryAnimation) {
-                return Center(
-                  child: Container(
-                    color: Theme.of(context).colorScheme.background,
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          // todo add reset
-                          // todo add filter by notes
-                          TargetGrids(onPressed: (target) {
-                            provider.filterByTarget(target);
-
-                            Navigator.pop(context);
-                          })
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-          icon: const Icon(Icons.filter_alt_rounded))
-    ];
+    List<Widget> actions = [const TransactionFilterButton()];
     if (accountProvider.items.isNotEmpty && categoryProvider.isNotEmpty()) {
       actions.add(
-        IconButton(
-          onPressed: () {
-            showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TransactionNumPad(
-                    onDoneFunc: (value, date, from, to, note) {
-                      provider.add(note, from, to, value, value, date);
-                      Navigator.pop(context);
-                    },
-                    from: provider.getRecentFromTarget(),
-                    to: provider.getRecentToTarget(),
-                  ),
-                ],
-              ),
-            );
-          },
-          icon: const Icon(Icons.add),
-        ),
+        const AddTransactionButton(),
       );
     }
 
@@ -106,6 +52,78 @@ class TransactionsPage extends StatelessWidget implements page.Page {
   @override
   String getLabel() {
     return 'Transactions';
+  }
+}
+
+class TransactionFilterButton extends StatelessWidget {
+  const TransactionFilterButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+
+    return IconButton(
+        onPressed: () {
+          showGeneralDialog(
+            context: context,
+            barrierLabel: "Barrier",
+            barrierDismissible: true,
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return Center(
+                child: Container(
+                  color: Theme.of(context).colorScheme.background,
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  // todo add filter by notes, sort
+                  child: TargetFilter(
+                      filters: provider.targetFilter,
+                      onUpdate: (target) {
+                        provider.filterByTargets(target);
+
+                        Navigator.pop(context);
+                      }),
+                ),
+              );
+            },
+          );
+        },
+        icon: const Icon(Icons.filter_alt_rounded));
+  }
+}
+
+class AddTransactionButton extends StatelessWidget {
+  const AddTransactionButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
+
+    return IconButton(
+      onPressed: () {
+        showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (context) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TransactionNumPad(
+                onDoneFunc: (value, date, from, to, note) {
+                  provider.add(note, from, to, value, value, date);
+                  Navigator.pop(context);
+                },
+                from: provider.getRecentFromTarget(),
+                to: provider.getRecentToTarget(),
+              ),
+            ],
+          ),
+        );
+      },
+      icon: const Icon(Icons.add),
+    );
   }
 }
 
@@ -148,14 +166,14 @@ class _TransactionListState extends State<TransactionList> {
               }
 
               List<Transaction>? dataItems = snapshot.data;
-              if (provider.targetFilter != null) {
+              if (provider.targetFilter.isNotEmpty) {
                 // todo handle categories and accounts with the same id
                 dataItems = dataItems
                     ?.where((element) =>
-                        element.fromAccount == provider.targetFilter!.id ||
-                        element.fromCategory == provider.targetFilter!.id ||
-                        element.toAccount == provider.targetFilter!.id ||
-                        element.toCategory == provider.targetFilter!.id)
+                        provider.targetFilter.any((filterElement) => filterElement.id == element.fromAccount) ||
+                        provider.targetFilter.any((filterElement) => filterElement.id == element.fromCategory) ||
+                        provider.targetFilter.any((filterElement) => filterElement.id == element.toAccount) ||
+                        provider.targetFilter.any((filterElement) => filterElement.id == element.toCategory))
                     .toList();
               }
 
@@ -326,52 +344,144 @@ class TransactionsSeparator extends StatelessWidget {
   }
 }
 
-class TargetGrids extends StatefulWidget {
-  final Function(TransferTarget) onPressed;
+class TargetFilter extends StatefulWidget {
+  final Function(Set<TransferTarget>) onUpdate;
+  final Set<TransferTarget> filters;
 
-  const TargetGrids({super.key, required this.onPressed});
+  const TargetFilter({super.key, required this.onUpdate, required this.filters});
 
   @override
-  State<TargetGrids> createState() => _TargetGridsState();
+  State<TargetFilter> createState() => _TargetFilterState();
 }
 
-class _TargetGridsState extends State<TargetGrids> {
+class _TargetFilterState extends State<TargetFilter> {
   bool _isAccount = true;
+  late Set<TransferTarget> filters;
+
+  @override
+  void initState() {
+    filters = widget.filters;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
+    final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
+    final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextButton(
+                onPressed: () => setState(() {
+                      _isAccount = true;
+                    }),
+                child: Text(
+                  'Accounts',
+                  style: TextStyle(fontSize: 15, color: _isAccount ? null : Colors.grey),
+                )),
+            const SizedBox(width: 20),
+            TextButton(
+                onPressed: () => setState(() {
+                      _isAccount = false;
+                    }),
+                child: Text('Categories', style: TextStyle(fontSize: 15, color: _isAccount ? Colors.grey : null))),
+          ],
+        ),
+        Flexible(
+          child: SingleChildScrollView(
+            child: _isAccount
+                ? ListView(
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: List.generate(accountProvider.length, (index) {
+                      Account account = accountProvider.get(index)!;
+
+                      return FilterChip(
+                        padding: const EdgeInsets.all(0),
+                        label: AccountCard(key: ValueKey(index), account: account),
+                        showCheckmark: false,
+                        side: const BorderSide(width: 0, color: Colors.transparent),
+                        shape: const RoundedRectangleBorder(),
+                        selected: filters.contains(account),
+                        onSelected: (bool selected) {
+                          setState(() {
+                            if (selected) {
+                              filters.add(account);
+                            } else {
+                              filters.remove(account);
+                            }
+                          });
+                        },
+                      );
+                    }))
+                : GridView.count(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 16,
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: categoryProvider
+                        .getCategories()
+                        .map((category) => FilterChip(
+                              padding: const EdgeInsets.all(0),
+                              showCheckmark: false,
+                              side: const BorderSide(width: 0, color: Colors.transparent),
+                              label: CategoryCard(key: ValueKey(category.id), category: category),
+                              selected: filters.contains(category),
+                              onSelected: (bool selected) {
+                                setState(() {
+                                  if (selected) {
+                                    filters.add(category);
+                                  } else {
+                                    filters.remove(category);
+                                  }
+                                });
+                              },
+                            ))
+                        .toList()),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton(
-                  onPressed: () => setState(() {
-                        _isAccount = true;
-                      }),
-                  child: Text(
-                    'Accounts',
-                    style: TextStyle(fontSize: 15, color: _isAccount ? null : Colors.grey),
-                  )),
-              const SizedBox(width: 20),
-              TextButton(
-                  onPressed: () => setState(() {
-                        _isAccount = false;
-                      }),
-                  child: Text('Categories', style: TextStyle(fontSize: 15, color: _isAccount ? Colors.grey : null))),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    filters.clear();
+                  });
+
+                  widget.onUpdate(filters);
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.error),
+                ),
+                child: Text(
+                  'Reset',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  widget.onUpdate(filters);
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.onPrimary),
+                ),
+                child: const Text('Apply'),
+              ),
             ],
           ),
-          _isAccount
-              ? AccountSelectionPopup(onPressed: (account) {
-                  widget.onPressed(account);
-                })
-              : CategorySelectionPopup(onPressed: (category) {
-                  widget.onPressed(category);
-                }),
-        ],
-      ),
+        )
+      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 Basic Features
 - TODOs
+- Dart analysis
 
 Design
 - download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
@@ -9,7 +10,7 @@ Design
 });*/
 
 Polishing
-- do refactoring to extract widgets and functions as much as possible (globally)
+- do refactoring to extract widgets and functions as much as possible (globally) (possible use gemini)
 - performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
 - https://pub.dev/packages/dynamic_color
 

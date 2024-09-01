@@ -21,7 +21,7 @@ class TransactionProvider extends ChangeNotifier {
   final CategoryProvider categoryProvider;
   final StateProvider stateProvider;
 
-  TransferTarget? targetFilter;
+  Set<TransferTarget> targetFilter = {};
 
   Future<List<Transaction>> get previousItems async {
     final range = getPreviousRange(stateProvider.range, stateProvider.rangeType);
@@ -167,7 +167,7 @@ class TransactionProvider extends ChangeNotifier {
     return categoryProvider.getByID(_transactions.last.toCategory!);
   }
 
-  void filterByTarget(TransferTarget target) {
+  void filterByTargets(Set<TransferTarget> target) {
     targetFilter = target;
     notifyListeners();
   }

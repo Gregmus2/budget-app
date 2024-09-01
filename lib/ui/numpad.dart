@@ -3,10 +3,8 @@ import 'package:fb/db/category.dart';
 import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
-import 'package:fb/providers/category.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/categories_popup.dart';
-import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/subcategory.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
@@ -210,13 +208,20 @@ class FromToButton extends StatelessWidget {
   }
 }
 
-class AccountSelectionPopup extends StatelessWidget {
+class AccountSelectionPopup extends StatefulWidget {
   const AccountSelectionPopup({
     super.key,
     required this.onPressed,
   });
 
   final Function(Account) onPressed;
+
+  @override
+  State<AccountSelectionPopup> createState() => _AccountSelectionPopupState();
+}
+
+class _AccountSelectionPopupState extends State<AccountSelectionPopup> {
+  Set<Account> filters = <Account>{};
 
   @override
   Widget build(BuildContext context) {
@@ -230,11 +235,12 @@ class AccountSelectionPopup extends StatelessWidget {
             Account account = provider.get(index)!;
 
             return AccountCard(
-                key: ValueKey(index),
-                account: account,
-                onPressed: () {
-                  onPressed(account);
-                });
+              key: ValueKey(index),
+              account: account,
+              onPressed: () {
+                widget.onPressed(account);
+              },
+            );
           })),
     );
   }

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class AccountCard extends StatelessWidget {
   final Account account;
-  final Function() onPressed;
+  final Function()? onPressed;
 
-  const AccountCard({super.key, required this.account, required this.onPressed});
+  const AccountCard({super.key, required this.account, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class AccountCard extends StatelessWidget {
                 onPressed: onPressed,
                 style: const ButtonStyle(
                     alignment: AlignmentDirectional.centerStart,
-                    shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
-                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
+                    shape: WidgetStatePropertyAll(RoundedRectangleBorder()),
+                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
