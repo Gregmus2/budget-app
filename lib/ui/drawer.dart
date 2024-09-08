@@ -29,7 +29,6 @@ class BudgetDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: colorScheme.background,
       child: ListView(
-        padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
@@ -54,6 +53,7 @@ class BudgetDrawer extends StatelessWidget {
                   stateProvider.user = user.user;
                 });
               }),
+          const Divider(),
           StringDrawerCard(
             name: "First day of month",
             value: stateProvider.firstDayOfMonth.toString(),
@@ -92,6 +92,11 @@ class BudgetDrawer extends StatelessWidget {
                 },
               );
             },
+          ),
+          const Divider(),
+          const ListTile(
+            title: Text("Data", style: TextStyle(fontWeight: FontWeight.bold)), // Section header
+            dense: true, // Make the header compact
           ),
           StringDrawerCard(
               name: "Import Accounts",

@@ -7,6 +7,7 @@ Added:
 
 Updated:
 - Rebuilt transaction filters to allow multiple selections and improve ui
+- Migrate to Nunito Sans font
 
 Fixed:
 - Small async fixes

@@ -13,7 +13,7 @@ class StateProvider extends ChangeNotifier {
   late DateTimeRange range;
   RangeType rangeType = RangeType.monthly;
   int firstDayOfMonth = 1;
-  Currency defaultCurrency = Currency();
+  Currency defaultCurrency = Currency.eur;
   late SharedPreferences _prefs;
   late User? _user;
   late String? userID;

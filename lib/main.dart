@@ -11,7 +11,6 @@ import 'package:fb/quick_transaction.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:http/io_client.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';

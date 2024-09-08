@@ -9,5 +9,6 @@ ThemeData getThemeData(BuildContext context) {
       brightness: Brightness.dark,
       seedColor: Colors.blue,
     ),
+    fontFamily: GoogleFonts.nunitoSans().fontFamily,
   );
 }

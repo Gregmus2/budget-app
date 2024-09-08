@@ -354,15 +354,22 @@ class TargetFilter extends StatefulWidget {
   State<TargetFilter> createState() => _TargetFilterState();
 }
 
-class _TargetFilterState extends State<TargetFilter> {
-  bool _isAccount = true;
+class _TargetFilterState extends State<TargetFilter> with TickerProviderStateMixin {
   late Set<TransferTarget> filters;
+  late final TabController _tabController;
 
   @override
   void initState() {
-    filters = widget.filters;
-
     super.initState();
+
+    filters = widget.filters;
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -372,81 +379,67 @@ class _TargetFilterState extends State<TargetFilter> {
 
     return Column(
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextButton(
-                onPressed: () => setState(() {
-                      _isAccount = true;
-                    }),
-                child: Text(
-                  'Accounts',
-                  style: TextStyle(fontSize: 15, color: _isAccount ? null : Colors.grey),
-                )),
-            const SizedBox(width: 20),
-            TextButton(
-                onPressed: () => setState(() {
-                      _isAccount = false;
-                    }),
-                child: Text('Categories', style: TextStyle(fontSize: 15, color: _isAccount ? Colors.grey : null))),
+        TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Accounts'),
+            Tab(text: 'Categories'),
           ],
         ),
         Flexible(
-          child: SingleChildScrollView(
-            child: _isAccount
-                ? ListView(
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    children: List.generate(accountProvider.length, (index) {
-                      Account account = accountProvider.get(index)!;
+          child: TabBarView(controller: _tabController, children: <Widget>[
+            ListView(
+                shrinkWrap: true,
+                physics: const ScrollPhysics(),
+                children: List.generate(accountProvider.length, (index) {
+                  Account account = accountProvider.get(index)!;
 
-                      return FilterChip(
-                        padding: const EdgeInsets.all(0),
-                        label: AccountCard(key: ValueKey(index), account: account),
-                        showCheckmark: false,
-                        side: const BorderSide(width: 0, color: Colors.transparent),
-                        shape: const RoundedRectangleBorder(),
-                        selected: filters.contains(account),
-                        onSelected: (bool selected) {
-                          setState(() {
-                            if (selected) {
-                              filters.add(account);
-                            } else {
-                              filters.remove(account);
-                            }
-                          });
-                        },
-                      );
-                    }))
-                : GridView.count(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 16,
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    children: categoryProvider
-                        .getCategories()
-                        .map((category) => FilterChip(
-                              padding: const EdgeInsets.all(0),
-                              showCheckmark: false,
-                              side: const BorderSide(width: 0, color: Colors.transparent),
-                              label: CategoryCard(key: ValueKey(category.id), category: category),
-                              selected: filters.contains(category),
-                              onSelected: (bool selected) {
-                                setState(() {
-                                  if (selected) {
-                                    filters.add(category);
-                                  } else {
-                                    filters.remove(category);
-                                  }
-                                });
-                              },
-                            ))
-                        .toList()),
-          ),
+                  return FilterChip(
+                    padding: const EdgeInsets.all(0),
+                    label: AccountCard(key: ValueKey(index), account: account),
+                    showCheckmark: false,
+                    side: const BorderSide(width: 0, color: Colors.transparent),
+                    shape: const RoundedRectangleBorder(),
+                    selected: filters.contains(account),
+                    onSelected: (bool selected) {
+                      setState(() {
+                        if (selected) {
+                          filters.add(account);
+                        } else {
+                          filters.remove(account);
+                        }
+                      });
+                    },
+                  );
+                })),
+            GridView.count(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                crossAxisCount: 4,
+                childAspectRatio: 0.7,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 16,
+                shrinkWrap: true,
+                physics: const ScrollPhysics(),
+                children: categoryProvider
+                    .getCategories()
+                    .map((category) => FilterChip(
+                          padding: const EdgeInsets.all(0),
+                          showCheckmark: false,
+                          side: const BorderSide(width: 0, color: Colors.transparent),
+                          label: CategoryCard(key: ValueKey(category.id), category: category),
+                          selected: filters.contains(category),
+                          onSelected: (bool selected) {
+                            setState(() {
+                              if (selected) {
+                                filters.add(category);
+                              } else {
+                                filters.remove(category);
+                              }
+                            });
+                          },
+                        ))
+                    .toList())
+          ]),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),

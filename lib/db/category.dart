@@ -62,7 +62,7 @@ class Category implements Model, TransferTarget {
       icon: IconData(map['icon_code'], fontFamily: map['icon_font']),
       color: Color(map['color']).withOpacity(1),
       archived: map['archived'] == 1,
-      currency: Currency.fromISOCode(map['currency']),
+      currency: Currency.mustFromISOCode(map['currency']),
       order: map['order'],
       parent: map['parent'],
       type: CategoryType.values[map['type']],

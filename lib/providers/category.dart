@@ -1,6 +1,5 @@
 import 'package:fb/db/category.dart';
 import 'package:fb/db/repository.dart';
-import 'package:fb/db/category.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 

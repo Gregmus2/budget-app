@@ -11,6 +11,7 @@ Design
 
 Polishing
 - do refactoring to extract widgets and functions as much as possible (globally) (possible use gemini)
+  - make all properties for all classes private (which are not used outside) and add getters/setters if necessary
 - performance issues (https://docs.flutter.dev/perf/best-practices, devtools in profile mode, find other ways to optimize)
 - https://pub.dev/packages/dynamic_color
 

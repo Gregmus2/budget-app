@@ -8,8 +8,6 @@ import 'package:fb/providers/state.dart';
 import 'package:fb/utils/dates.dart';
 import 'package:flutter/material.dart';
 
-import '../db/budget.dart';
-
 class BudgetProvider extends ChangeNotifier {
   List<Budget> _budgets = [];
   final Repository repo;

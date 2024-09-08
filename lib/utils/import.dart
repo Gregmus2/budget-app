@@ -132,6 +132,7 @@ class DataImport {
     Category? category;
     if (categoryProvider.isNotExists(nameField)) {
       Currency? currency = Currency.fromISOCode(currencyField);
+      currency ??= stateProvider.defaultCurrency;
       category = categoryProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, type, [], false);
     }
 
