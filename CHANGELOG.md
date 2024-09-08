@@ -4,6 +4,7 @@
 
 Added:
 - Subcategory context items implementation
+- Add search on transaction page
 
 Updated:
 - Rebuilt transaction filters to allow multiple selections and improve ui

@@ -2,7 +2,7 @@ import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/budget.dart';
 import 'package:fb/pages/categories.dart';
 import 'package:fb/pages/page.dart' as page;
-import 'package:fb/pages/transactions.dart';
+import 'package:fb/pages/transactions/transactions.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/ui/bottom_navigation.dart';
 import 'package:fb/ui/drawer.dart';

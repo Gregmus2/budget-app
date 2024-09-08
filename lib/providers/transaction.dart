@@ -20,7 +20,19 @@ class TransactionProvider extends ChangeNotifier {
   final CategoryProvider categoryProvider;
   final StateProvider stateProvider;
 
-  Set<TransferTarget> targetFilter = {};
+  Set<TransferTarget> _targetFilter = {};
+  set targetFilter(Set<TransferTarget> value) {
+    _targetFilter = value;
+    notifyListeners();
+  }
+  Set<TransferTarget> get targetFilter => _targetFilter;
+
+  String _search = '';
+  set search(String value) {
+    _search = value;
+    notifyListeners();
+  }
+  String get search => _search;
 
   Future<List<Transaction>> get previousItems async {
     final range = getPreviousRange(stateProvider.range, stateProvider.rangeType);
@@ -164,11 +176,6 @@ class TransactionProvider extends ChangeNotifier {
     }
 
     return categoryProvider.getByID(_transactions.last.toCategory!);
-  }
-
-  void filterByTargets(Set<TransferTarget> target) {
-    targetFilter = target;
-    notifyListeners();
   }
 
   void deleteAll() {

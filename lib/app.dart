@@ -13,7 +13,17 @@ class App extends StatelessWidget {
       title: 'Gregmus Budget',
       home: const HomePage(),
       theme: getThemeData(context),
-      builder: EasyLoading.init(),
+      builder: EasyLoading.init(
+        builder: (context, widget) {
+          Widget error = const Text('...rendering error...');
+          if (widget is Scaffold || widget is Navigator) {
+            error = Scaffold(body: Center(child: error));
+          }
+          ErrorWidget.builder = (errorDetails) => error;
+          if (widget != null) return widget;
+          throw StateError('widget is null');
+        },
+      ),
     );
   }
 }
