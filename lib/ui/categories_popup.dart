@@ -28,10 +28,10 @@ class CategorySelectionPopup extends StatelessWidget {
           physics: const ScrollPhysics(),
           children: categories
               .map((category) => CategoryCard(
-            key: ValueKey(category.id),
-            category: category,
-            onPressed: () => onPressed(category),
-          ))
+                    key: ValueKey(category.id),
+                    category: category,
+                    onPressed: () => onPressed(category),
+                  ))
               .toList()),
     );
   }

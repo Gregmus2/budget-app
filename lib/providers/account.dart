@@ -22,7 +22,9 @@ class AccountProvider extends ChangeNotifier {
   int get length => _accounts.length;
 
   List<Account> getAccounts({bool archived = false, AccountType? type}) {
-    return _accounts.where((element) => element.archived == archived && (type == null || element.type == type)).toList();
+    return _accounts
+        .where((element) => element.archived == archived && (type == null || element.type == type))
+        .toList();
   }
 
   void upsert(
@@ -43,7 +45,8 @@ class AccountProvider extends ChangeNotifier {
     update(account);
   }
 
-  Account add(String name, IconData icon, Color color, Currency currency, AccountType type, double balance, bool archived) {
+  Account add(
+      String name, IconData icon, Color color, Currency currency, AccountType type, double balance, bool archived) {
     Account account = Account(
         name: name,
         icon: icon,

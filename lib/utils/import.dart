@@ -121,7 +121,7 @@ class DataImport {
     if (accounts.isNotEmpty) {
       return accounts.first;
     }
-    
+
     String? subCategory;
     List<String> parts = nameField.split('(');
     if (parts.length > 1) {
@@ -138,7 +138,8 @@ class DataImport {
 
     String parentID = categoryProvider.findCategoryByName(nameField)!.id;
     if (subCategory != null && categoryProvider.isSubCategoryNotExists(subCategory, parentID)) {
-      category = categoryProvider.addSubcategory(const UuidV4().generate(), subCategory, IconPicker.icons.first, parentID);
+      category =
+          categoryProvider.addSubcategory(const UuidV4().generate(), subCategory, IconPicker.icons.first, parentID);
     }
 
     if (category == null) {
@@ -157,9 +158,10 @@ class DataImport {
     currency ??= stateProvider.defaultCurrency;
     accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0, archived);
   }
-  
+
   Account getAccount(String name, String currencyField) {
-    return accountProvider.items.firstWhere((element) => element.name == name && currencyField == element.currency.isoCode, orElse: () {
+    return accountProvider.items
+        .firstWhere((element) => element.name == name && currencyField == element.currency.isoCode, orElse: () {
       return accountProvider.items.last;
     });
   }

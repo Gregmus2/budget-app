@@ -72,9 +72,9 @@ class _IconPickerState extends State<IconPicker> {
               padding: EdgeInsets.all((constraints.maxWidth / 100) / 4 * 7),
               child: OutlinedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
+                    backgroundColor: WidgetStatePropertyAll(
                         (icon == IconPicker.icons[index]) ? widget.color : Colors.transparent),
-                    shape: MaterialStateProperty.all(const CircleBorder())),
+                    shape: const WidgetStatePropertyAll(CircleBorder())),
                 onPressed: () {
                   setState(() {
                     icon = IconPicker.icons[index];

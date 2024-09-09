@@ -6,9 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const firstDayOfMonthKey = 'firstDayOfMonth';
 
-
-// todo make all properties for all classes private (which are not used outside) and add getters/setters if necessary
-
 class StateProvider extends ChangeNotifier {
   late DateTimeRange range;
   RangeType rangeType = RangeType.monthly;

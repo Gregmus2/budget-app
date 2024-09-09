@@ -9,39 +9,6 @@ class AccountCard extends StatelessWidget {
   const AccountCard({super.key, required this.account, this.onPressed});
 
   @override
-  /* Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-            child: TextButton(
-                onPressed: onPressed,
-                style: const ButtonStyle(
-                    alignment: AlignmentDirectional.centerStart,
-                    shape: WidgetStatePropertyAll(RoundedRectangleBorder()),
-                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 20, horizontal: 10))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(account.icon, color: account.color, size: 40),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(account.name,
-                            style: const TextStyle(color: Colors.white, fontSize: 18), overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                    Text("${account.balance.toPrecision(2)} ${account.currency.symbol}",
-                        style: TextStyle(color: account.balance >= 0 ? Colors.green : Colors.red, fontSize: 18),
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ))),
-      ],
-    );
-  }*/
-
   Widget build(BuildContext context) {
     return Card(
       // Wrap with a Card widget for visual separation

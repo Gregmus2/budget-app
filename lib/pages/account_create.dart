@@ -1,5 +1,5 @@
-import 'package:fb/ext/string.dart';
 import 'package:fb/db/account.dart';
+import 'package:fb/ext/string.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/ui/color_picker.dart';
@@ -47,10 +47,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
   Widget build(BuildContext context) {
     final AccountProvider provider = Provider.of<AccountProvider>(context);
     final StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
-
-    if (_currency == null) {
-      _currency = stateProvider.defaultCurrency;
-    }
+    _currency ??= stateProvider.defaultCurrency;
 
     return DefaultTabController(
       initialIndex: 0,
@@ -166,7 +163,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             children: List<Widget>.generate(
                 AccountType.values.length,
                 (index) => SimpleDialogOption(

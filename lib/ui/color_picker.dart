@@ -54,8 +54,8 @@ class _ColorPickerState extends State<ColorPicker> {
         (index) {
           return ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(ColorPicker.primaryColors[index]),
-                shape: MaterialStateProperty.all(CircleBorder(
+                backgroundColor: WidgetStatePropertyAll(ColorPicker.primaryColors[index]),
+                shape: WidgetStatePropertyAll(CircleBorder(
                     side: (color.value == ColorPicker.primaryColors[index].value)
                         ? const BorderSide(width: 2, color: Colors.white)
                         : BorderSide.none))),

@@ -1,8 +1,8 @@
-import 'package:fb/db/repository.dart';
 import 'package:fb/db/model.dart';
+import 'package:fb/db/repository.dart';
 import 'package:fb/db/transfer_target.dart';
-import 'package:flutter/material.dart';
 import 'package:fb/utils/currency.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/v4.dart';
 
 enum CategoryType { expenses, income }

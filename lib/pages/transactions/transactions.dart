@@ -32,7 +32,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
     final AccountProvider accountProvider = Provider.of<AccountProvider>(context);
     final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
 
-    List<Widget> actions = [TransactionsSearchBar(), TransactionFilterButton()];
+    List<Widget> actions = [const TransactionsSearchBar(), const TransactionFilterButton()];
     if (accountProvider.items.isNotEmpty && categoryProvider.isNotEmpty()) {
       actions.add(
         const AddTransactionButton(),

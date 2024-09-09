@@ -26,7 +26,7 @@ class TransactionFilterButton extends StatelessWidget {
             pageBuilder: (context, animation, secondaryAnimation) {
               return Center(
                 child: Container(
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   height: MediaQuery.of(context).size.height * 0.8,
                   child: TargetFilter(

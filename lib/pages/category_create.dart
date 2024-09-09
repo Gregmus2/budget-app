@@ -389,7 +389,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               pageBuilder: (context, animation, secondaryAnimation) {
                 return Center(
                   child: Container(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       height: MediaQuery.of(context).size.height * 0.7,
                       child: CategorySelectionPopup(onPressed: (category) {
@@ -414,7 +414,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
               pageBuilder: (context, animation, secondaryAnimation) {
                 return Center(
                   child: Container(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       height: MediaQuery.of(context).size.height * 0.7,
                       child: CategorySelectionPopup(onPressed: (category) {

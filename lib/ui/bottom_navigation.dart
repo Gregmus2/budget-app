@@ -14,7 +14,7 @@ class BottomNavigation extends StatelessWidget {
     return NavigationBar(
       destinations: items,
       selectedIndex: pageIndex,
-      backgroundColor: Color(colorScheme.background.value).withOpacity(0.5),
+      backgroundColor: Color(colorScheme.surface.value).withOpacity(0.5),
       elevation: 1,
       onDestinationSelected: (int index) => onSelectTab(index),
     );

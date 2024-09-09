@@ -17,10 +17,15 @@ class TransactionNumPad extends StatefulWidget {
   final TransferTarget from;
   final TransferTarget to;
   final Transaction? transaction;
-  final Function(double value, DateTime date, TransferTarget from, TransferTarget to, String note) onDoneFunc;
+  final Function(double value, DateTime date, TransferTarget from,
+      TransferTarget to, String note) onDoneFunc;
 
   const TransactionNumPad(
-      {super.key, required this.onDoneFunc, required this.from, required this.to, this.transaction});
+      {super.key,
+      required this.onDoneFunc,
+      required this.from,
+      required this.to,
+      this.transaction});
 
   @override
   State<TransactionNumPad> createState() => _TransactionNumPadState();
@@ -67,7 +72,10 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
           handler: (char, context) {
             if (char == 'D') {
               showDatePicker(
-                      context: context, initialDate: selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2100))
+                      context: context,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100))
                   .then((value) {
                 if (value != null) {
                   setState(() {
@@ -88,13 +96,15 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                       children: List.generate(
                         parentCategory.activeSubCategories.length,
                         (index) {
-                          Category subcategory = parentCategory!.activeSubCategories[index];
+                          Category subcategory =
+                              parentCategory!.activeSubCategories[index];
 
                           return SubCategory(
                               label: subcategory.name,
                               color: subcategory.color,
                               icon: subcategory.icon,
-                              inverse: (toSubCategory == subcategory || fromSubCategory == subcategory),
+                              inverse: (toSubCategory == subcategory ||
+                                  fromSubCategory == subcategory),
                               onPressed: () {
                                 setState(() {
                                   if (toSubCategory == subcategory) {
@@ -138,16 +148,19 @@ class _TransactionNumPadState extends State<TransactionNumPad> {
                 controller: _nameInput,
                 textAlign: TextAlign.center,
                 decoration: const InputDecoration(
-                    hintText: 'Notes...', contentPadding: EdgeInsets.all(0), border: InputBorder.none),
+                    hintText: 'Notes...',
+                    contentPadding: EdgeInsets.all(0),
+                    border: InputBorder.none),
               ),
             ],
           ),
-          onDone: (number) =>
-              widget.onDoneFunc(number, selectedDate, fromSubCategory ?? from, toSubCategory ?? to, _nameInput.text),
+          onDone: (number) => widget.onDoneFunc(number, selectedDate,
+              fromSubCategory ?? from, toSubCategory ?? to, _nameInput.text),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
-          child: Text(DateFormat().format(selectedDate), style: const TextStyle(color: Colors.white)),
+          child: Text(DateFormat().format(selectedDate),
+              style: const TextStyle(color: Colors.white)),
         )
       ],
     );
@@ -167,7 +180,8 @@ class FromToButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      style: ButtonStyle(shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
+      style: const ButtonStyle(
+          shape: WidgetStatePropertyAll(BeveledRectangleBorder())),
       onPressed: () {
         showGeneralDialog(
           context: context,
@@ -176,7 +190,7 @@ class FromToButton extends StatelessWidget {
           pageBuilder: (context, animation, secondaryAnimation) {
             return Center(
               child: Container(
-                color: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.surface,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: entity is Account
@@ -201,7 +215,9 @@ class FromToButton extends StatelessWidget {
             entity.icon,
             color: entity.color,
           ),
-          Text(entity.name, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis),
+          Text(entity.name,
+              style: const TextStyle(color: Colors.white),
+              overflow: TextOverflow.ellipsis),
         ],
       ),
     );
@@ -225,7 +241,8 @@ class _AccountSelectionPopupState extends State<AccountSelectionPopup> {
 
   @override
   Widget build(BuildContext context) {
-    AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
+    AccountProvider provider =
+        Provider.of<AccountProvider>(context, listen: false);
 
     return SingleChildScrollView(
       child: ListView(
@@ -317,7 +334,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -333,9 +350,13 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
                   flex: 2,
                   child: Column(
                     children: [
-                      const Text("Balance", style: TextStyle(color: Colors.white, fontSize: 14)),
-                      Text("$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
-                          style: const TextStyle(fontSize: 24, color: Colors.white), overflow: TextOverflow.ellipsis),
+                      const Text("Balance",
+                          style: TextStyle(color: Colors.white, fontSize: 14)),
+                      Text(
+                          "$arg1${operator != '' ? ' $operator $arg2' : ''} ${widget.currency.symbol}",
+                          style: const TextStyle(
+                              fontSize: 24, color: Colors.white),
+                          overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
@@ -355,7 +376,7 @@ class _SimpleNumPadState extends State<SimpleNumPad> {
             cells: _getCells(context),
             showGrid: true,
             style: SpannableGridStyle(
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               spacing: 0.5,
             ),
           ),
@@ -522,13 +543,18 @@ class NumPadButton extends StatelessWidget {
   final Color? backgroundColor;
   final Function() onPressed;
 
-  const NumPadButton({super.key, required this.char, this.backgroundColor, required this.onPressed});
+  const NumPadButton(
+      {super.key,
+      required this.char,
+      this.backgroundColor,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(backgroundColor ?? Theme.of(context).colorScheme.background),
+        backgroundColor: WidgetStatePropertyAll(
+            backgroundColor ?? Theme.of(context).colorScheme.surface),
       ),
       onPressed: onPressed,
       child: Center(
@@ -549,5 +575,6 @@ class NumPadButtonModel {
   String label;
   String char;
 
-  NumPadButtonModel(this.column, this.row, this.label, this.char, {this.rowSpan});
+  NumPadButtonModel(this.column, this.row, this.label, this.char,
+      {this.rowSpan});
 }

@@ -17,9 +17,9 @@ class DialogButton extends StatelessWidget {
     return TextButton(
         onPressed: onPressed,
         style: const ButtonStyle(
-            shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
+            shape: WidgetStatePropertyAll(BeveledRectangleBorder()),
             alignment: AlignmentDirectional.center,
-            padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
         child: Text(text));
   }
 }

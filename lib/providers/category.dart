@@ -61,8 +61,8 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Category add(
-      String name, IconData icon, Color color, Currency currency, CategoryType type, List<Category> subCategories, bool archived) {
+  Category add(String name, IconData icon, Color color, Currency currency, CategoryType type,
+      List<Category> subCategories, bool archived) {
     Category category = Category(
       name: name,
       icon: icon,
@@ -117,7 +117,9 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   List<Category> getCategories({bool archived = false, CategoryType? type}) {
-    return _categories.where((element) => element.archived == archived && (type == null || element.type == type)).toList();
+    return _categories
+        .where((element) => element.archived == archived && (type == null || element.type == type))
+        .toList();
   }
 
   void updateCategory(Category category) {

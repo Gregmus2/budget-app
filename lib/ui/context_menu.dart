@@ -22,10 +22,10 @@ class ContextMenu {
                   TextButton(
                     onPressed: items[index].onPressed,
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Color.fromRGBO(
+                      backgroundColor: WidgetStatePropertyAll(Color.fromRGBO(
                           items[index].color.red, items[index].color.green, items[index].color.blue, 0.3)),
-                      shape: MaterialStateProperty.all(const CircleBorder(eccentricity: 0)),
-                      padding: MaterialStateProperty.all(const EdgeInsets.all(13)),
+                      shape: const WidgetStatePropertyAll(CircleBorder(eccentricity: 0)),
+                      padding: const WidgetStatePropertyAll(EdgeInsets.all(13)),
                     ),
                     child: Icon(items[index].icon, color: items[index].color, size: 25),
                   ),

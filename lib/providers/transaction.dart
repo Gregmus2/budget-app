@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-import 'package:fb/db/repository.dart';
-import 'package:fb/db/transaction.dart';
 import 'package:fb/db/account.dart';
 import 'package:fb/db/category.dart';
+import 'package:fb/db/repository.dart';
+import 'package:fb/db/transaction.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
@@ -21,17 +21,21 @@ class TransactionProvider extends ChangeNotifier {
   final StateProvider stateProvider;
 
   Set<TransferTarget> _targetFilter = {};
+
   set targetFilter(Set<TransferTarget> value) {
     _targetFilter = value;
     notifyListeners();
   }
+
   Set<TransferTarget> get targetFilter => _targetFilter;
 
   String _search = '';
+
   set search(String value) {
     _search = value;
     notifyListeners();
   }
+
   String get search => _search;
 
   Future<List<Transaction>> get previousItems async {
@@ -41,7 +45,9 @@ class TransactionProvider extends ChangeNotifier {
 
     return transactions;
   }
+
   UnmodifiableListView<Transaction> get items => UnmodifiableListView(_transactions);
+
   Future<List<Transaction>> get nextItems async {
     final range = getNextRange(stateProvider.range, stateProvider.rangeType);
     final transactions = await repo.listTransactions(range); // get latest month

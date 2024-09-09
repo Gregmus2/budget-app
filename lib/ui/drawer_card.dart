@@ -25,8 +25,8 @@ class StringDrawerCard extends StatelessWidget {
                 onPressed: onPressed,
                 style: const ButtonStyle(
                     alignment: AlignmentDirectional.centerStart,
-                    shape: MaterialStatePropertyAll(RoundedRectangleBorder()),
-                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                    shape: WidgetStatePropertyAll(RoundedRectangleBorder()),
+                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [

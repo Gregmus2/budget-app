@@ -111,29 +111,29 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   AppBar _appBar(BuildContext context) {
-    return  AppBar(
+    return AppBar(
       foregroundColor: Colors.white,
       leading: _isEditing
           ? IconButton(
-          onPressed: () => setState(() => _isEditing = false),
-          icon: const Icon(Icons.arrow_back, color: Colors.white))
+              onPressed: () => setState(() => _isEditing = false),
+              icon: const Icon(Icons.arrow_back, color: Colors.white))
           : null,
       bottom: _isEditing ? null : const DateBar(),
       actions: _isEditing
           ? null
           : [
-        IconButton(
-            onPressed: () => setState(() => _isEditing = true),
-            icon: const Icon(Icons.edit, color: Colors.white)),
-      ],
+              IconButton(
+                  onPressed: () => setState(() => _isEditing = true),
+                  icon: const Icon(Icons.edit, color: Colors.white)),
+            ],
       title: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           TextButton(
               onPressed: () => setState(() {
-                _isIncome = false;
-              }),
+                    _isIncome = false;
+                  }),
               child: Text(
                 'Expenses',
                 style: TextStyle(fontSize: 15, color: _isIncome ? Colors.grey : null),
@@ -141,10 +141,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
           const SizedBox(width: 20),
           TextButton(
               onPressed: () => setState(() {
-                _isIncome = true;
-              }),
-              child: Text('Income',
-                  style: TextStyle(fontSize: 15, color: _isIncome ? Colors.greenAccent : Colors.grey))),
+                    _isIncome = true;
+                  }),
+              child:
+                  Text('Income', style: TextStyle(fontSize: 15, color: _isIncome ? Colors.greenAccent : Colors.grey))),
         ],
       ),
       centerTitle: true,

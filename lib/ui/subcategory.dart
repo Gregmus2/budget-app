@@ -23,13 +23,13 @@ class SubCategory extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: onPressed,
         style: ButtonStyle(
-          shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
               borderRadius: const BorderRadius.all(Radius.circular(15)), side: BorderSide(color: color))),
           alignment: AlignmentDirectional.center,
           backgroundColor:
-              inverse ? MaterialStatePropertyAll(color) : const MaterialStatePropertyAll(Colors.transparent),
-          shadowColor: const MaterialStatePropertyAll(Colors.transparent),
-          overlayColor: const MaterialStatePropertyAll(Colors.transparent),
+              inverse ? WidgetStatePropertyAll(color) : const WidgetStatePropertyAll(Colors.transparent),
+          shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         ),
         icon: Icon(
           icon,

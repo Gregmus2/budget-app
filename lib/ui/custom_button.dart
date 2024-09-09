@@ -116,9 +116,9 @@ class CustomButton extends StatelessWidget {
           child: TextButton(
               onPressed: onPressed,
               style: const ButtonStyle(
-                  shape: MaterialStatePropertyAll(BeveledRectangleBorder()),
+                  shape: WidgetStatePropertyAll(BeveledRectangleBorder()),
                   alignment: AlignmentDirectional.centerStart,
-                  padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
+                  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 10, horizontal: 10))),
               child: child),
         ),
       ],

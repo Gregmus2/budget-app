@@ -27,7 +27,7 @@ class BudgetDrawer extends StatelessWidget {
     BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     return Drawer(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       child: ListView(
         children: [
           DrawerHeader(
@@ -60,12 +60,11 @@ class BudgetDrawer extends StatelessWidget {
             icon: Icons.calendar_month,
             color: colorScheme.primary,
             onPressed: () {
-              // todo move
               showDialog<void>(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    backgroundColor: colorScheme.background,
+                    backgroundColor: colorScheme.surface,
                     content: StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
                         return SingleChildScrollView(

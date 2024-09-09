@@ -80,7 +80,7 @@ Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPress
       currencies.sort((a, b) => (a.name.compareTo(b.name)));
 
       return SimpleDialog(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           children: List.generate(
               currencies.length,
               (index) => SimpleDialogOption(

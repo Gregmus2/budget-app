@@ -90,7 +90,10 @@ class BudgetList extends StatelessWidget {
         number: budget.amount,
         currency: currency,
         onDone: (value) {
-          budgetProvider.update(budget..month = stateProvider.range.start.month..year = stateProvider.range.start.year..amount = value);
+          budgetProvider.update(budget
+            ..month = stateProvider.range.start.month
+            ..year = stateProvider.range.start.year
+            ..amount = value);
           Navigator.pop(context);
         },
       ),

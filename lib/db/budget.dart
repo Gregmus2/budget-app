@@ -1,5 +1,5 @@
-import 'package:fb/db/repository.dart';
 import 'package:fb/db/model.dart';
+import 'package:fb/db/repository.dart';
 import 'package:sqflite/utils/utils.dart';
 import 'package:uuid/v4.dart';
 

@@ -19,11 +19,11 @@ class _QuickTransactionState extends State<QuickTransaction> {
       debugShowCheckedModeBanner: false,
       title: 'Gregmus Budget',
       theme: getThemeData(context),
-      home: _buildHomeWidget(context),
+      home: _buildQuickTransactionView(context),
     );
   }
 
-  Scaffold _buildHomeWidget(BuildContext context) {
+  Scaffold _buildQuickTransactionView(BuildContext context) {
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
     return Scaffold(
