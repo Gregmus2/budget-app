@@ -21,14 +21,15 @@ class AccountsPage extends StatelessWidget implements page.Page {
   bool ownAppBar() => true;
 
   @override
-  Icon getIcon(BuildContext _) {
-    return const Icon(Icons.account_balance_wallet);
-  }
+  IconData getIcon() => Icons.account_balance_wallet;
 
   @override
   String getLabel() {
     return 'Accounts';
   }
+
+  @override
+  bool isDisabled(BuildContext context) => false;
 
   @override
   Widget build(BuildContext context) {

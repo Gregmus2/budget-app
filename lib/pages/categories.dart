@@ -26,14 +26,15 @@ class CategoriesPage extends StatefulWidget implements page.Page {
   bool ownAppBar() => true;
 
   @override
-  Icon getIcon(BuildContext _) {
-    return const Icon(Icons.list);
-  }
+  IconData getIcon() => Icons.list;
 
   @override
   String getLabel() {
     return 'Categories';
   }
+
+  @override
+  bool isDisabled(BuildContext context) => false;
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
@@ -65,7 +66,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               });
             },
             backgroundColor: _isArchived ? colorScheme.primary : colorScheme.inversePrimary,
-            child: Icon(Icons.archive_rounded, color: colorScheme.onPrimary),
+            child: Icon(Icons.archive, color: colorScheme.onPrimary),
           ),
           if (_isEditing)
             FloatingActionButton(
@@ -83,7 +84,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
   void _navigateToCategoryCreate(BuildContext context, Category? category) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CategoryCreatePage(category: category)),
+      PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => CategoryCreatePage(category: category),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+                position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation), child: child);
+          }),
     );
   }
 
@@ -115,17 +121,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
     return AppBar(
       leading: _isEditing
-          ? IconButton(
-              onPressed: () => setState(() => _isEditing = false),
-              icon: const Icon(Icons.arrow_back))
+          ? IconButton(onPressed: () => setState(() => _isEditing = false), icon: const Icon(Icons.arrow_back))
           : null,
       bottom: _isEditing ? null : const DateBar(),
       actions: _isEditing
           ? null
           : [
-              IconButton(
-                  onPressed: () => setState(() => _isEditing = true),
-                  icon: const Icon(Icons.edit)),
+              IconButton(onPressed: () => setState(() => _isEditing = true), icon: const Icon(Icons.edit)),
             ],
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -144,8 +146,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               onPressed: () => setState(() {
                     _isIncome = true;
                   }),
-              child:
-                  Text('Income', style: TextStyle(fontSize: 15, color: _isIncome ? null : colorScheme.outline))),
+              child: Text('Income', style: TextStyle(fontSize: 15, color: _isIncome ? null : colorScheme.outline))),
         ],
       ),
       centerTitle: true,

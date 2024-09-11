@@ -1,5 +1,3 @@
-import 'package:dynamic_color/dynamic_color.dart';
-import 'package:fb/app.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -217,7 +215,10 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.category != null ? "Update category" : "New category", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary,)),
+        Text(widget.category != null ? "Update category" : "New category",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+            )),
         EntityNameTextInput(nameInput: _nameInput, isUnique: isUnique),
       ],
     );

@@ -28,7 +28,7 @@ class CategoryCard extends StatelessWidget {
           Text(category.name,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: colorScheme.onSurface ,
+                color: colorScheme.onSurface,
               )),
           CategoryWithProgress(
             category: category,

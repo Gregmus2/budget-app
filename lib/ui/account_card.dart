@@ -12,37 +12,30 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: InkWell(
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(account.icon, color: account.color, size: 30),
-                  const SizedBox(width: 15),
-                  Text(account.name,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      overflow: TextOverflow.ellipsis),
-                ],
-              ),
-              Text("${account.balance.toPrecision(2)} ${account.currency.symbol}",
-                  style: TextStyle(
-                    color: account.balance >= 0 ? colorScheme.primary : colorScheme.error,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis),
-            ],
-          ),
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(account.icon, color: account.color, size: 30),
+                const SizedBox(width: 15),
+                Text(account.name,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+            Text("${account.balance.toPrecision(2)} ${account.currency.symbol}",
+                style: TextStyle(
+                  color: account.balance >= 0 ? colorScheme.primary : colorScheme.error,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis),
+          ],
         ),
       ),
     );

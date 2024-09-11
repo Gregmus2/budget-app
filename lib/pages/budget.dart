@@ -38,11 +38,12 @@ class BudgetPage extends StatelessWidget implements page.Page {
   bool ownAppBar() => true;
 
   @override
-  Icon getIcon(BuildContext context) {
-    final StateProvider stateProvider = Provider.of<StateProvider>(context);
-    final ThemeData theme = Theme.of(context);
+  IconData getIcon() => Icons.savings;
 
-    return Icon(Icons.savings, color: stateProvider.isMonthlyRange ? null : theme.colorScheme.onSurface);
+  @override
+  bool isDisabled(BuildContext context) {
+    final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    return !stateProvider.isMonthlyRange;
   }
 
   @override

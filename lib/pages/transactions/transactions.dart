@@ -46,14 +46,15 @@ class TransactionsPage extends StatelessWidget implements page.Page {
   bool ownAppBar() => false;
 
   @override
-  Icon getIcon(BuildContext _) {
-    return const Icon(Icons.receipt);
-  }
+  IconData getIcon() => Icons.receipt;
 
   @override
   String getLabel() {
     return 'Transactions';
   }
+
+  @override
+  bool isDisabled(BuildContext context) => false;
 }
 
 class AddTransactionButton extends StatelessWidget {
@@ -263,6 +264,7 @@ class TransactionsGrid extends StatelessWidget {
               Row(
                 children: [
                   Icon(from.icon, color: colorScheme.onSurfaceVariant, size: 16),
+                  const SizedBox(width: 3),
                   Text(from.name, style: TextStyle(color: colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
                 ],
               ),
@@ -273,7 +275,6 @@ class TransactionsGrid extends StatelessWidget {
               style: TextStyle(color: transaction.fromAccount == null ? Colors.green : colorScheme.error, fontSize: 16),
               overflow: TextOverflow.ellipsis),
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-          shape: BorderDirectional(bottom: BorderSide(color: colorScheme.outlineVariant)),
         );
       },
       order: GroupedListOrder.DESC,

@@ -44,7 +44,7 @@ class BudgetCard extends StatelessWidget {
                               Text(category.name,
                                   style: const TextStyle(fontSize: 18),
                                   overflow: TextOverflow.ellipsis),
-                              Text("$left ${category.currency.symbol}",
+                              Text("${left.toStringAsFixed(2)} ${category.currency.symbol}",
                                   style: TextStyle(color: left < 0 ? colorScheme.error : colorScheme.primary, fontSize: 18),
                                   overflow: TextOverflow.ellipsis),
                             ],

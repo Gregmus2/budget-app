@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     StateProvider stateProvider = Provider.of<StateProvider>(context, listen: false);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     // run quick transaction from home widget
     HomeWidget.widgetClicked.listen((event) {
@@ -55,8 +56,13 @@ class _HomePageState extends State<HomePage> {
             children: _pages,
           ),
           bottomNavigationBar: BottomNavigation(
-            items: List.generate(_pages.length,
-                (index) => NavigationDestination(icon: _pages[index].getIcon(context), label: _pages[index].getLabel())),
+            items: List.generate(
+                _pages.length,
+                (index) => NavigationDestination(
+                    icon: Icon(_pages[index].getIcon(),
+                        color: _pages[index].isDisabled(context) ? colorScheme.outline : null,
+                    ),
+                    label: _pages[index].getLabel())),
             pageIndex: pageIndex,
             onSelectTab: (int index) => setState(() {
               if (_pages[index] is BudgetPage && !stateProvider.isMonthlyRange) {
