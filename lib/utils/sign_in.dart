@@ -7,7 +7,6 @@ Future<UserCredential> signInWithGoogle() async {
     serverClientId: GlobalConfig().clientID,
   ).signIn();
 
-  // todo handle error
   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
   final credential = GoogleAuthProvider.credential(

@@ -12,7 +12,7 @@ class StringDrawerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> content = [Text(name, style: const TextStyle(color: Colors.white, fontSize: 18))];
+    List<Widget> content = [Text(name, style: const TextStyle(fontSize: 18))];
     if (value != null) {
       content.add(Text(value!, style: TextStyle(color: color, fontSize: 16)));
     }
@@ -30,7 +30,7 @@ class StringDrawerCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(icon, color: Colors.grey, size: 30),
+                    Icon(icon, size: 30),
                     const SizedBox(
                       width: 15,
                     ),

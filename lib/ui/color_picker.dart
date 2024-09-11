@@ -57,7 +57,7 @@ class _ColorPickerState extends State<ColorPicker> {
                 backgroundColor: WidgetStatePropertyAll(ColorPicker.primaryColors[index]),
                 shape: WidgetStatePropertyAll(CircleBorder(
                     side: (color.value == ColorPicker.primaryColors[index].value)
-                        ? const BorderSide(width: 2, color: Colors.white)
+                        ? BorderSide(width: 2, color: Theme.of(context).colorScheme.onSurface)
                         : BorderSide.none))),
             onPressed: () {
               setState(() {

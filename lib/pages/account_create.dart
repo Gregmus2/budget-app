@@ -6,7 +6,7 @@ import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/currency_picker.dart';
 import 'package:fb/ui/custom_button.dart';
 import 'package:fb/ui/icon_picker.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/basic.dart';
 import 'package:fb/ui/text_input.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +55,6 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: _color,
-          foregroundColor: Colors.white,
           toolbarHeight: 100,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,14 +70,14 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
 
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.check, color: Colors.white)),
+                icon: const Icon(Icons.check)),
             if (widget.account != null)
               IconButton(
                   onPressed: () {
                     provider.remove(widget.account!);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.delete, color: Colors.white)),
+                  icon: const Icon(Icons.delete)),
           ],
         ),
         body: ListView(
@@ -157,8 +156,6 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
   }
 
   Future<void> _showTypeDialog() async {
-    const TextStyle textStyle = TextStyle(color: Colors.white);
-
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -175,7 +172,6 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                       },
                       child: Text(
                         AccountType.values[index].name.capitalize(),
-                        style: textStyle,
                       ),
                     )));
       },

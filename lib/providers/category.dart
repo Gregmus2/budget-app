@@ -33,22 +33,6 @@ class CategoryProvider extends ChangeNotifier {
       return;
     }
 
-    // todo handle deleted subcategories
-    List<Category> subCategoriesToAdd = [];
-    for (var subCategory in subCategories) {
-      final targetSubcategories = _subCategories.where((element) => element.id == subCategory.id);
-      if (targetSubcategories.isNotEmpty) {
-        if (subCategory.name != targetSubcategories.first.name || subCategory.icon != targetSubcategories.first.icon) {
-          updateSubCategory(subCategory);
-        }
-      } else {
-        subCategoriesToAdd.add(subCategory);
-      }
-    }
-    for (var subCategory in subCategoriesToAdd) {
-      addSubcategory(subCategory.id, subCategory.name, subCategory.icon, category.id);
-    }
-
     category
       ..name = name
       ..icon = icon
@@ -180,7 +164,6 @@ class CategoryProvider extends ChangeNotifier {
     await repo.delete(subCategory);
   }
 
-  // todo check if subcategories have the same order when reorder. It can be the case when they added on different devices offline
   void reOrderSubCategory(Category category, int from, int to) {
     if (from == to) {
       return;
@@ -203,7 +186,6 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // todo check if categories have the same order when reorder. It can be the case when they added on different devices offline
   void reOrderCategory(Category fromCategory, toCategory) {
     if (fromCategory.id == toCategory.id) {
       return;

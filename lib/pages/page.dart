@@ -7,7 +7,7 @@ abstract class Page extends Widget {
 
   bool ownAppBar() => false;
 
-  Icon getIcon(BuildContext context) => const Icon(Icons.not_interested, color: Colors.white);
+  Icon getIcon(BuildContext context) => const Icon(Icons.not_interested);
 
   String getLabel() => "";
 }

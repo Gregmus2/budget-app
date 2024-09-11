@@ -5,10 +5,12 @@
 Added:
 - Subcategory context items implementation
 - Add search on transaction page
+- Dynamic colors
 
 Updated:
 - Rebuilt transaction filters to allow multiple selections and improve ui
 - Migrate to Nunito Sans font
+- Colors revamp
 
 Fixed:
 - Small async fixes

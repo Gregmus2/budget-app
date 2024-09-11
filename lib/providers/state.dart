@@ -11,6 +11,8 @@ class StateProvider extends ChangeNotifier {
   RangeType rangeType = RangeType.monthly;
   int firstDayOfMonth = 1;
   Currency defaultCurrency = Currency.eur;
+  ThemeMode themeMode = ThemeMode.system;
+
   late SharedPreferences _prefs;
   late User? _user;
   late String? userID;
@@ -20,16 +22,22 @@ class StateProvider extends ChangeNotifier {
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     await _initFirstDayOfMonth();
+    await _initThemeMode();
     _initMonthlyRange();
     _initUser();
   }
 
   Future<void> _initFirstDayOfMonth() async {
     int? firstDayOfMonth = _prefs.getInt(firstDayOfMonthKey);
-    if (firstDayOfMonth == null) {
-      await _prefs.setInt(firstDayOfMonthKey, this.firstDayOfMonth);
-    } else {
+    if (firstDayOfMonth != null) {
       this.firstDayOfMonth = firstDayOfMonth;
+    }
+  }
+
+  Future<void> _initThemeMode() async {
+    final themeMode = _prefs.getString('themeMode');
+    if (themeMode != null) {
+      this.themeMode = ThemeMode.values.firstWhere((e) => e.toString() == themeMode);
     }
   }
 
@@ -64,6 +72,13 @@ class StateProvider extends ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    themeMode = mode;
+    _prefs.setString('themeMode', mode.toString());
+
+    notifyListeners();
   }
 
   DateTimeRange _buildMonthlyRange(DateTime start) {

@@ -1,3 +1,4 @@
+import 'package:fb/app.dart';
 import 'package:fb/pages/accounts.dart';
 import 'package:fb/pages/budget.dart';
 import 'package:fb/pages/categories.dart';
@@ -7,6 +8,7 @@ import 'package:fb/providers/state.dart';
 import 'package:fb/ui/bottom_navigation.dart';
 import 'package:fb/ui/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -38,30 +40,32 @@ class _HomePageState extends State<HomePage> {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const QuickTransaction()));
     });
 
-    return Scaffold(
-        drawer: const BudgetDrawer(),
-        appBar: _pages[pageIndex].ownAppBar()
-            ? null
-            : AppBar(
-                bottom: const DateBar(),
-                actions: _pages[pageIndex].getActions(context),
-                foregroundColor: Colors.white,
-              ),
-        body: IndexedStack(
-          index: pageIndex,
-          children: _pages,
-        ),
-        bottomNavigationBar: BottomNavigation(
-          items: List.generate(_pages.length,
-              (index) => NavigationDestination(icon: _pages[index].getIcon(context), label: _pages[index].getLabel())),
-          pageIndex: pageIndex,
-          onSelectTab: (int index) => setState(() {
-            if (_pages[index] is BudgetPage && !stateProvider.isMonthlyRange) {
-              return;
-            }
+    return App(
+      builder: EasyLoading.init(),
+      page: Scaffold(
+          drawer: const BudgetDrawer(),
+          appBar: _pages[pageIndex].ownAppBar()
+              ? null
+              : AppBar(
+                  bottom: const DateBar(),
+                  actions: _pages[pageIndex].getActions(context),
+                ),
+          body: IndexedStack(
+            index: pageIndex,
+            children: _pages,
+          ),
+          bottomNavigationBar: BottomNavigation(
+            items: List.generate(_pages.length,
+                (index) => NavigationDestination(icon: _pages[index].getIcon(context), label: _pages[index].getLabel())),
+            pageIndex: pageIndex,
+            onSelectTab: (int index) => setState(() {
+              if (_pages[index] is BudgetPage && !stateProvider.isMonthlyRange) {
+                return;
+              }
 
-            pageIndex = index;
-          }),
-        ));
+              pageIndex = index;
+            }),
+          )),
+    );
   }
 }

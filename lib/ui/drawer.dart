@@ -28,132 +28,176 @@ class BudgetDrawer extends StatelessWidget {
 
     return Drawer(
       backgroundColor: colorScheme.surface,
-      child: ListView(
+      child: Column(
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-            ),
-            child: null,
-          ),
-          // todo add automatic archive of old accounts and categories
-          StringDrawerCard(
-              name: stateProvider.user == null ? "Sign In" : "Sign Out",
-              value: stateProvider.user?.displayName,
-              icon: Icons.account_circle,
-              color: colorScheme.primary,
-              onPressed: () {
-                if (stateProvider.user != null) {
-                  FirebaseAuth.instance.signOut();
-                  stateProvider.user = null;
-                  return;
-                }
+          Expanded(
+            child: ListView(
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                  ),
+                  child: null,
+                ),
+                StringDrawerCard(
+                    name: stateProvider.user == null ? "Sign In" : "Sign Out",
+                    value: stateProvider.user?.displayName,
+                    icon: Icons.account_circle,
+                    color: colorScheme.primary,
+                    onPressed: () {
+                      if (stateProvider.user != null) {
+                        FirebaseAuth.instance.signOut();
+                        stateProvider.user = null;
+                        return;
+                      }
 
-                signInWithGoogle().then((user) {
-                  stateProvider.user = user.user;
-                });
-              }),
-          const Divider(),
-          StringDrawerCard(
-            name: "First day of month",
-            value: stateProvider.firstDayOfMonth.toString(),
-            icon: Icons.calendar_month,
-            color: colorScheme.primary,
-            onPressed: () {
-              showDialog<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    backgroundColor: colorScheme.surface,
-                    content: StatefulBuilder(
-                      builder: (BuildContext context, StateSetter setState) {
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: List<Widget>.generate(
-                                30,
-                                (index) => RadioListTile<int>(
-                                      title: Text((index + 1).toString()),
-                                      value: index + 1,
-                                      groupValue: stateProvider.firstDayOfMonth,
-                                      onChanged: (int? value) {
-                                        setState(() {
-                                          stateProvider.setFirstDayOfMonth(value!);
-                                          transactionProvider.updateRange();
-                                          budgetProvider.updateRange().then((value) => Navigator.pop(context));
-                                        });
-                                      },
-                                    )),
+                      signInWithGoogle().then((user) {
+                        stateProvider.user = user.user;
+                      });
+                    }),
+                const Divider(),
+                StringDrawerCard(
+                  name: "First day of month",
+                  value: stateProvider.firstDayOfMonth.toString(),
+                  icon: Icons.calendar_month,
+                  color: colorScheme.primary,
+                  onPressed: () {
+                    showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: colorScheme.surface,
+                          content: StatefulBuilder(
+                            builder: (BuildContext context, StateSetter setState) {
+                              return SingleChildScrollView(
+                                child: Column(
+                                  children: List<Widget>.generate(
+                                      30,
+                                      (index) => RadioListTile<int>(
+                                            title: Text((index + 1).toString()),
+                                            value: index + 1,
+                                            groupValue: stateProvider.firstDayOfMonth,
+                                            onChanged: (int? value) {
+                                              setState(() {
+                                                stateProvider.setFirstDayOfMonth(value!);
+                                                transactionProvider.updateRange();
+                                                budgetProvider.updateRange().then((value) => Navigator.pop(context));
+                                              });
+                                            },
+                                          )),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          const Divider(),
-          const ListTile(
-            title: Text("Data", style: TextStyle(fontWeight: FontWeight.bold)), // Section header
-            dense: true, // Make the header compact
-          ),
-          StringDrawerCard(
-              name: "Import Accounts",
-              icon: Icons.upload,
-              color: colorScheme.primary,
-              onPressed: () {
-                FilePicker.platform.pickFiles().then((result) {
-                  if (result == null) {
-                    return;
-                  }
-
-                  DataImport(context).importAccounts(result.files.first);
-                });
-              }),
-          StringDrawerCard(
-              name: "Import Transactions",
-              icon: Icons.upload,
-              color: colorScheme.primary,
-              onPressed: () {
-                FilePicker.platform.pickFiles().then((result) {
-                  if (result == null) {
-                    return;
-                  }
-
-                  DataImport(context).importTransactions(result.files.first);
-                });
-              }),
-          StringDrawerCard(
-              name: "Clean Data",
-              icon: Icons.highlight_remove,
-              color: colorScheme.primary,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Confirmation", style: TextStyle(color: Colors.white, fontSize: 18)),
-                      content:
-                          const Text("Would you like to remove all the data?", style: TextStyle(color: Colors.white)),
-                      actions: [
-                        DialogButton(onPressed: () => Navigator.pop(context), color: Colors.red, text: "Cancel"),
-                        DialogButton(
-                          onPressed: () {
-                            categoryProvider.deleteAll();
-                            accountProvider.deleteAll();
-                            budgetProvider.deleteAll();
-                            transactionProvider.deleteAll();
-
-                            Navigator.pop(context);
-                          },
-                          color: Colors.green,
-                          text: "Confirm",
-                        )
-                      ],
                     );
                   },
-                );
-              }),
+                ),
+                const Divider(),
+                const ListTile(
+                  title: Text("Data", style: TextStyle(fontWeight: FontWeight.bold)), // Section header
+                  dense: true, // Make the header compact
+                ),
+                StringDrawerCard(
+                    name: "Import Accounts",
+                    icon: Icons.upload,
+                    color: colorScheme.primary,
+                    onPressed: () {
+                      FilePicker.platform.pickFiles().then((result) {
+                        if (result == null) {
+                          return;
+                        }
+
+                        DataImport(context).importAccounts(result.files.first);
+                      });
+                    }),
+                StringDrawerCard(
+                    name: "Import Transactions",
+                    icon: Icons.upload,
+                    color: colorScheme.primary,
+                    onPressed: () {
+                      FilePicker.platform.pickFiles().then((result) {
+                        if (result == null) {
+                          return;
+                        }
+
+                        DataImport(context).importTransactions(result.files.first);
+                      });
+                    }),
+                StringDrawerCard(
+                    name: "Clean Data",
+                    icon: Icons.highlight_remove,
+                    color: colorScheme.primary,
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Confirmation", style: TextStyle(fontSize: 18)),
+                            content: const Text("Would you like to remove all the data?"),
+                            actions: [
+                              DialogButton(onPressed: () => Navigator.pop(context), text: "Cancel"),
+                              DialogButton(
+                                onPressed: () {
+                                  categoryProvider.deleteAll();
+                                  accountProvider.deleteAll();
+                                  budgetProvider.deleteAll();
+                                  transactionProvider.deleteAll();
+
+                                  Navigator.pop(context);
+                                },
+                                text: "Confirm",
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    }),
+                StringDrawerCard(
+                    name: "Clean Transactions",
+                    icon: Icons.highlight_remove,
+                    color: colorScheme.primary,
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Confirmation", style: TextStyle(fontSize: 18)),
+                            content: const Text("Would you like to remove all transactions?"),
+                            actions: [
+                              DialogButton(onPressed: () => Navigator.pop(context), text: "Cancel"),
+                              DialogButton(
+                                onPressed: () {
+                                  transactionProvider.deleteAll();
+
+                                  Navigator.pop(context);
+                                },
+                                text: "Confirm",
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    })
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: SegmentedButton<ThemeMode>(
+              showSelectedIcon: false,
+              segments: const <ButtonSegment<ThemeMode>>[
+                ButtonSegment<ThemeMode>(value: ThemeMode.system, icon: Icon(Icons.hdr_auto)),
+                ButtonSegment<ThemeMode>(value: ThemeMode.light, icon: Icon(Icons.light_mode)),
+                ButtonSegment<ThemeMode>(value: ThemeMode.dark, icon: Icon(Icons.dark_mode)),
+              ],
+              selected: <ThemeMode>{stateProvider.themeMode},
+              onSelectionChanged: (Set<ThemeMode> newSelection) {
+                stateProvider.setThemeMode(newSelection.first);
+              },
+            ),
+          ),
         ],
       ),
     );

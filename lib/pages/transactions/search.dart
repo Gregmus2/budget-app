@@ -13,6 +13,8 @@ class TransactionsSearchBar extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.6,
       height: 40,
       child: SearchBar(
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+        side: WidgetStatePropertyAll(BorderSide(width: 1, color: Theme.of(context).colorScheme.outline)),
         hintText: 'Search transactions',
         onChanged: (value) {
           provider.search = value;

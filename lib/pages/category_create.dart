@@ -1,3 +1,5 @@
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:fb/app.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
@@ -61,6 +63,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
   Row _buildFloatingActionButton() {
     CategoryProvider provider = Provider.of<CategoryProvider>(context);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -72,8 +75,8 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
             Navigator.pop(context);
           },
-          backgroundColor: Colors.red,
-          child: const Icon(Icons.delete, color: Colors.white),
+          backgroundColor: colorScheme.error,
+          child: Icon(Icons.delete, color: colorScheme.onError),
         ),
         const SizedBox(
           width: 10,
@@ -86,8 +89,8 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
             Navigator.pop(context);
           },
-          backgroundColor: Colors.green,
-          child: const Icon(Icons.check, color: Colors.white),
+          backgroundColor: colorScheme.primary,
+          child: Icon(Icons.check, color: colorScheme.onPrimary),
         ),
       ],
     );
@@ -98,7 +101,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       onTap: _hideContextMenuIfShown,
       child: ListView(
         children: [
-          _buildTypeSetting(),
+          _buildTypeSetting(context),
           _buildCurrencySetting(context),
           _buildIconSetting(context),
           _buildColorSetting(context),
@@ -184,11 +187,13 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         subtitle: _currency!.name);
   }
 
-  EntitySettingString _buildTypeSetting() {
+  EntitySettingString _buildTypeSetting(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return EntitySettingString(
         label: "Type",
         value: _type.name.toUpperCase(),
-        color: _type == CategoryType.expenses ? Colors.red : Colors.green,
+        color: _type == CategoryType.expenses ? colorScheme.error : colorScheme.primary,
         onPressed: () {
           setState(() {
             if (_type == CategoryType.expenses) {
@@ -203,17 +208,16 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: _color,
-      foregroundColor: Colors.white,
       toolbarHeight: 100,
-      title: _title(Provider.of<CategoryProvider>(context).isNotExists),
+      title: _title(context, Provider.of<CategoryProvider>(context).isNotExists),
     );
   }
 
-  Column _title(bool Function(String) isUnique) {
+  Column _title(BuildContext context, bool Function(String) isUnique) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.category != null ? "Update category" : "New category"),
+        Text(widget.category != null ? "Update category" : "New category", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary,)),
         EntityNameTextInput(nameInput: _nameInput, isUnique: isUnique),
       ],
     );
@@ -234,6 +238,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         TextEditingController subcategoryNameInput = TextEditingController(text: subCategory?.name);
         IconData icon = subCategory != null ? subCategory.icon : Icons.shopping_cart;
         CategoryProvider provider = Provider.of<CategoryProvider>(context);
+        ColorScheme colorScheme = Theme.of(context).colorScheme;
 
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
@@ -271,14 +276,12 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                   onPressed: () {
                     onSubmit(subcategoryNameInput.text, icon);
                     Navigator.pop(context);
-                  },
-                  color: Colors.green),
+                  }),
               DialogButton(
                   text: 'CANCEL',
                   onPressed: () {
                     Navigator.pop(context);
-                  },
-                  color: Colors.red)
+                  })
             ],
           );
         });
@@ -288,6 +291,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
 
   List<Widget> _buildSubCategoriesCards(BuildContext context) {
     CategoryProvider provider = Provider.of<CategoryProvider>(context);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     List<Widget> result = List<Widget>.generate(
       _subcategories.length,
@@ -297,7 +301,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
         return GestureDetector(
           child: SubCategory(
             icon: subcategory.icon,
-            color: subcategory.archived ? Colors.grey : subcategory.color,
+            color: subcategory.archived ? colorScheme.outline : subcategory.color,
             label: subcategory.name,
           ),
           onTap: () {

@@ -1,6 +1,6 @@
-import 'package:fb/common/theme_data.dart';
+import 'package:fb/app.dart';
 import 'package:fb/providers/transaction.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -15,12 +15,7 @@ class QuickTransaction extends StatefulWidget {
 class _QuickTransactionState extends State<QuickTransaction> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Gregmus Budget',
-      theme: getThemeData(context),
-      home: _buildQuickTransactionView(context),
-    );
+    return App(page: _buildQuickTransactionView(context));
   }
 
   Scaffold _buildQuickTransactionView(BuildContext context) {

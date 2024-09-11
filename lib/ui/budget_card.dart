@@ -14,7 +14,9 @@ class BudgetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context);
-    double spent = transactionProvider.getRangeExpenses(category.id);
+    final double spent = transactionProvider.getRangeExpenses(category.id);
+    final double left = budget - spent;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,10 +42,10 @@ class BudgetCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(category.name,
-                                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                   overflow: TextOverflow.ellipsis),
-                              Text("${budget - spent} ${category.currency.symbol}",
-                                  style: const TextStyle(color: Colors.red, fontSize: 18),
+                              Text("$left ${category.currency.symbol}",
+                                  style: TextStyle(color: left < 0 ? colorScheme.error : colorScheme.primary, fontSize: 18),
                                   overflow: TextOverflow.ellipsis),
                             ],
                           ),
@@ -54,7 +56,7 @@ class BudgetCard extends StatelessWidget {
                             value: spent / budget,
                             color: category.color,
                             minHeight: 5,
-                            backgroundColor: Colors.grey[800],
+                            backgroundColor: colorScheme.surfaceDim,
                           ),
                           const SizedBox(
                             height: 5,
@@ -66,7 +68,7 @@ class BudgetCard extends StatelessWidget {
                                   style: TextStyle(color: category.color, fontSize: 14),
                                   overflow: TextOverflow.ellipsis),
                               Text("$budget ${category.currency.symbol}",
-                                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                  style: TextStyle(color: colorScheme.secondary, fontSize: 14),
                                   overflow: TextOverflow.ellipsis),
                             ],
                           ),

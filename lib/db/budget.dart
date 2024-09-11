@@ -28,7 +28,7 @@ class Budget implements Model {
 
   static Budget mapDatabase(Map<String, dynamic> map) {
     return Budget(
-      id: hex(map['id']),
+      id: map['id'],
       category: map['category'],
       month: map['month'],
       year: map['year'],

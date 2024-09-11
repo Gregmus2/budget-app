@@ -6,7 +6,8 @@ import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/account_card.dart';
 import 'package:fb/ui/context_menu.dart';
 import 'package:fb/ui/drawer.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/basic.dart';
+import 'package:fb/ui/numpad/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,7 @@ class AccountsPage extends StatelessWidget implements page.Page {
 
   @override
   Icon getIcon(BuildContext _) {
-    return const Icon(Icons.account_balance_wallet, color: Colors.white);
+    return const Icon(Icons.account_balance_wallet);
   }
 
   @override
@@ -43,7 +44,7 @@ class AccountsPage extends StatelessWidget implements page.Page {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountCreatePage()));
                 },
-                icon: const Icon(Icons.add, color: Colors.white))
+                icon: const Icon(Icons.add))
           ],
           bottom: const TabBar(
             tabs: [
@@ -58,11 +59,10 @@ class AccountsPage extends StatelessWidget implements page.Page {
             SingleChildScrollView(
                 child: Column(children: [
               AccountTab(accounts: provider.getAccounts(archived: false, type: AccountType.regular)),
-              Text("Savings",
+              const Text("Savings",
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade400,
                   ),
                   overflow: TextOverflow.ellipsis),
               AccountTab(accounts: provider.getAccounts(archived: false, type: AccountType.savings)),
@@ -92,9 +92,7 @@ class AccountTab extends StatelessWidget {
               body: child,
             ),*/
       physics: const ScrollPhysics(),
-      footer: const Divider(
-        color: Colors.grey,
-      ),
+      footer: const Divider(),
       onReorder: (oldIndex, newIndex) => provider.reOrder(oldIndex, newIndex),
       children: List.generate(accounts.length, (index) {
         Account? account = accounts[index];
@@ -112,6 +110,7 @@ class AccountTab extends StatelessWidget {
   _showAccountContextMenu(BuildContext context, Account account) {
     AccountProvider provider = Provider.of<AccountProvider>(context, listen: false);
     TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     ContextMenu.showMenu(
       context,
@@ -119,7 +118,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Delete",
           icon: Icons.delete,
-          color: Colors.red,
+          iconColor: colorScheme.onError,
+          color: colorScheme.error,
           onPressed: () {
             provider.remove(account);
             Navigator.pop(context);
@@ -128,7 +128,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Balance",
           icon: Icons.balance,
-          color: Colors.yellow,
+          iconColor: colorScheme.onTertiary,
+          color: colorScheme.tertiary,
           onPressed: () {
             Navigator.pop(context);
             showModalBottomSheet(
@@ -148,7 +149,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Edit",
           icon: Icons.edit,
-          color: Colors.yellow,
+          iconColor: colorScheme.onTertiary,
+          color: colorScheme.tertiary,
           onPressed: () {
             Navigator.push(
                 context,
@@ -161,7 +163,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Recharge",
           icon: Icons.arrow_downward,
-          color: Colors.green,
+          iconColor: colorScheme.onPrimary,
+          color: colorScheme.primary,
           onPressed: () {
             Navigator.pop(context);
             showModalBottomSheet(
@@ -180,7 +183,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Withdraw",
           icon: Icons.arrow_upward,
-          color: Colors.red,
+          iconColor: colorScheme.onTertiary,
+          color: colorScheme.tertiary,
           onPressed: () {
             Navigator.pop(context);
             showModalBottomSheet(
@@ -199,7 +203,8 @@ class AccountTab extends StatelessWidget {
         ContextMenuItem(
           title: "Transfer",
           icon: Icons.arrow_forward,
-          color: Colors.grey,
+          iconColor: colorScheme.onSecondary,
+          color: colorScheme.secondary,
           onPressed: () {
             Navigator.pop(context);
             showModalBottomSheet(

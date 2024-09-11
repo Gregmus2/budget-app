@@ -11,7 +11,7 @@ import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
@@ -47,7 +47,7 @@ class TransactionsPage extends StatelessWidget implements page.Page {
 
   @override
   Icon getIcon(BuildContext _) {
-    return const Icon(Icons.receipt, color: Colors.white);
+    return const Icon(Icons.receipt);
   }
 
   @override
@@ -182,6 +182,7 @@ class TransactionsGrid extends StatelessWidget {
     final TransactionProvider provider = Provider.of<TransactionProvider>(context, listen: false);
     final AccountProvider accountProvider = Provider.of<AccountProvider>(context, listen: false);
     final CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return GroupedListView<Transaction, String>(
       physics: const ScrollPhysics(),
@@ -251,28 +252,28 @@ class TransactionsGrid extends StatelessWidget {
             backgroundColor: to.color,
             child: Icon(
               to.icon,
-              color: Colors.white,
+                color: Colors.white
             ),
           ),
-          textColor: Colors.white,
+          textColor: colorScheme.onSurface,
           title: Text(to.name + (parent != null ? " (${parent.name})" : ""), overflow: TextOverflow.ellipsis),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(from.icon, color: Colors.grey.shade400, size: 16),
-                  Text(from.name, style: TextStyle(color: Colors.grey.shade400), overflow: TextOverflow.ellipsis),
+                  Icon(from.icon, color: colorScheme.onSurfaceVariant, size: 16),
+                  Text(from.name, style: TextStyle(color: colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
                 ],
               ),
-              Text(transaction.note, style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
+              Text(transaction.note, style: TextStyle(color: colorScheme.outline), overflow: TextOverflow.ellipsis),
             ],
           ),
           trailing: Text("${transaction.amountFrom.toString()} ${from.currency.symbol}",
-              style: TextStyle(color: transaction.fromAccount == null ? Colors.green : Colors.red, fontSize: 16),
+              style: TextStyle(color: transaction.fromAccount == null ? Colors.green : colorScheme.error, fontSize: 16),
               overflow: TextOverflow.ellipsis),
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-          shape: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
+          shape: BorderDirectional(bottom: BorderSide(color: colorScheme.outlineVariant)),
         );
       },
       order: GroupedListOrder.DESC,
@@ -293,6 +294,8 @@ class TransactionsSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -301,7 +304,7 @@ class TransactionsSeparator extends StatelessWidget {
               height: 1,
               fontSize: 25,
               fontWeight: FontWeight.bold,
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant,
             ),
             overflow: TextOverflow.ellipsis),
         const SizedBox(width: 3),
@@ -309,7 +312,7 @@ class TransactionsSeparator extends StatelessWidget {
             style: TextStyle(
               height: 1.3,
               fontSize: 16,
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant,
             ),
             overflow: TextOverflow.ellipsis)
       ],

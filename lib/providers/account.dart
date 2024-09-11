@@ -9,7 +9,6 @@ class AccountProvider extends ChangeNotifier {
   List<Account> _accounts = [];
   final Repository repo;
 
-  // todo get rid of direct call of items if not necessary
   UnmodifiableListView<Account> get items => UnmodifiableListView(_accounts);
 
   AccountProvider(this.repo);

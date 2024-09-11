@@ -44,7 +44,7 @@ dependencies:
   spannable_grid: ^0.3.0
   intl: ^0.19.0
   grouped_list: ^6.0.0
-  home_widget: ^0.6.0
+  home_widget: ^0.7.0
   shared_preferences: ^2.2.0
   file_picker: ^8.0.3
   csv: ^6.0.0
@@ -53,8 +53,9 @@ dependencies:
   google_sign_in: ^6.2.1
   http: ^1.2.2
   uuid: ^4.4.2
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
+  firebase_core: ^3.4.0
+  firebase_auth: ^5.2.0
+  dynamic_color: ^1.7.0
 
 dev_dependencies:
   flutter_test:

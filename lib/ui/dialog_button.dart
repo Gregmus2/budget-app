@@ -4,11 +4,9 @@ class DialogButton extends StatelessWidget {
   const DialogButton({
     required this.text,
     required this.onPressed,
-    required this.color,
     super.key,
   });
 
-  final Color color;
   final Function() onPressed;
   final String text;
 

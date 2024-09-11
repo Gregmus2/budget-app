@@ -21,6 +21,7 @@ class _DateBarState extends State<DateBar> {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
     final TransactionProvider transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
     final BudgetProvider budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,18 +32,18 @@ class _DateBarState extends State<DateBar> {
             transactionProvider.updateRange();
             budgetProvider.updateRange();
           },
-          icon: Icon(Icons.arrow_back_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
+          icon: Icon(Icons.arrow_back_ios, color: !stateProvider.isCustomRange ? colorScheme.onSurface : colorScheme.outline),
         ),
         Text(
             "${DateFormat("dd MMM yyyy").format(stateProvider.range.start)} - ${DateFormat("dd MMM yyyy").format(stateProvider.range.end)}",
-            style: const TextStyle(color: Colors.white)),
+            style: TextStyle(color: colorScheme.onSurface)),
         IconButton(
           onPressed: () {
             stateProvider.nextRange();
             transactionProvider.updateRange();
             budgetProvider.updateRange();
           },
-          icon: Icon(Icons.arrow_forward_ios, color: !stateProvider.isCustomRange ? Colors.white : Colors.grey),
+          icon: Icon(Icons.arrow_forward_ios, color: !stateProvider.isCustomRange ? colorScheme.onSurface : colorScheme.outline),
         ),
       ],
     );

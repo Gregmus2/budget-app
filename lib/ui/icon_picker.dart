@@ -37,7 +37,9 @@ class IconPicker extends StatefulWidget {
     Icons.healing,
     Icons.card_giftcard,
     Icons.airplane_ticket,
+    Icons.restaurant,
   ];
+
   final Color color;
   final IconData icon;
   final Function(IconData) onChange;
@@ -50,6 +52,7 @@ class IconPicker extends StatefulWidget {
 
 class _IconPickerState extends State<IconPicker> {
   late IconData icon;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -57,41 +60,71 @@ class _IconPickerState extends State<IconPicker> {
     icon = widget.icon;
   }
 
+  List<IconData> _getFilteredIcons() {
+    if (_searchQuery.isEmpty) {
+      return IconPicker.icons;
+    }
+
+    return IconPicker.icons
+        .where((icon) => icon.toString().toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-      return GridView.count(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        crossAxisCount: 4,
-        crossAxisSpacing: (constraints.maxWidth / 100) / 4 * 10,
-        mainAxisSpacing: (constraints.maxWidth / 100) / 4 * 16,
-        children: List.generate(
-          IconPicker.icons.length,
-          (index) {
-            return Padding(
-              padding: EdgeInsets.all((constraints.maxWidth / 100) / 4 * 7),
-              child: OutlinedButton(
-                style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        (icon == IconPicker.icons[index]) ? widget.color : Colors.transparent),
-                    shape: const WidgetStatePropertyAll(CircleBorder())),
-                onPressed: () {
-                  setState(() {
-                    icon = IconPicker.icons[index];
-                  });
-                  widget.onChange(IconPicker.icons[index]);
-                },
-                child: Icon(
-                  IconPicker.icons[index],
-                  color: Colors.white,
-                  size: (constraints.maxWidth / 100) / 4 * 30,
-                ),
-              ),
-            );
-          },
+    final filteredIcons = _getFilteredIcons();
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        // Search Bar
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            decoration: const InputDecoration(
+              hintText: 'Search Icons',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
+            },
+          ),
         ),
-      );
-    });
+        Expanded(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List.generate(
+              filteredIcons.length,
+                  (index) {
+                return OutlinedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        (icon == filteredIcons[index]) ? widget.color : Colors.transparent
+                    ),
+                    shape: const WidgetStatePropertyAll(CircleBorder()),
+                    padding: const WidgetStatePropertyAll(EdgeInsets.all(12)),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      icon = filteredIcons[index];
+                    });
+                    widget.onChange(filteredIcons[index]);
+                  },
+                  child: Icon(
+                    filteredIcons[index],
+                    color: (icon == filteredIcons[index]) ? colorScheme.onPrimary : colorScheme.onSurface,
+                    size: 24,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

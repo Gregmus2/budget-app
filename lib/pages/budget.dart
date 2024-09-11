@@ -8,7 +8,7 @@ import 'package:fb/ui/budget_card.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/drawer.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/basic.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +21,6 @@ class BudgetPage extends StatelessWidget implements page.Page {
     return Scaffold(
       drawer: const BudgetDrawer(),
       appBar: AppBar(
-        foregroundColor: Colors.white,
         bottom: const DateBar(),
       ),
       body: const SingleChildScrollView(
@@ -41,8 +40,9 @@ class BudgetPage extends StatelessWidget implements page.Page {
   @override
   Icon getIcon(BuildContext context) {
     final StateProvider stateProvider = Provider.of<StateProvider>(context);
+    final ThemeData theme = Theme.of(context);
 
-    return Icon(Icons.savings, color: stateProvider.isMonthlyRange ? Colors.white : Colors.grey);
+    return Icon(Icons.savings, color: stateProvider.isMonthlyRange ? null : theme.colorScheme.onSurface);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:csv/csv.dart';
 import 'package:fb/db/account.dart';
@@ -9,6 +10,7 @@ import 'package:fb/providers/account.dart';
 import 'package:fb/providers/category.dart';
 import 'package:fb/providers/state.dart';
 import 'package:fb/providers/transaction.dart';
+import 'package:fb/ui/color_picker.dart';
 import 'package:fb/ui/icon_picker.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,7 +20,6 @@ import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/v4.dart';
 
-// todo check with profile mode and improve performance (Exhausted heap space)
 class DataImport {
   static const _indexDate = 0;
   static const _indexType = 1;
@@ -66,6 +67,10 @@ class DataImport {
   void importTransactions(PlatformFile file) async {
     await EasyLoading.show(status: 'loading...');
 
+    List<Future> futures = [];
+    int totalLines = await File(file.path!).openRead().transform(utf8.decoder).transform(const LineSplitter()).length - 1;
+    int processedLines = 0;
+
     Stream<List<int>> stream = File(file.path!).openRead();
     stream
         .transform(utf8.decoder)
@@ -105,14 +110,22 @@ class DataImport {
           throw Exception('Unknown transaction type: ${record[_indexType]}');
       }
 
-      transactionProvider.addOnly(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
+      Future future = transactionProvider.addOnly(record[_indexNote], from, to, double.parse(record[_indexAmountFrom]),
           double.parse(record[_indexAmountTo]), Jiffy.parse(record[_indexDate], pattern: "MM/dd/yy").dateTime);
+      futures.add(future);
+      future.then((value) {
+        processedLines++;
+        double progress = processedLines / totalLines;
+        EasyLoading.showProgress(progress, status: 'Importing... $processedLines/$totalLines');
+      });
     }, onDone: () async {
-      transactionProvider.updateRange();
+      await Future.wait(futures);
+      await transactionProvider.updateRange();
       await EasyLoading.showSuccess('Imported successfully!');
-      await EasyLoading.dismiss();
+      Future.delayed(const Duration(seconds: 3), () => EasyLoading.dismiss());
     }, onError: (error) {
-      EasyLoading.showError(error).then((value) => EasyLoading.dismiss());
+      EasyLoading.showError(error.toString());
+      Future.delayed(const Duration(seconds: 3), () => EasyLoading.dismiss());
     });
   }
 
@@ -156,12 +169,20 @@ class DataImport {
   void addAccount(String nameField, String currencyField, bool archived) {
     Currency? currency = Currency.fromISOCode(currencyField);
     currency ??= stateProvider.defaultCurrency;
-    accountProvider.add(nameField, IconPicker.icons.first, Colors.blue, currency, AccountType.regular, 0.0, archived);
+    accountProvider.add(
+        nameField,
+        Icons.account_balance_wallet,
+        ColorPicker.primaryColors[(Random()).nextInt(ColorPicker.primaryColors.length)],
+        currency,
+        AccountType.regular,
+        0.0,
+        archived);
   }
 
   Account getAccount(String name, String currencyField) {
-    return accountProvider.items
-        .firstWhere((element) => element.name == name && currencyField == element.currency.isoCode, orElse: () {
+    return accountProvider.items.firstWhere(
+        (element) => element.name == name && currencyField.toLowerCase() == element.currency.isoCode.toLowerCase(),
+        orElse: () {
       return accountProvider.items.last;
     });
   }

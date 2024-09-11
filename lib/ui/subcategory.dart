@@ -18,6 +18,8 @@ class SubCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 3),
       child: ElevatedButton.icon(
@@ -33,11 +35,11 @@ class SubCategory extends StatelessWidget {
         ),
         icon: Icon(
           icon,
-          color: inverse ? Colors.white : color,
+          color: inverse ? colorScheme.onPrimary : color,
           size: 18,
         ),
         label: Text(label,
-            style: TextStyle(color: inverse ? Colors.white : color),
+            style: TextStyle(color: inverse ? colorScheme.onPrimary : color),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis),
       ),

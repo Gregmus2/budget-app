@@ -8,7 +8,7 @@ import 'package:fb/providers/transaction.dart';
 import 'package:fb/ui/category_card.dart';
 import 'package:fb/ui/date_bar.dart';
 import 'package:fb/ui/drawer.dart';
-import 'package:fb/ui/numpad.dart';
+import 'package:fb/ui/numpad/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
@@ -27,7 +27,7 @@ class CategoriesPage extends StatefulWidget implements page.Page {
 
   @override
   Icon getIcon(BuildContext _) {
-    return const Icon(Icons.list, color: Colors.white);
+    return const Icon(Icons.list);
   }
 
   @override
@@ -64,8 +64,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 _isArchived = !_isArchived;
               });
             },
-            backgroundColor: _isArchived ? colorScheme.primary : Colors.grey,
-            child: const Icon(Icons.archive_rounded, color: Colors.white),
+            backgroundColor: _isArchived ? colorScheme.primary : colorScheme.inversePrimary,
+            child: Icon(Icons.archive_rounded, color: colorScheme.onPrimary),
           ),
           if (_isEditing)
             FloatingActionButton(
@@ -73,7 +73,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               onPressed: () {
                 _navigateToCategoryCreate(context, null);
               },
-              child: const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add),
             )
         ]),
       ),
@@ -111,12 +111,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   AppBar _appBar(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return AppBar(
-      foregroundColor: Colors.white,
       leading: _isEditing
           ? IconButton(
               onPressed: () => setState(() => _isEditing = false),
-              icon: const Icon(Icons.arrow_back, color: Colors.white))
+              icon: const Icon(Icons.arrow_back))
           : null,
       bottom: _isEditing ? null : const DateBar(),
       actions: _isEditing
@@ -124,7 +125,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           : [
               IconButton(
                   onPressed: () => setState(() => _isEditing = true),
-                  icon: const Icon(Icons.edit, color: Colors.white)),
+                  icon: const Icon(Icons.edit)),
             ],
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -136,7 +137,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   }),
               child: Text(
                 'Expenses',
-                style: TextStyle(fontSize: 15, color: _isIncome ? Colors.grey : null),
+                style: TextStyle(fontSize: 15, color: _isIncome ? colorScheme.outline : null),
               )),
           const SizedBox(width: 20),
           TextButton(
@@ -144,7 +145,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     _isIncome = true;
                   }),
               child:
-                  Text('Income', style: TextStyle(fontSize: 15, color: _isIncome ? Colors.greenAccent : Colors.grey))),
+                  Text('Income', style: TextStyle(fontSize: 15, color: _isIncome ? null : colorScheme.outline))),
         ],
       ),
       centerTitle: true,

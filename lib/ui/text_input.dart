@@ -17,7 +17,6 @@ class EntityNameTextInput extends StatelessWidget {
       decoration: const InputDecoration(
         hintText: 'Name',
       ),
-      style: const TextStyle(color: Colors.white),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Please enter some text';

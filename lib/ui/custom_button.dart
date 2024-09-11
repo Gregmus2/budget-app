@@ -72,7 +72,7 @@ class EntitySetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget labelWidget = Text(label, style: const TextStyle(color: Colors.white, fontSize: 15));
+    Widget labelWidget = Text(label, style: const TextStyle(fontSize: 15));
 
     return CustomButton(
       onPressed: onPressed,

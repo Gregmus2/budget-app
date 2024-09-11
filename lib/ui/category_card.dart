@@ -15,6 +15,8 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return TextButton(
       style: ButtonStyle(
         padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
@@ -25,8 +27,8 @@ class CategoryCard extends StatelessWidget {
         children: [
           Text(category.name,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: colorScheme.onSurface ,
               )),
           CategoryWithProgress(
             category: category,

@@ -105,7 +105,7 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<void> add(
       String note, TransferTarget from, TransferTarget to, double amountFrom, double amountTo, DateTime date) async {
-    addOnly(note, from, to, amountFrom, amountTo, date);
+    await addOnly(note, from, to, amountFrom, amountTo, date);
     if (from is Account) {
       accountProvider.addBalance(from, -amountFrom);
     }
@@ -128,7 +128,7 @@ class TransactionProvider extends ChangeNotifier {
         amountTo: amountTo,
         date: date);
     _transactions.add(transaction);
-    repo.create(transaction);
+    await repo.create(transaction);
   }
 
   void update(Transaction transaction) {
@@ -144,7 +144,6 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // todo check if db query would be faster and ?cache
   double getRangeExpenses(String? categoryID) {
     double result = 0;
     for (var i = 0; i < _transactions.length; i++) {
@@ -158,7 +157,6 @@ class TransactionProvider extends ChangeNotifier {
     return result;
   }
 
-  // todo make it recent, not last
   TransferTarget getRecentFromTarget() {
     if (_transactions.isEmpty) {
       return accountProvider.items.first;
@@ -171,7 +169,6 @@ class TransactionProvider extends ChangeNotifier {
     return categoryProvider.getByID(_transactions.last.fromCategory!);
   }
 
-  // todo make it recent, not last
   TransferTarget getRecentToTarget() {
     if (_transactions.isEmpty) {
       return categoryProvider.getCategories().first;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb/db/repository.dart';
 import 'package:fb/firebase_options.dart';
+import 'package:fb/pages/home.dart';
 import 'package:fb/providers/account.dart';
 import 'package:fb/providers/budget.dart';
 import 'package:fb/providers/category.dart';
@@ -22,7 +23,7 @@ Future<void> main() async {
     if (value != null) {
       _runApp(const QuickTransaction());
     } else {
-      _runApp(const App());
+      _runApp(const HomePage());
     }
   });
 }

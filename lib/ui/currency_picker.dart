@@ -44,7 +44,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
                 element.symbol,
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                    color: (widget.currency == element) ? widget.color : Colors.white, fontWeight: FontWeight.bold),
+                    color: (widget.currency == element) ? widget.color : null, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(
@@ -52,7 +52,7 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
             ),
             Text(element.name,
                 style: TextStyle(
-                  color: (widget.currency == element) ? widget.color : Colors.white,
+                  color: (widget.currency == element) ? widget.color : null,
                 ),
                 overflow: TextOverflow.ellipsis),
           ],
@@ -71,8 +71,6 @@ class _CurrencyPickerState extends State<CurrencyPicker> {
 }
 
 Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPressed) async {
-  const TextStyle textStyle = TextStyle(color: Colors.white);
-
   await showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -91,8 +89,8 @@ Future<void> showCurrencyDialog(BuildContext context, Function(Currency) onPress
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(currencies[index].name, style: textStyle, overflow: TextOverflow.ellipsis),
-                        Text(currencies[index].isoCode, style: textStyle)
+                        Text(currencies[index].name, overflow: TextOverflow.ellipsis),
+                        Text(currencies[index].isoCode)
                       ],
                     ),
                   )));
