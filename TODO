@@ -2,6 +2,15 @@ Basic Features
 - TODOs
 - Fix firebase login
 
+Data sync
+- Create external db (firestore, postgres, anything)
+- First install - download all the data and write sync timestamp
+- Write changes locally (generate ids locally) as sql queries with timestamp
+- On app init or by trigger:
+    - send all the changes to the server and clear local list of changes
+    - download all the changes from server since last sync timestamp and execute
+    - update sync timestamp
+
 Design
 - download and add font with license https://github.com/material-foundation/flutter-packages/blob/main/packages/google_fonts/README.md#bundling-fonts-when-releasing
 /*LicenseRegistry.addLicense(() async* {

@@ -24,6 +24,7 @@ Added:
 - Existing budget is editable
 - Implement archive and delete operations for subcategories
 - Category type switch
+- Transition to category create/edit page
 
 Updated:
 - Replace count with builder mode on budget page

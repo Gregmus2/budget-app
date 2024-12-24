@@ -9,3 +9,7 @@
 <div align="center">
     <img src="res/demo.gif" alt="demo.gif"> 
 </div>
+
+## ADB issues
+
+In order to connect to your phone via wifi you have to run your adb separately, pair and connect your device 

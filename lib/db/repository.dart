@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:fb/db/account.dart';
 import 'package:fb/db/budget.dart';
 import 'package:fb/db/category.dart';
 import 'package:fb/db/model.dart';
+import 'package:fb/db/sync_manager.dart';
 import 'package:fb/db/transaction.dart' as model;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -62,8 +67,13 @@ const migrationScripts = [
   '''
 ];
 
+// todo SQLLite optimizations (PRAGMA journal_mode=WAL;PRAGMA synchronous = NORMAL;)
+// todo create sqllite indexes
+// todo consider WITHOUT ROWID
 class Repository {
   late Database db;
+
+  Repository();
 
   Future init() async {
     db = await openDatabase(
