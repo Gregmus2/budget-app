@@ -3,6 +3,7 @@ import 'package:fb/db/repository.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
+import 'package:sync_proto_gen/sync.dart';
 import 'package:uuid/v4.dart';
 
 enum AccountType { regular, debt, savings }
@@ -69,5 +70,14 @@ class Account implements Model, TransferTarget {
   @override
   String tableName() {
     return tableAccounts;
+  }
+
+  @override
+  List<Operation_Entity> relatedEntities() {
+    return [
+      Operation_Entity()
+        ..id = id
+        ..name = tableAccounts
+    ];
   }
 }

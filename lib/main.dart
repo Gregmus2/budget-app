@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:fb/db/group_service.dart';
 import 'package:fb/db/repository.dart';
+import 'package:fb/db/sync_service.dart';
 import 'package:fb/firebase_options.dart';
 import 'package:fb/pages/home.dart';
 import 'package:fb/providers/account.dart';
@@ -37,6 +39,8 @@ Future<void> _runApp(Widget app) async {
   AccountProvider accountProvider = AccountProvider(repo);
   TransactionProvider transactionProvider = TransactionProvider(repo, accountProvider, categoryProvider, stateProvider);
   BudgetProvider budgetProvider = BudgetProvider(repo, stateProvider);
+  SyncService syncStorage = SyncService();
+  GroupService groupService = GroupService();
 
   await stateProvider.init();
   await repo.init();
@@ -45,6 +49,8 @@ Future<void> _runApp(Widget app) async {
     accountProvider.init(),
     transactionProvider.init(),
     budgetProvider.init(),
+    syncStorage.init(),
+    groupService.init(),
   ]);
 
   runApp(

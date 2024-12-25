@@ -1,5 +1,6 @@
 import 'package:fb/db/model.dart';
 import 'package:fb/db/repository.dart';
+import 'package:sync_proto_gen/sync.dart';
 import 'package:uuid/v4.dart';
 
 class Transaction implements Model {
@@ -59,5 +60,37 @@ class Transaction implements Model {
   @override
   String tableName() {
     return tableTransactions;
+  }
+
+  @override
+  List<Operation_Entity> relatedEntities() {
+    List<Operation_Entity> result = [
+      Operation_Entity()
+        ..id = id
+        ..name = tableTransactions
+    ];
+
+    if (fromAccount != null) {
+      result.add(Operation_Entity()
+        ..id = fromAccount!
+        ..name = tableAccounts);
+    }
+    if (fromCategory != null) {
+      result.add(Operation_Entity()
+        ..id = fromCategory!
+        ..name = tableCategories);
+    }
+    if (toAccount != null) {
+      result.add(Operation_Entity()
+        ..id = toAccount!
+        ..name = tableAccounts);
+    }
+    if (toCategory != null) {
+      result.add(Operation_Entity()
+        ..id = toCategory!
+        ..name = tableCategories);
+    }
+
+    return result;
   }
 }

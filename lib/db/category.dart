@@ -3,6 +3,7 @@ import 'package:fb/db/repository.dart';
 import 'package:fb/db/transfer_target.dart';
 import 'package:fb/utils/currency.dart';
 import 'package:flutter/material.dart';
+import 'package:sync_proto_gen/sync.dart';
 import 'package:uuid/v4.dart';
 
 enum CategoryType { expenses, income }
@@ -76,5 +77,22 @@ class Category implements Model, TransferTarget {
 
   bool isSubCategory() {
     return parent != null;
+  }
+
+  @override
+  List<Operation_Entity> relatedEntities() {
+    List<Operation_Entity> result = [
+      Operation_Entity()
+        ..id = id
+        ..name = tableCategories
+    ];
+
+    if (parent != null) {
+      result.add(Operation_Entity()
+        ..id = parent!
+        ..name = tableCategories);
+    }
+
+    return result;
   }
 }

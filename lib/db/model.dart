@@ -1,3 +1,5 @@
+import 'package:sync_proto_gen/sync.dart';
+
 abstract class Model {
   final String id;
 
@@ -11,5 +13,9 @@ abstract class Model {
     return {
       'id': id,
     };
+  }
+
+  List<Operation_Entity> relatedEntities() {
+    return [];
   }
 }

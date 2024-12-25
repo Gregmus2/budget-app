@@ -60,6 +60,7 @@ dependencies:
     hosted: https://dart.cloudsmith.io/musorinfamily/sync-proto-gen/
     version: 1.0.5
   grpc: ^3.2.4
+  sqflite_common: ^2.5.4+6
 
 dev_dependencies:
   flutter_test:

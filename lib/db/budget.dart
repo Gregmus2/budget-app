@@ -1,6 +1,6 @@
 import 'package:fb/db/model.dart';
 import 'package:fb/db/repository.dart';
-import 'package:sqflite/utils/utils.dart';
+import 'package:sync_proto_gen/sync/sync.pb.dart';
 import 'package:uuid/v4.dart';
 
 class Budget implements Model {
@@ -39,5 +39,17 @@ class Budget implements Model {
   @override
   String tableName() {
     return tableBudgets;
+  }
+
+  @override
+  List<Operation_Entity> relatedEntities() {
+    return [
+      Operation_Entity()
+        ..id = id
+        ..name = tableBudgets,
+      Operation_Entity()
+        ..id = category
+        ..name = tableCategories
+    ];
   }
 }
