@@ -689,10 +689,10 @@ packages:
     dependency: "direct main"
     description:
       name: sync_proto_gen
-      sha256: "4d872aea6cb18e338bae68b1c68dafad9ef21ad06de75fda07f6d32d2e747932"
+      sha256: cd33e23a2878c0f98cdde6ed5565249131c3097bcdf76e103da4bc3e54b78647
       url: "https://dart.cloudsmith.io/musorinfamily/sync-proto-gen/"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.8"
   synchronized:
     dependency: transitive
     description:

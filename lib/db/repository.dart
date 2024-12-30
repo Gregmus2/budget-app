@@ -259,4 +259,28 @@ class Repository {
 
     await batch.commit(noResult: true);
   }
+
+  Future<List<Operation>> getOperations() async {
+    final List<Map<String, dynamic>> maps = await db.query(tableOperations);
+
+    return List.generate(maps.length, (i) {
+      List<Operation_Entity> relatedEntities = jsonDecode(maps[i]['related_entities']);
+
+      return Operation(
+        args: maps[i]['args'],
+        sql: maps[i]['sql'],
+        type: Operation_OperationType.valueOf(maps[i]['operation_type']),
+        relatedEntities: relatedEntities
+      );
+    });
+  }
+
+  Future<void> applyOperations(List<Operation> operations) async {
+    Batch batch = db.batch();
+    for (var operation in operations) {
+      batch.rawInsert(operation.sql, jsonDecode(operation.args));
+    }
+
+    await batch.commit(noResult: true);
+  }
 }

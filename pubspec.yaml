@@ -58,7 +58,7 @@ dependencies:
   dynamic_color: ^1.7.0
   sync_proto_gen:
     hosted: https://dart.cloudsmith.io/musorinfamily/sync-proto-gen/
-    version: 1.0.5
+    version: 1.0.8
   grpc: ^3.2.4
   sqflite_common: ^2.5.4+6
 
